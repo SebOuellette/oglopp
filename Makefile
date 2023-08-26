@@ -1,7 +1,7 @@
 CXX = g++
 
-IOPTS := -Wall -I/network/Programming/GLAD/include
-LOPTS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+IOPTS :=  -ggdb -Wall -I/network/Programming/GLAD/include
+LOPTS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl 
 OBJECT_FILES := $(patsubst Sources/%.cpp,%.o,$(wildcard Sources/*.cpp))
 
 all: main

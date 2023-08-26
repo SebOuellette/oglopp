@@ -9,8 +9,8 @@
 class Shape {
 protected:
 	float* vertices;
-	unsigned int VAO;
-	unsigned int VBO;
+	unsigned int VAO = 0;
+	unsigned int VBO = 0;
 public:
 	Shape();
 	~Shape();
