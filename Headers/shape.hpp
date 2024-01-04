@@ -15,6 +15,9 @@ public:
 	Shape();
 	~Shape();
 
+	Shape& updateVAO();
+	Shape& updateVBO();
+
 	unsigned int getVAO();
 	unsigned int getVBO();
 	float* getVertices();

@@ -1,4 +1,4 @@
-// https://learnopengl.com
+// https://learnopengl.com/Getting-started/Hello-Triangle
 
 #include <iostream>
 #include <cmath>
@@ -13,7 +13,8 @@ int main() {
 	window.create();
 
 	// Initialize the shape we want to draw
-	Shape triangle;
+	//Shape triangle;
+	Rectangle rect;
 
 	// Initialize our shader object
 	Shader ourShader("Shaders/multiColour.vert", "Shaders/multiColour.frag");
@@ -34,7 +35,9 @@ int main() {
 		// Rendering
 
 		// Draw Triangle
-		triangle.draw();
+		//triangle.draw();
+
+		rect.draw();
 
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer

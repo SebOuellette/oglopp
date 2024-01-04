@@ -15,6 +15,8 @@ Window::Window() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAR, GL_TRUE); // Needed on Mac OS
 	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 }
 
 Window::~Window() {
