@@ -5,6 +5,7 @@
 
 #define INDICES 6
 #define VERTICES 4 * 3
+#define STRIDE 6 * sizeof(float)
 
 class Rectangle : public Shape {
 private:

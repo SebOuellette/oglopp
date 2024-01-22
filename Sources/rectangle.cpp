@@ -8,29 +8,14 @@ Rectangle::Rectangle() {
 	};
 
 	this->vertices = new float[VERTICES * 2] {
-		 0.5,  0.5, 0.0,1.0f, 0.0f, 0.0f,  // top right
-		 0.5, -0.5, 0.0,0.0f, 1.0f, 0.0f,  // bottom right
-		-0.5, -0.5, 0.0,0.0f, 0.0f, 1.0f,  // bottom left
-		-0.5,  0.5, 0.0,1.0f, 0.0f, 0.0f// top left
-
-		
-		
-		
-		
+		 0.5,  0.5, 0.0,		 1.0f, 0.0f, 0.0f,  // top right - red
+		 0.5, -0.5, 0.0,		 0.0f, 1.0f, 0.0f,  // bottom right - green
+		-0.5, -0.5, 0.0,		0.0f, 0.0f, 1.0f,  // bottom left - blue
+		-0.5,  0.5, 0.0,		1.0f, 0.0f, 0.0f// top left - red
 	};
-
-	//this->updateVBO();
-
-	// Create and update the Entity Buffer Object
-	//this->updateEBO();
 
 	// ..:: Initialization code :: ..
 	this->updateVAO();
-
-
-	std::cout << "Drawing rectangle" << std::endl;
-
-	
 }
 
 Rectangle::~Rectangle() {
@@ -65,11 +50,11 @@ Rectangle& Rectangle::updateVAO() {
 	this->updateEBO();
 	
 	// 4. then set the vertex attributes pointers
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE, (void*)0);
 	glEnableVertexAttribArray(0);
 
 	// Set the colour attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, STRIDE, (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 	
 
@@ -96,15 +81,10 @@ Rectangle& Rectangle::updateVBO() {
 }
 
 void Rectangle::draw() {
-	// glBindVertexArray(this->VAO);
-	// glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-	// glBindVertexArray(0);
+	// The very beginning
+	// https://cdn.honeybeeks.net/rNoI7KT2nH.png
 
-	//glEnableVertexAttribArray(1);  
 	glBindVertexArray(this->VAO);
-	//glBindBuffer(GL_ARRAY_BUFFER, this->EBO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-	//glDrawArrays(GL_TRIANGLES, 0, 3 * 4);
-	//glDisableVertexAttribArray(1);  
 }

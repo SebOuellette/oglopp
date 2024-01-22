@@ -1,4 +1,8 @@
+// For basic texture stuff
 // https://learnopengl.com/Getting-started/Hello-Triangle
+
+// For 3d 
+// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
 #include <iostream>
 #include <cmath>
@@ -6,6 +10,8 @@
 #include "../Headers/shape.hpp"
 #include "../Headers/rectangle.hpp"
 #include "../Headers/window.hpp"
+#include "../Headers/camera.hpp"
+
 
 int main() {
 	// Create the window
@@ -18,6 +24,8 @@ int main() {
 
 	// Initialize our shader object
 	Shader ourShader("Shaders/multiColour.vert", "Shaders/multiColour.frag");
+
+	Camera cam;
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
