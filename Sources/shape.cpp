@@ -1,30 +1,145 @@
 #include "../Headers/oglopp.h"
 #include <cstdlib>
+#include <cstdint>
 
 //#define VERTS 18
 //#define VERT_SIZE (VERTS * sizeof(float))
 
 namespace oglopp {
+
+	/* @brief Get the opengl texture register for the n'th texture, where index = n
+	* @param[in]	index	The index/layer of the texture
+	*/
+	uint16_t Shape::getTextureCode(uint8_t index) {
+		return static_cast<uint16_t>(GL_TEXTURE0) + index;
+	}
+
+	/* @brief Get the opengl texture string for the n'th texture, where index = n
+	* @param[in]	index	The index/layer of the texture
+	*/
+	std::string Shape::getTextureString(uint8_t index) {
+		std::string str = "texture" + std::to_string(index);
+
+		return str;
+	}
+
+	/* @brief Update uniform MVP
+	* @param[in] window	A reference to the window object
+	* @param[in] pShader	A pointer to the shader object
+	* @return				A reference to this shape object
+	*/
+	Shape& Shape::updateUniformMVP(Window& window, Shader* pShader) {
+		// Transform is model
+		glm::mat4 transform(1.f); // Accumulate changes
+		transform = glm::rotate<float>(transform, this->angle.x, glm::vec3(1.0, 0.0, 0.0f));
+		transform = glm::rotate<float>(transform, this->angle.y, glm::vec3(0.0, 1.0, 0.0f));
+		transform = glm::rotate<float>(transform, this->angle.z, glm::vec3(0.0, 0.0, 1.0f));
+		transform = glm::translate(transform, this->position);
+
+		glm::mat4 view(1.0f);
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
+		//view = glm::rotate(view, angle, glm::vec3(0.0, 1.0, 0.0));
+
+		int width, height;
+		window.getSize(&width, &height);
+
+		glm::mat4 projection(1.0f);
+		projection = glm::perspective<float>(glm::radians(45.f), glm::round(width / height), 0.1f, 100.f);
+
+		pShader->use();
+		pShader->setMat4("model", transform);
+		pShader->setMat4("view", view);
+		pShader->setMat4("projection", projection);
+
+		return *this;
+	}
+
+	Shape& Shape::updateEBO() {
+		// Create the element buffer object
+		glGenBuffers(1, &this->EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * this->strideElements * sizeof(int), this->indices.data(), GL_STATIC_DRAW);
+
+		return *this;
+	}
+
+	Shape& Shape::updateVBO() {
+		// Create an empty vertex buffer object
+		glGenBuffers(1, &this->VBO);
+
+		// Bind the newly created buffer to the array buffer
+		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+
+		// Copy the vertex array data into the buffer
+		glBufferData(GL_ARRAY_BUFFER, this->vertCount * this->strideElements * sizeof(float), this->vertices.data(), GL_STATIC_DRAW);
+
+		return *this;
+	}
+
+	Shape& Shape::updateVAO(bool color, bool texture) { 
+		// Calculate the stride bytes 
+		this->strideElements = HLGL_VEC_COMPONENTS + (color ? HLGL_COL_COMPONENTS : 0) + (texture ? HLGL_TEX_COMPONENTS : 0);
+		const unsigned int STRIDE_BYTES = this->strideElements * sizeof(float);
+
+		std::cout << "Stride bytes is " << STRIDE_BYTES << ", vert count is " << this->vertCount << std::endl;
+
+		glGenVertexArrays(1, &this->VAO);
+		// Initialization code (done once (unless your object frequently changes))
+
+		// 1. bind Vertex Array Object
+		glBindVertexArray(this->VAO);
+
+		// Update Vertex Buffer Object
+		this->updateVBO();
+
+		// Update Enitty Buffer Object
+		if (this->indexCount > 0) {
+			this->updateEBO();
+		}
+
+		unsigned long int offset = 0;
+		int index = 0;
+
+		// 3. then set our vertex attributes pointers
+		glVertexAttribPointer(index, HLGL_VEC_COMPONENTS, GL_FLOAT, GL_FALSE, STRIDE_BYTES, (void*)offset);
+		glEnableVertexAttribArray(index);
+		offset += HLGL_VEC_COMPONENTS * sizeof(float);
+		index++;
+		
+
+		if (color) {
+			// 4. Set the colour attribute
+			glVertexAttribPointer(index, HLGL_COL_COMPONENTS, GL_FLOAT, GL_FALSE, STRIDE_BYTES, (void*)offset);
+			glEnableVertexAttribArray(index);
+			offset += HLGL_COL_COMPONENTS * sizeof(float);
+
+		}
+		index++;
+		
+		if (texture) {
+			// 5. Set the texture attribute
+			std::cout << "offset is " << offset / sizeof(float) << std::endl;
+			glVertexAttribPointer(index, HLGL_TEX_COMPONENTS, GL_FLOAT, GL_FALSE, STRIDE_BYTES, (void*)offset);
+			glEnableVertexAttribArray(index);
+			offset += HLGL_TEX_COMPONENTS * sizeof(float);
+		}
+		index++;
+			
+
+		// Unbind the vertex array
+		glBindVertexArray(0);
+
+		return *this;
+	}
+
 	Shape::Shape() {
-		// float tmpVerts[] = {
-		// 	 0.5, -0.5,  0.0,	1.0, 0.0, 0.0, // Bottom left
-		// 	-0.5, -0.5,  0.0,	0.0, 1.0, 0.0, // Bottom right
-		// 	 0.0,  0.5,  0.0,	0.0, 0.0, 1.0  // Top
-		// };
-
-		// this->vertices = new float[VERTS] {
-		// 	 0.5, -0.5,  0.0,	1.0, 0.0, 0.0, // Bottom left
-		// 	-0.5, -0.5,  0.0,	0.0, 1.0, 0.0, // Bottom right
-		// 	 0.0,  0.5,  0.0,	0.0, 0.0, 1.0  // Top
-		// };
-
-		//std::memcpy(this->vertices, tmpVerts, VERT_SIZE);
-
-		// Vertex buffer obejct
-
-
-		// ----- Vertex Array Object -----
-		//updateVAO();
+		// Initialize stuff
+		//std::memset(this->textures, 0, sizeof(Texture*) * HLGL_SHAPE_MAX_TEXTURES);
+		this->position = glm::vec3(0, 0, 0);
+		this->angle = glm::vec3(0, 0, 0);
+		this->size = 0;
+		this->myRegister = 0;
+		this->strideElements = 0;
 	}
 
 	Shape::~Shape() {
@@ -55,16 +170,69 @@ namespace oglopp {
 		this->vertices.push_back(texPos.y);
 
 		this->vertCount++;
+		//this->strideElements = HLGL_VEC_COMPONENTS + HLGL_COL_COMPONENTS + HLGL_TEX_COMPONENTS;
+
+		return *this;
+	}
+
+	/* @brief Push a single point to the shape.
+	* @param[in]	vec		The vector of the point 
+	* @param[in]	col		The color of the vertex
+	* @return 		A reference to this shape object
+	*/
+	Shape& Shape::pushPoint(glm::vec3 vec, glm::vec3 col) {
+		this->vertices.push_back(vec.x);
+		this->vertices.push_back(vec.y);
+		this->vertices.push_back(vec.z);
+
+		this->vertices.push_back(col.x);
+		this->vertices.push_back(col.y);
+		this->vertices.push_back(col.z);
+
+		this->vertCount++;
+		//this->strideElements = HLGL_VEC_COMPONENTS + HLGL_COL_COMPONENTS + HLGL_TEX_COMPONENTS;
+
+		return *this;
+	}
+
+	/* @brief Push a single point to the shape.
+	* @param[in]	vec		The vector of the point 
+	* @param[in]	texPos	The texture position
+	* @return 		A reference to this shape object
+	*/
+	Shape& Shape::pushPoint(glm::vec3 vec, glm::vec2 texPos) {
+		this->vertices.push_back(vec.x);
+		this->vertices.push_back(vec.y);
+		this->vertices.push_back(vec.z);
+
+		this->vertices.push_back(texPos.x);
+		this->vertices.push_back(texPos.y);
+
+		this->vertCount++;
+
+		return *this;
+	}
+
+	/* @brief Push a single point to the shape.
+	* @param[in]	vec		The vector of the point 
+	* @return 		A reference to this shape object
+	*/
+	Shape& Shape::pushPoint(glm::vec3 vec) {
+		this->vertices.push_back(vec.x);
+		this->vertices.push_back(vec.y);
+		this->vertices.push_back(vec.z);
+
+		this->vertCount++;
 
 		return *this;
 	}
 
 	/* @brief Push a triangle to the indicies list. A triangle is constructed of the following verticies which were defined with pushPoint
-	* @param[in] vertA	The A vertex index out of the point list, where the first point is 0
-	* @param[in] vertB	The B vertex index 
-	* @param[in] vertC	The C vertex index
-	* @return			A reference to this shape object
-	*/
+	 * @param[in] vertA	The A vertex index out of the point list, where the first point is 0
+	 * @param[in] vertB	The B vertex index 
+	 * @param[in] vertC	The C vertex index
+	 * @return			A reference to this shape object
+	 */
 	Shape& Shape::pushTriangle(unsigned int vertA, unsigned int vertB, unsigned int vertC) {
 		this->indices.push_back(vertA);
 		this->indices.push_back(vertB);
@@ -79,71 +247,12 @@ namespace oglopp {
 	* @param[in] texture	The texture object to set to
 	* @return				A reference to this shape object
 	*/
-	Shape& Shape::setTexture(Texture* newTexture) {
-		this->texture = newTexture;
-
-
-		// Change to push texture instead of set texture
+	Shape& Shape::pushTexture(Texture const& newTexture) {
+		this->textures.push_back(newTexture);
 
 		return *this;
 	}
 	
-
-	Shape& Shape::updateEBO() {
-		// Create the element buffer object
-		glGenBuffers(1, &this->EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * HLGL_STRIDE_ELEMENTS * sizeof(int), this->indices.data(), GL_STATIC_DRAW);
-
-		return *this;
-	}
-
-	Shape& Shape::updateVAO() {
-		glGenVertexArrays(1, &this->VAO);
-		// Initialization code (done once (unless your object frequently changes))
-
-		// 1. bind Vertex Array Object
-		glBindVertexArray(this->VAO);
-
-		// Update Vertex Buffer Object
-		this->updateVBO();
-
-		// Update Enitty Buffer Object
-		if (this->indexCount > 0) {
-			this->updateEBO();
-		}
-
-		// 3. then set our vertex attributes pointers
-		glVertexAttribPointer(HLGL_VEC_INDEX, HLGL_VEC_COMPONENTS, GL_FLOAT, GL_FALSE, HLGL_STRIDE_BYTES, (void*)0);
-		glEnableVertexAttribArray(HLGL_VEC_INDEX);
-
-		// 4. Set the colour attribute
-		glVertexAttribPointer(HLGL_COL_INDEX, HLGL_COL_COMPONENTS, GL_FLOAT, GL_FALSE, HLGL_STRIDE_BYTES, (void*)(HLGL_VEC_COMPONENTS * sizeof(float)));
-		glEnableVertexAttribArray(HLGL_COL_INDEX);
-
-		// 5. Set the texture attribute
-		glVertexAttribPointer(HLGL_TEX_INDEX, HLGL_TEX_COMPONENTS, GL_FLOAT, GL_FALSE, HLGL_STRIDE_BYTES, (void*)((HLGL_VEC_COMPONENTS + HLGL_COL_COMPONENTS) * sizeof(float)));
-		glEnableVertexAttribArray(HLGL_TEX_INDEX);
-
-		// Unbind the vertex array
-		glBindVertexArray(0);
-
-		return *this;
-	}
-
-	Shape& Shape::updateVBO() {
-		// Create an empty vertex buffer object
-		glGenBuffers(1, &this->VBO);
-
-		// Bind the newly created buffer to the array buffer
-		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-
-		// Copy the vertex array data into the buffer
-		glBufferData(GL_ARRAY_BUFFER, this->vertCount * HLGL_STRIDE_BYTES, this->vertices.data(), GL_STATIC_DRAW);
-
-		return *this;
-	}
-
 	unsigned int Shape::getVAO() {
 		return this->VAO;
 	}
@@ -156,13 +265,115 @@ namespace oglopp {
 		return this->vertices;
 	}
 
-	void Shape::draw() {
-		if (this->texture != nullptr) {
-			glBindTexture(GL_TEXTURE_2D, this->texture->getTexture());
+	std::vector<Texture>& Shape::getTextureList() {
+		return this->textures;
+	}
+
+	/* @brief Draw this shape to the specified window using an optional shader
+	* @param[in] window		A reference to the window object
+	* @param[in] pShader	An optional pointer to the shader object
+	* @return 				A reference to this shape
+	*/
+	Shape& Shape::draw(Window& window, Shader* pShader) {
+		if (pShader != nullptr) {
+			pShader->use();
+			
+			// Perform the model - view - projection calculation and pass through to the 
+			this->updateUniformMVP(window, pShader);
 		}
 
+		this->size = this->textures.size();
+
+		while (size > HLGL_SHAPE_MAX_TEXTURES) { // What the hell? Somebody is messing with me...
+			std::cerr << "Popping extra texture. Did you try to stuff the texture buffer? Do you really need more than " << HLGL_SHAPE_MAX_TEXTURES << "?" << std::endl;
+			this->textures.pop_back(); // Cant fool me...
+		}
+
+		for (uint i=0;i<this->textures.size();i++) {
+			myRegister = Shape::getTextureCode(i);
+
+			glActiveTexture(myRegister);
+			glBindTexture(GL_TEXTURE_2D, this->textures[i].getTexture());
+			
+			if (pShader != nullptr) {
+				pShader->setInt(Shape::getTextureString(i), i);
+			}
+		}
+
+		// Bind vertex array
 		glBindVertexArray(this->VAO);
-		glDrawElements(GL_TRIANGLES, HLGL_STRIDE_ELEMENTS, GL_UNSIGNED_INT, 0);
+
+		// Draw 
+		if (this->indexCount > 0) {
+			glDrawElements(GL_TRIANGLES, this->strideElements, GL_UNSIGNED_INT, 0);
+		} else {
+			glDrawArrays(GL_TRIANGLES, 0, this->vertCount);
+		}
+
+		// Unbind vertex array
 		glBindVertexArray(0);
+
+		for (uint i=0;i<this->textures.size();i++) {
+			myRegister = Shape::getTextureCode(i);
+
+			glActiveTexture(myRegister);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			if (pShader != nullptr) {
+				pShader->setInt(Shape::getTextureString(i), 0);
+			}
+		}
+
+		return *this;
+	}
+
+	/* @brief Get the position of this shape
+	* @return The position of this shape
+	*/
+	glm::vec3 Shape::getPosition() {
+		return this->position;
+	}
+
+	/* @brief Get the angle of this shape
+	* @return The angle of this shape
+	*/
+	glm::vec3 Shape::getAngle() {
+		return this->angle;
+	}
+
+	/* @brief Set the position of this shape in world space
+	* @param[in] newPosition	The position in world space
+	* @return					A reference to this position
+	*/
+	Shape& Shape::setPosition(glm::vec3 newPosition) {
+		this->position = newPosition;
+		return *this;
+	}
+
+	/* @brief Set the angle of this shape in radians for each axis
+	* @param[in] newAngle		The angle to set to
+	* @return 					A reference to this shape object
+	*/
+	Shape& Shape::setAngle(glm::vec3 newAngle) {
+		this->angle = newAngle;
+		return *this;
+	}
+
+	/* @brief Translate this shape some coordinates in world space
+	* @param[in] offset	The offset to translate by
+	* @return				A reference to this shape object
+	*/
+	Shape& Shape::translate(glm::vec3 offset) {
+		this->position += offset;
+		return *this;
+	}
+
+	/* @brief Rotate this shape around its local origin
+	* @param[in] offset	The offset to rotate by in radians for each axis
+	* @return				A reference to this shape object
+	*/
+	Shape& Shape::rotate(glm::vec3 offset) {
+		this->angle += offset;
+		return *this;
 	}
 }

@@ -18,16 +18,18 @@
 // Helpful defines
 #define HLGL_WORLD_UP 		glm::vec3(0.0f, 1.0f, 0.0f)
 
-#define HLGL_VEC_INDEX			0
-#define HLGL_COL_INDEX			1
-#define HLGL_TEX_INDEX			2
+//#define HLGL_VEC_INDEX			0
+//#define HLGL_COL_INDEX			1
+//#define HLGL_TEX_INDEX			2
 
 #define HLGL_VEC_COMPONENTS 	3
 #define HLGL_COL_COMPONENTS 	3
 #define HLGL_TEX_COMPONENTS		2
 
-#define HLGL_STRIDE_ELEMENTS 	(HLGL_VEC_COMPONENTS + HLGL_COL_COMPONENTS + HLGL_TEX_COMPONENTS)
-#define HLGL_STRIDE_BYTES		(HLGL_STRIDE_ELEMENTS * sizeof(float))
+//#define HLGL_STRIDE_ELEMENTS 	(HLGL_VEC_COMPONENTS + HLGL_COL_COMPONENTS + HLGL_TEX_COMPONENTS)
+//#define HLGL_STRIDE_BYTES		(HLGL_STRIDE_ELEMENTS * sizeof(float))
+
+#define HLGL_SHAPE_MAX_TEXTURES	(GL_MAX_TEXTURE_UNITS - GL_TEXTURE0)
 
 namespace oglopp {
 
@@ -126,26 +128,36 @@ namespace oglopp {
 		Camera& setTarget(glm::vec3 newPos = glm::vec3(0.0f, 0.0f, 0.0f));
 	};
 
-
-
 	/* @brief Texture 
 	*/
 	class Texture {
+	public:
+		enum FileType {
+			JPG,
+			PNG
+		};
+
 	private:
-		int width = 0;
-		int height = 0;
-		int channels = 0;
+		int width = -1;
+		int height = -1;
+		int channels = -1;
 		
 		unsigned int TID = 0;
 
+		/* @brief Get color register that corresponds with some type. GL_RGB for jpg. GL_RGBA for png
+		 * @return The register defining how to read the color
+		*/
+		uint16_t getTypeRegister(FileType type);
+
 	public:
+
 		/* @brief Texture default constructor
 		*/
 		Texture();
 
 		/* @brief Texture constructor. Load texture
 		*/
-		Texture(const char* path);
+		Texture(const char* path, FileType type = FileType::JPG);
 
 		/* @brief Texture destructor
 		*/
@@ -155,12 +167,24 @@ namespace oglopp {
 		*  @param[in]	path	The filepath to load
 		*  @return				A reference to this texture object
 		*/
-		Texture& load(const char* path);
+		Texture& load(const char* path, FileType type = FileType::JPG);
 
 		/* @brief Destroy the image. Called on destructor. 
 		*  @return A reference to this texture object
 		*/
 		Texture& destroy();
+
+		/* @brief Check if this texture object has loaded some image yet. Checks if the size is -1x-1x-1
+		 * @return True if this object has loaded an image, false if this is empty
+		*/
+		bool isDefined();
+
+		/* @brief Get the size of this texture. Will be -1x-1x-1 if this texture has not been defined
+		 * @param[out] getWidth		A pointer to an integer where a width will be saved
+		 * @param[out] getHeight	A pointer to an integer where the height will be saved
+		 * @param[out] getChannels	Optionally get the channels. If nullptr, do not get the channels.
+		*/
+		Texture& getSize(int* getWidth, int* getHeight, int* getChannels = nullptr);
 
 		/* @brief Get texture ID
 		*  @return	The opengl texture ID of this texture object
@@ -169,84 +193,9 @@ namespace oglopp {
 	};
 
 
-
-	/* @brief Shape object
-	*/
-	class Shape {
-	protected:
-		unsigned int vertCount = 0;
-		std::vector<float> vertices;
-
-		unsigned int indexCount = 0;
-		std::vector<unsigned int> indices;
-		
-		unsigned int VAO = 0;
-		unsigned int VBO = 0;
-		unsigned int EBO = 0;
-
-		Texture* texture = nullptr;
-
-	public:
-		Shape();
-		~Shape();
-
-		/* @brief Push a single point to the shape.
-		* @param[in]	vec		The vector of the point 
-		* @param[in]	col		The color of the vertex
-		* @param[in]	texPos	The texture position
-		* @return 		A reference to this shape object
-		*/
-		Shape& pushPoint(glm::vec3 vec, glm::vec3 col, glm::vec2 texPos);
-
-		/* @brief Push a triangle to the indicies list. A triangle is constructed of the following verticies which were defined with pushPoint
-		 * @param[in] vertA	The A vertex index out of the point list, where the first point is 0
-		 * @param[in] vertB	The B vertex index 
-		 * @param[in] vertC	The C vertex index
-		 * @return			A reference to this shape object
-		*/
-		Shape& pushTriangle(unsigned int vertA, unsigned int vertB, unsigned int vertC);
-
-		/* @brief Set the texture 
-		 * @param[in] newTexture	The texture object to set to
-		 * @return					A reference to this shape object
-		*/
-		Shape& setTexture(Texture* newTexture);
-
-		Shape& updateEBO();
-		Shape& updateVAO();
-		Shape& updateVBO();
-
-		unsigned int getVAO();
-		unsigned int getVBO();
-		std::vector<float>& getVertices();
-
-		virtual void draw();
-	};
-
-
-
-
-	/* @brief Rectangle object
-	*/
-	class Rectangle : public Shape {
-	public:
-		Rectangle();
-	};
-
-	/* @brief Rectangle object
-	*/
-	class Triangle : public Shape {
-	public:
-		Triangle();
-	};
-
-
-
-
-
 	enum ShaderType : uint8_t {
-		FILE,
-		RAW
+		FILE,	// const char* vertex and const char* fragment represent a path to the respective shaders. 
+		RAW 	// const char* vertex and const char* fragment represent the fragment shader contents as a string. 
 	};
 
 	/* @brief Shader object
@@ -255,6 +204,8 @@ namespace oglopp {
 	private:
 		unsigned int ID;
 	public:
+		/* @brief Create a new shader
+		*/
 		Shader(const char* vertex, const char* fragment, ShaderType type);
 		// use / activate the shader
 		void use();
@@ -262,8 +213,8 @@ namespace oglopp {
 		void setBool(const std::string &name, bool value) const;
 		void setInt(const std::string &name, int vlaue) const;
 		void setFloat(const std::string &name, float value) const;
-		void setVec4(const std::string &name, std::vector<float> value) const;
-		void setMat4(const std::string &name, glm::mat4* matrix) const;
+		void setVec4(const std::string &name, glm::vec4 const& vector) const;
+		void setMat4(const std::string &name, glm::mat4 const& matrix) const;
 	};
 
 
@@ -283,8 +234,13 @@ namespace oglopp {
 	    Window();
 	    ~Window();
 
-	    // Open the window
-	    Window& create();
+	    /* @brief Create a window with some width and height
+		 * @param[in]	width	The width (in pixels) of the window upon creation
+		 * @param[in]	height	The height (in pixels) of the window upon creation
+		 * @param[in]	title	The title of the window
+		 * @return				A reference to this window object
+		 */
+		Window& create(unsigned int width, unsigned int height, const char* title);
 
 	    // Close the window and clear memory
 	    Window& destroy();
@@ -300,6 +256,182 @@ namespace oglopp {
 
 	    // Poll GLFW events
 	    Window& pollEvents();
+
+		/* @brief Get the size of the window in pixels
+		 * @param[out] width	The width of the window in pixels
+		 * @param[out] height	The height of the window in pixels
+		 * @return				A reference to this window object
+		*/
+		Window& getSize(int* width, int* height);
+	};
+
+
+
+
+	/* @brief Shape object
+	*/
+	class Shape {
+	protected:
+		unsigned int vertCount = 0;
+		unsigned int indexCount = 0;
+		unsigned int VAO = 0;
+		unsigned int VBO = 0;
+		unsigned int EBO = 0;
+
+		std::vector<float> vertices;
+		std::vector<unsigned int> indices;
+		std::vector<Texture> textures;
+
+		unsigned int strideElements;
+
+		// The angle and position of this shape in the world. 
+		glm::vec3 angle;
+		glm::vec3 position;
+
+		// Variables pre-defined for use in each draw() iteration
+		int16_t size;
+		uint16_t myRegister;
+
+		/* @brief Get the opengl texture register for the n'th texture, where index = n
+		 * @param[in]	index	The index/layer of the texture
+		*/
+		static uint16_t getTextureCode(uint8_t index);
+
+		/* @brief Get the opengl texture string for the n'th texture, where index = n
+		 * @param[in]	index	The index/layer of the texture
+		*/
+		static std::string getTextureString(uint8_t index);
+
+		/* @brief Update uniform MVP
+		 * @param[in] window	A reference to the window object
+		 * @param[in] pShader	A pointer to the shader object
+		 * @return				A reference to this shape object
+		*/
+		Shape& updateUniformMVP(Window& window, Shader* pShader);
+
+		Shape& updateEBO();
+		Shape& updateVBO();
+
+	public:
+		Shape();
+		~Shape();
+
+		/* @brief Push a single point to the shape.
+		* @param[in]	vec		The vector of the point 
+		* @param[in]	col		The color of the vertex
+		* @param[in]	texPos	The texture position
+		* @return 		A reference to this shape object
+		*/
+		Shape& pushPoint(glm::vec3 vec, glm::vec3 col, glm::vec2 texPos);
+
+		/* @brief Push a single point to the shape.
+		* @param[in]	vec		The vector of the point 
+		* @param[in]	col		The color of the vertex
+		* @return 		A reference to this shape object
+		*/
+		Shape& pushPoint(glm::vec3 vec, glm::vec3 col);
+
+		/* @brief Push a single point to the shape.
+		* @param[in]	vec		The vector of the point 
+		* @param[in]	texPos	The texture position
+		* @return 		A reference to this shape object
+		*/
+		Shape& pushPoint(glm::vec3 vec, glm::vec2 texPos);
+
+		/* @brief Push a single point to the shape.
+		* @param[in]	vec		The vector of the point 
+		* @return 		A reference to this shape object
+		*/
+		Shape& pushPoint(glm::vec3 vec);
+
+		/* @brief Push a triangle to the indicies list. A triangle is constructed of the following verticies which were defined with pushPoint
+		 * @param[in] vertA	The A vertex index out of the point list, where the first point is 0
+		 * @param[in] vertB	The B vertex index 
+		 * @param[in] vertC	The C vertex index
+		 * @return			A reference to this shape object
+		*/
+		Shape& pushTriangle(unsigned int vertA, unsigned int vertB, unsigned int vertC);
+
+		/* @brief Push a texture onto the back of the texture stack. 
+		 * @param[in] newTexture	The texture object to set to
+		 * @return					A reference to this shape object
+		*/
+		Shape& pushTexture(Texture const& newTexture);
+		
+		/* @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified. 
+		 * @return	A reference to this shape object
+		*/
+		Shape& updateVAO(bool color = true, bool texture = true);
+
+		unsigned int getVAO();
+		unsigned int getVBO();
+		std::vector<float>& getVertices();
+		std::vector<Texture>& getTextureList();
+
+		/* @brief Draw this shape to the specified window using an optional shader
+		 * @param[in] window	A reference to the window object
+		 * @param[in] pShader	An optional pointer to the shader object
+		 * @return 				A reference to this shape
+		*/
+		Shape& draw(Window& window, Shader* pShader = nullptr);
+
+		/* @brief Get the position of this shape
+		 * @return The position of this shape
+		*/
+		glm::vec3 getPosition();
+
+		/* @brief Get the angle of this shape
+		 * @return The angle of this shape
+		*/
+		glm::vec3 getAngle();
+
+		/* @brief Set the position of this shape in world space
+		 * @param[in] newPosition	The position in world space
+		 * @return					A reference to this position
+		*/
+		Shape& setPosition(glm::vec3 newPosition);
+
+		/* @brief Set the angle of this shape in radians for each axis
+		 * @param[in] newAngle		The angle to set to
+		 * @return 					A reference to this shape object
+		*/
+		Shape& setAngle(glm::vec3 newAngle);
+
+		/* @brief Translate this shape some coordinates in world space
+		 * @param[in] offset	The offset to translate by
+		 * @return				A reference to this shape object
+		*/
+		Shape& translate(glm::vec3 offset);
+
+		/* @brief Rotate this shape around its local origin
+		 * @param[in] offset	The offset to rotate by in radians for each axis
+		 * @return				A reference to this shape object
+		*/
+		Shape& rotate(glm::vec3 offset);
+	};
+
+
+
+
+	/* @brief Rectangle object
+	*/
+	class Rectangle : public Shape {
+	public:
+		Rectangle();
+	};
+
+	/* @brief Rectangle object
+	*/
+	class Triangle : public Shape {
+	public:
+		Triangle();
+	};
+
+	/* @brief Rectangle object
+	*/
+	class Cube : public Shape {
+	public:
+		Cube();
 	};
 }
 

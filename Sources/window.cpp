@@ -17,8 +17,14 @@ namespace oglopp {
 	    this->destroy();
 	}
 
-	Window& Window::create() {
-	    this->_window = glfwCreateWindow(800, 600, "OpenGL Example", NULL, NULL);
+	/* @brief Create a window with some width and height
+	 * @param[in]	width	The width (in pixels) of the window upon creation
+	 * @param[in]	height	The height (in pixels) of the window upon creation
+	 * @param[in]	title	The title of the window
+	 * @return				A reference to this window object
+	 */
+	Window& Window::create(unsigned int width, unsigned int height, const char* title) {
+	    this->_window = glfwCreateWindow(width, height, title, NULL, NULL);
 		if (_window == NULL) {
 			std::cout << "Failed to create GLFW window" << std::endl;
 			this->destroy();
@@ -36,16 +42,13 @@ namespace oglopp {
 	        exit(1);
 		}
 
-		// Set the viewport
-		//glViewport(0, 0, 800, 600);
-
 #ifdef HLGL_DRAW_WIREFRAMES
 		// Use wireframe mode
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 #endif
 
 		// Callback function to automatically change viewport when window is resized
-		glfwSetFramebufferSizeCallback(this->_window,this->framebuffer_size_callback);
+		glfwSetFramebufferSizeCallback(this->_window, this->framebuffer_size_callback);
 
 		// Set the "background" colour of the window
 		glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -89,5 +92,15 @@ namespace oglopp {
 	    glfwPollEvents();
 
 	    return *this;
+	}
+
+	/* @brief Get the size of the window in pixels
+	* @param[out] width	The width of the window in pixels
+	* @param[out] height	The height of the window in pixels
+	* @return				A reference to this window object
+	*/
+	Window& Window::getSize(int* width, int* height) {
+		glfwGetWindowSize(this->_window, width, height);
+		return *this;
 	}
 }

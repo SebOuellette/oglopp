@@ -16,7 +16,7 @@ int main() {
 
 	// Create the window
 	Window window;
-	window.create();
+	window.create(800, 800, "HoneyLib OpenGL - Texture Example 1");
 
 	// Initialize the shape we want to draw
 	//Shape triangle;
@@ -32,28 +32,36 @@ int main() {
 		"uniform mat4 transform;\n"\
 		"out vec4 vertexColor;\n"\
 		"out vec2 texCoord;\n"\
+		\
 		"void main() {\n"\
 			"gl_Position = vec4(aPos, 1.0) * transform;\n"\
 			"vertexColor = vec4(aColor, 1.0);\n"\
 			"texCoord = aTexCoord;\n"\
 		"}\n",
 
-		"#version 140\n"\
+		"#version 330 core\n"\
 		"out vec4 FragColor;\n"\
 		"in vec4 vertexColor;\n"\
 		"in vec2 texCoord;\n"\
+		\
 		"uniform sampler2D texture1;\n"\
+		"uniform sampler2D texture2;\n"\
+		\
 		"void main() {\n"\
-			"FragColor = vertexColor + texture(texture1, texCoord);\n"\
-		"}\n", ShaderType::RAW); 
+			"FragColor = (vertexColor + texture(texture1, texCoord) + texture(texture2, texCoord)) / 3.0;\n"\
+		"}\n", 
+
+		ShaderType::RAW); 
 
 	// Camera cam;
 	glm::mat4 transform(1.f);
 
-	Texture container;
-	container.load("./container.jpg");
+	Texture container("/network/Programming/OpenGL/Examples/assets/container.jpg");
+	Texture face("/network/Programming/OpenGL/Examples/assets/awesomeface.png", oglopp::Texture::PNG);
 
-	tri.setTexture(&container);
+	tri.pushTexture(face);
+	rect.pushTexture(container);
+	rect.pushTexture(face);
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
@@ -64,15 +72,16 @@ int main() {
 		// Uniforms
 		float alphaValue = (sin(glfwGetTime()) / 2.0f) + 0.5f;
 
-		transform = glm::rotate<float>(transform, 0.001, glm::vec3(0.0, 0.0, 1.0f));
+		transform = glm::rotate<float>(transform, 0.01, glm::vec3(1.0, 1.0, 1.0f));
 
-		ourShader.setMat4("transform", &transform);
-		ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, alphaValue});
 		ourShader.use();
-
+		ourShader.setMat4("transform", transform);
+		ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, alphaValue});
+		
+		
 		//Rendering
-		rect.draw();
-		tri.draw();
+		rect.draw(window, &ourShader);
+		tri.draw(window, &ourShader);
 
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer

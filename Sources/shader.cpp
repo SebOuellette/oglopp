@@ -113,11 +113,11 @@ namespace oglopp {
 	    glUniform1f(glGetUniformLocation(this->ID, name.c_str()), value);
 	}
 
-	void Shader::setVec4(const std::string &name, std::vector<float> value) const {
+	void Shader::setVec4(const std::string &name, glm::vec4 const& value) const {
 		glUniform4f(glGetUniformLocation(this->ID, name.c_str()), value[0], value[1], value[2], value[3]);
 	}
 
-	void Shader::setMat4(const std::string &name, glm::mat4* matrix) const {
-		glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(*matrix));
+	void Shader::setMat4(const std::string &name, glm::mat4 const& matrix) const {
+		glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(*const_cast<glm::mat4*>(&matrix)));
 	}
 }
