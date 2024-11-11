@@ -26,6 +26,9 @@
 #define HLGL_COL_COMPONENTS 	3
 #define HLGL_TEX_COMPONENTS		2
 
+#define HLGL_RENDER_FAR			(200.f)
+#define HLGL_RENDER_NEAR		(0.01f)
+
 //#define HLGL_STRIDE_ELEMENTS 	(HLGL_VEC_COMPONENTS + HLGL_COL_COMPONENTS + HLGL_TEX_COMPONENTS)
 //#define HLGL_STRIDE_BYTES		(HLGL_STRIDE_ELEMENTS * sizeof(float))
 
@@ -100,6 +103,7 @@ namespace oglopp {
 		// Positions
 		glm::vec3 _pos;
 		glm::vec3 _target;
+		glm::vec3 _angle;
 
 		// Directions
 		glm::vec3 _backward; // The tutorial says this is the backward direction
@@ -111,7 +115,7 @@ namespace oglopp {
 		Camera& _updateRight();
 
 	public:
-		Camera(glm::vec3 pos = glm::vec3(0, 0, 0));
+		Camera(glm::vec3 pos = glm::vec3(0, 0.0, 0.0));
 
 		// Positions
 		glm::vec3 getPos();
@@ -121,11 +125,17 @@ namespace oglopp {
 		glm::vec3 getRight();
 		glm::vec3 getUp();
 
-		// Alternative for all the crap above?
-		Camera& lookAt(glm::vec3 target);
+		glm::vec3 const& getAngle();
 
-		Camera& setPos(glm::vec3 newPos = glm::vec3(0.0f, 0.0f, 3.0f));
-		Camera& setTarget(glm::vec3 newPos = glm::vec3(0.0f, 0.0f, 0.0f));
+		glm::mat4 const& getView();
+
+		// Alternative for all the crap above?
+		glm::mat4 const& lookAt(glm::vec3 target);
+
+		Camera& setPos(glm::vec3 const& newPos = glm::vec3(0.0f, 0.0f, 3.0f));
+		Camera& translate(glm::vec3 const& offset);
+		Camera& setTarget(glm::vec3 const& newPos = glm::vec3(0.0f, 0.0f, 0.0f));
+		Camera& setAngle(glm::vec3 const& newAngle = glm::vec3(0, 0, 0));
 	};
 
 	/* @brief Texture 
@@ -217,15 +227,14 @@ namespace oglopp {
 		void setMat4(const std::string &name, glm::mat4 const& matrix) const;
 	};
 
-
-
-
 	/* @brief Window object
 	 * @param HLGL_DRAW_WIREFRAMES 	Macro defined at compiler time to draw just wireframes. Not defined by default to draw normally
 	*/
 	class Window {
 	private:
 	    GLFWwindow* _window;
+
+		Camera renderCamera;
 
 	    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -257,6 +266,16 @@ namespace oglopp {
 	    // Poll GLFW events
 	    Window& pollEvents();
 
+		/* @brief Get a reference to this object's camera
+		 * @return A constant reference to this object's camera
+		*/
+		Camera& getCam();
+
+		/* @brief Get a pointer to the saved glfw window object
+		* @return	A pointer to the glfw window object
+		*/
+		GLFWwindow* getWindow();
+
 		/* @brief Get the size of the window in pixels
 		 * @param[out] width	The width of the window in pixels
 		 * @param[out] height	The height of the window in pixels
@@ -285,6 +304,7 @@ namespace oglopp {
 		unsigned int strideElements;
 
 		// The angle and position of this shape in the world. 
+		glm::vec3 scaleVec;
 		glm::vec3 angle;
 		glm::vec3 position;
 
@@ -378,12 +398,12 @@ namespace oglopp {
 		/* @brief Get the position of this shape
 		 * @return The position of this shape
 		*/
-		glm::vec3 getPosition();
+		glm::vec3 const& getPosition();
 
 		/* @brief Get the angle of this shape
 		 * @return The angle of this shape
 		*/
-		glm::vec3 getAngle();
+		glm::vec3 const& getAngle();
 
 		/* @brief Set the position of this shape in world space
 		 * @param[in] newPosition	The position in world space
@@ -408,6 +428,23 @@ namespace oglopp {
 		 * @return				A reference to this shape object
 		*/
 		Shape& rotate(glm::vec3 offset);
+
+		/* @brief Set the scale of the shape
+		 * @param[in] newScale	The new scale for this shape
+		 * @return 				A reference to this shape object
+		*/
+		Shape& setScale(glm::vec3 newScale);
+
+		/* @brief Apply a scaling factor to the shape
+		 * @param[in] offset	The new scale for this shape
+		 * @return				A reference to this shape object
+		*/
+		Shape& scale(glm::vec3 offset);
+
+		/* @brief Get the scale factor
+		 * @return The scaling factor
+		*/
+		glm::vec3 const& getScale();
 	};
 
 

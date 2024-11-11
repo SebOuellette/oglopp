@@ -4,13 +4,94 @@
 // For 3d
 // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
-#include <glm/ext/scalar_constants.hpp>
-#include <glm/ext/vector_float3.hpp>
+#include "../Headers/oglopp.h"
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <cmath>
-#include "../Headers/oglopp.h"
+
 
 using namespace oglopp;
+
+#define CAMSPEED (0.05f)
+
+void handleInput(Window& window) {
+	// When escape is pressed...
+	if (glfwGetKey(window.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		// Release the cursor
+		glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+		// If control is also pressed.. Destroy the window
+		if (glfwGetKey(window.getWindow(), GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+			window.destroy();
+		}
+	}
+
+	bool eventRecevied = false;
+	if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
+		window.getCam().translate(window.getCam().getBack() * -CAMSPEED);
+		eventRecevied = true;
+	}
+	if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
+		window.getCam().translate(window.getCam().getRight() * -CAMSPEED);
+		eventRecevied = true;
+	}
+	if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS) {
+		window.getCam().translate(window.getCam().getBack() * CAMSPEED);
+		eventRecevied = true;
+	}
+	if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS) {
+		window.getCam().translate(window.getCam().getRight() * CAMSPEED);
+		eventRecevied = true;
+	}
+	if (glfwGetKey(window.getWindow(), GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+		window.getCam().translate(window.getCam().getUp() * -CAMSPEED);
+		eventRecevied = true;
+	}
+	if (glfwGetKey(window.getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS) {
+		window.getCam().translate(window.getCam().getUp() * CAMSPEED);
+		eventRecevied = true;
+	}
+
+	// The cursor is trapped. So we can do window stuff now
+	if (glfwGetInputMode(window.getWindow(), GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+		double cursorX = 0;
+		double cursorY = 0;
+		glfwGetCursorPos(window.getWindow(), &cursorX, &cursorY);
+		glfwSetCursorPos(window.getWindow(), 0, 0);
+
+		glm::vec3 angle = window.getCam().getAngle();
+
+
+
+		cursorX *= 0.04;
+		cursorY *= 0.04;
+
+		angle.y += cursorX;
+		angle.x += cursorY;
+
+		
+		if (angle.z >= 89.0)
+			angle.z = 89.0;
+		if (angle.z <= -89.0)
+			angle.z = -89.0;
+
+
+
+		window.getCam().setAngle(angle);
+
+	}
+
+	if (eventRecevied) {
+		glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetCursorPos(window.getWindow(), 0, 0);
+	}
+
+	if (glfwGetKey(window.getWindow(), GLFW_KEY_R) == GLFW_PRESS) {
+		glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+
+	// When cursor enters.. Trap it
+}
 
 int main() {
 
@@ -28,7 +109,10 @@ int main() {
 	Rectangle rect;
 	Triangle tri;
 	Cube coob;
-	//Cube coob2;
+	Cube coob2;
+
+	coob.scale(glm::vec3(0.5));
+	coob2.scale(glm::vec3(0.5, 0.5, 1.0));
 
 	// // Initialize our shader object
 	Shader ourShader(
@@ -75,29 +159,44 @@ int main() {
 	rect.pushTexture(face);
 	coob.pushTexture(container);
 	coob.pushTexture(face);
+	coob2.pushTexture(face);
 
 	glEnable(GL_DEPTH_TEST);
 
+	window.getCam().setPos(glm::vec3(0.0, 0.0, -4.0)).setAngle(glm::vec3(00, -90, 0));
+
+	//std::cout << "angle:" << window.getCam().getAngle() << ", target:" << window.getCam().getBack() << std::endl;
+
+
+	ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, 0.0});
+
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
-		angle += 0.01;
-
+		
 		// Process events
-		window.processInput();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//window.processInput();
+		handleInput(window);
+		
+		
+
+		
+		angle += 0.02;
+
+		//window.getCam().setAngle(glm::vec3(angle * 10, 0, 0.0));
 
 		// Uniforms
-		float alphaValue = (sin(glfwGetTime()) / 2.0f) + 0.5f;
 		coob.rotate(glm::vec3(0.01));
+		coob2.setPosition(glm::vec3(sin(angle), cos(angle), 0.0));
 		//coob2.translate(glm::vec3(0, 1.0, 0.0));
 
-		ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, alphaValue});
-		
+		//window.getCam().setPos(glm::vec3(sin(angle) * 4, 3.0, cos(angle) * 4));
+
 		//Rendering
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		rect.draw(window, &ourShader);
 		tri.draw(window, &ourShader);
 		coob.draw(window, &ourShader);
-		//coob2.draw(window, &ourShader);
+		coob2.draw(window, &ourShader);
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer
 		// When drawing on the front buffer, aka the actual pixels on the screen, you can get screen tearing and watch the pixels draw

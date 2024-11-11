@@ -4,6 +4,7 @@
 namespace oglopp {
 	// Callback function to automatically change viewport when window is resized
 	void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+		//std::cout << "Window resized [" << width << ", " << height << "]" << std::endl;
 		glViewport(0, 0, width, height);
 	}
 
@@ -15,6 +16,10 @@ namespace oglopp {
 
 	Window::~Window() {
 	    this->destroy();
+
+		if (this->_window != nullptr) {
+			glfwDestroyWindow(this->_window);
+		}
 	}
 
 	/* @brief Create a window with some width and height
@@ -24,6 +29,7 @@ namespace oglopp {
 	 * @return				A reference to this window object
 	 */
 	Window& Window::create(unsigned int width, unsigned int height, const char* title) {
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 	    this->_window = glfwCreateWindow(width, height, title, NULL, NULL);
 		if (_window == NULL) {
 			std::cout << "Failed to create GLFW window" << std::endl;
@@ -63,7 +69,6 @@ namespace oglopp {
 			glfwHideWindow(this->_window);
 
 			glfwSetWindowShouldClose(this->_window, GLFW_TRUE);
-			glfwDestroyWindow(this->_window);
 			//this->_window = nullptr;
 		}
 
@@ -74,6 +79,8 @@ namespace oglopp {
 		if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 			glfwSetWindowShouldClose(_window, GLFW_TRUE);
 	    }
+
+		// Additional inputs are processed per implementation
 
 	    return *this;
 	}
@@ -92,6 +99,20 @@ namespace oglopp {
 	    glfwPollEvents();
 
 	    return *this;
+	}
+
+	/* @brief Get a reference to this object's camera
+	* @return A constant reference to this object's camera
+	*/
+	Camera& Window::getCam() {
+		return this->renderCamera;
+	}
+
+	/* @brief Get a pointer to the saved glfw window object
+	 * @return	A pointer to the glfw window object
+	*/
+	GLFWwindow* Window::getWindow() {
+		return this->_window;
 	}
 
 	/* @brief Get the size of the window in pixels

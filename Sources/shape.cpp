@@ -29,25 +29,35 @@ namespace oglopp {
 	* @return				A reference to this shape object
 	*/
 	Shape& Shape::updateUniformMVP(Window& window, Shader* pShader) {
-		// Transform is model
-		glm::mat4 transform(1.f); // Accumulate changes
-		transform = glm::rotate<float>(transform, this->angle.x, glm::vec3(1.0, 0.0, 0.0f));
-		transform = glm::rotate<float>(transform, this->angle.y, glm::vec3(0.0, 1.0, 0.0f));
-		transform = glm::rotate<float>(transform, this->angle.z, glm::vec3(0.0, 0.0, 1.0f));
-		transform = glm::translate(transform, this->position);
-
-		glm::mat4 view(1.0f);
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
-		//view = glm::rotate(view, angle, glm::vec3(0.0, 1.0, 0.0));
-
 		int width, height;
 		window.getSize(&width, &height);
 
-		glm::mat4 projection(1.0f);
-		projection = glm::perspective<float>(glm::radians(45.f), glm::round(width / height), 0.1f, 100.f);
+		// ..:: Model Matrix ::..
+		glm::mat4 model(1.f); // Accumulate changes
+		model = glm::scale(model, this->getScale());
+		model = glm::rotate<float>(model, this->getAngle().x, glm::vec3(1.0, 0.0, 0.0f));
+		model = glm::rotate<float>(model, this->getAngle().y, glm::vec3(0.0, 1.0, 0.0f));
+		model = glm::rotate<float>(model, this->getAngle().z, glm::vec3(0.0, 0.0, 1.0f));
+		model = glm::translate(model, this->position);
 
+		// ..:: View Matrix ::..
+		glm::mat4 view = window.getCam().lookAt(-window.getCam().getBack() + window.getCam().getPos()); //(-window.getCam().getTarget());
+		
+		//glm::mat4 view(1.0f);
+		//view = glm::translate(view, -window.getCam().getPos());
+		//view = glm::rotate(view, glm::radians(45.f), glm::vec3(1.0, 0.0, 0.0));
+		//view = glm::rotate(view, glm::radians(0.f), glm::vec3(0.0, 1.0, 0.0));
+		
+
+		// ..:: Projection Matrix ::..
+		glm::mat4 projection(1.0f);
+		projection = glm::perspective<float>(glm::radians(45.f), static_cast<float>(width) / static_cast<float>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
+
+
+
+		// ..:: Apply Elements ::..
 		pShader->use();
-		pShader->setMat4("model", transform);
+		pShader->setMat4("model", model);
 		pShader->setMat4("view", view);
 		pShader->setMat4("projection", projection);
 
@@ -80,8 +90,6 @@ namespace oglopp {
 		// Calculate the stride bytes 
 		this->strideElements = HLGL_VEC_COMPONENTS + (color ? HLGL_COL_COMPONENTS : 0) + (texture ? HLGL_TEX_COMPONENTS : 0);
 		const unsigned int STRIDE_BYTES = this->strideElements * sizeof(float);
-
-		std::cout << "Stride bytes is " << STRIDE_BYTES << ", vert count is " << this->vertCount << std::endl;
 
 		glGenVertexArrays(1, &this->VAO);
 		// Initialization code (done once (unless your object frequently changes))
@@ -118,7 +126,6 @@ namespace oglopp {
 		
 		if (texture) {
 			// 5. Set the texture attribute
-			std::cout << "offset is " << offset / sizeof(float) << std::endl;
 			glVertexAttribPointer(index, HLGL_TEX_COMPONENTS, GL_FLOAT, GL_FALSE, STRIDE_BYTES, (void*)offset);
 			glEnableVertexAttribArray(index);
 			offset += HLGL_TEX_COMPONENTS * sizeof(float);
@@ -137,6 +144,7 @@ namespace oglopp {
 		//std::memset(this->textures, 0, sizeof(Texture*) * HLGL_SHAPE_MAX_TEXTURES);
 		this->position = glm::vec3(0, 0, 0);
 		this->angle = glm::vec3(0, 0, 0);
+		this->scaleVec = glm::vec3(1, 1 ,1);
 		this->size = 0;
 		this->myRegister = 0;
 		this->strideElements = 0;
@@ -330,14 +338,14 @@ namespace oglopp {
 	/* @brief Get the position of this shape
 	* @return The position of this shape
 	*/
-	glm::vec3 Shape::getPosition() {
+	glm::vec3 const& Shape::getPosition() {
 		return this->position;
 	}
 
 	/* @brief Get the angle of this shape
 	* @return The angle of this shape
 	*/
-	glm::vec3 Shape::getAngle() {
+	glm::vec3 const& Shape::getAngle() {
 		return this->angle;
 	}
 
@@ -375,5 +383,32 @@ namespace oglopp {
 	Shape& Shape::rotate(glm::vec3 offset) {
 		this->angle += offset;
 		return *this;
+	}
+
+	/* @brief Set the scale of the shape
+	* @param[in] newScale	The new scale for this shape
+	* @return 				A reference to this shape object
+	*/
+	Shape& Shape::setScale(glm::vec3 newScale) {
+		this->scaleVec = newScale;
+
+		return *this;
+	}
+
+	/* @brief Apply a scaling factor to the shape
+	* @param[in] offset	The new scale for this shape
+	* @return				A reference to this shape object
+	*/
+	Shape& Shape::scale(glm::vec3 offset) {
+		this->scaleVec *= offset;
+
+		return *this;
+	}
+
+	/* @brief Get the scale factor
+	* @return The scaling factor
+	*/
+	glm::vec3 const& Shape::getScale() {
+		return this->scaleVec;
 	}
 }
