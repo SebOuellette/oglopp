@@ -61,8 +61,6 @@ void handleInput(Window& window) {
 
 		glm::vec3 angle = window.getCam().getAngle();
 
-
-
 		cursorX *= 0.04;
 		cursorY *= 0.04;
 
@@ -74,8 +72,6 @@ void handleInput(Window& window) {
 			angle.z = 89.0;
 		if (angle.z <= -89.0)
 			angle.z = -89.0;
-
-
 
 		window.getCam().setAngle(angle);
 
@@ -97,7 +93,7 @@ int main() {
 
 	// Create the window
 	Window window;
-	window.create(800, 800, "HoneyLib OpenGL - Perspective Example");
+	window.create(800, 800, "HoneyLib OpenGL - Shading");
 
 	int width = 0;
 	int height = 0;
@@ -105,14 +101,13 @@ int main() {
 	std::cout << "Window size: [" << width << ", " << height << "]" << std::endl;
 
 	// Initialize the shape we want to draw
-	//Shape triangle;
-	Rectangle rect;
-	Triangle tri;
 	Cube coob;
 	Cube coob2;
+	Cube coob3;
 
 	coob.scale(glm::vec3(0.5));
-	coob2.scale(glm::vec3(0.5, 0.5, 1.0));
+	coob2.scale(glm::vec3(0.5, 0.5, 0.6));
+	coob3.scale(glm::vec3(3.0));
 
 	// // Initialize our shader object
 	Shader ourShader(
@@ -124,26 +119,30 @@ int main() {
 		"uniform mat4 model;\n"\
 		"uniform mat4 view;\n"\
 		"uniform mat4 projection;\n"\
+		"uniform vec4 objectCol;\n"\
 		\
 		"out vec4 vertexColor;\n"\
 		"out vec2 texCoord;\n"\
+		"out vec4 objCol;\n"\
 		\
 		"void main() {\n"\
 			"gl_Position = projection * view * model * vec4(aPos, 1.0);\n"\
 			"vertexColor = vec4(aColor, 1.0);\n"\
 			"texCoord = aTexCoord;\n"\
+			"objCol = objectCol;\n"\
 		"}\n",
+
 
 		"#version 330 core\n"\
 		"out vec4 FragColor;\n"\
-		"in vec4 vertexColor;\n"\
-		"in vec2 texCoord;\n"\
+		"in vec4 objCol;\n"\
 		\
 		"uniform sampler2D texture1;\n"\
 		"uniform sampler2D texture2;\n"\
 		\
 		"void main() {\n"\
-			"FragColor =  (vertexColor + texture(texture1, texCoord) + texture(texture2, texCoord)) / 3.0;\n"\
+			"float ambientStrength = 0.1;\n"\
+			"FragColor = vec4(0.1) + objCol;\n"\
 		"}\n", 
 
 		ShaderType::RAW); 
@@ -151,31 +150,16 @@ int main() {
 	// Camera cam;
 	float angle = 0;
 
-	Texture container("/network/Programming/OpenGL/Examples/assets/container.jpg");
-	Texture face("/network/Programming/OpenGL/Examples/assets/awesomeface.png", oglopp::Texture::PNG);
-
-	tri.pushTexture(face);
-	rect.pushTexture(container);
-	rect.pushTexture(face);
-	coob.pushTexture(container);
-	coob.pushTexture(face);
-	coob2.pushTexture(face);
-
 	glEnable(GL_DEPTH_TEST);
 
 	window.getCam().setPos(glm::vec3(0.0, 0.0, -4.0)).setAngle(glm::vec3(00, -90, 0));
-
-	//std::cout << "angle:" << window.getCam().getAngle() << ", target:" << window.getCam().getBack() << std::endl;
-
-
-	ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, 0.0});
+	window.getCam().setFov(65);
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
-		
 		// Process events
-		//window.processInput();
 		handleInput(window);
+		
 		
 		angle += 0.02;
 
@@ -183,17 +167,25 @@ int main() {
 
 		// Uniforms
 		coob.rotate(glm::vec3(0.01));
+		
 		coob2.setPosition(glm::vec3(sin(angle), cos(angle), 0.0));
+		
+		coob3.setPosition(glm::vec3(sin(angle / 10) * 4, cos(angle / 10) * 4, cos(angle / 10) * sin(angle / 10) * 4));
 		//coob2.translate(glm::vec3(0, 1.0, 0.0));
 
 		//window.getCam().setPos(glm::vec3(sin(angle) * 4, 3.0, cos(angle) * 4));
 
-		//Rendering
+		// Prepare render layer
+		ourShader.use();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		rect.draw(window, &ourShader);
-		tri.draw(window, &ourShader);
+
+		ourShader.setVec4("objectCol", glm::vec4(1.0, 0.5, 0.0, 1.0));
 		coob.draw(window, &ourShader);
+
+		ourShader.setVec4("objectCol", glm::vec4(1.0));
 		coob2.draw(window, &ourShader);
+		
+		coob3.draw(window, &ourShader);
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer
 		// When drawing on the front buffer, aka the actual pixels on the screen, you can get screen tearing and watch the pixels draw

@@ -5,6 +5,7 @@ namespace oglopp {
 	Camera::Camera(glm::vec3 pos) {
 		this->_view = glm::mat4(1.f);
 
+		this->fov = HLGL_DEFAULT_FOV;
 		this->setAngle(glm::vec3(0.0));
 		this->setPos(pos);
 		this->lookAt(pos);
@@ -31,6 +32,15 @@ namespace oglopp {
 
 	glm::vec3 Camera::getUp() {
 		return glm::cross(this->_backward, this->_right);
+	}
+
+	float Camera::getFov() {
+		return this->fov;
+	}
+
+	Camera& Camera::setFov(float fov) {
+		this->fov = fov;
+		return *this;
 	}
 
 	glm::vec3 const& Camera::getAngle() {

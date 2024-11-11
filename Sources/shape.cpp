@@ -51,7 +51,7 @@ namespace oglopp {
 
 		// ..:: Projection Matrix ::..
 		glm::mat4 projection(1.0f);
-		projection = glm::perspective<float>(glm::radians(45.f), static_cast<float>(width) / static_cast<float>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
+		projection = glm::perspective<float>(glm::radians(window.getCam().getFov()), static_cast<float>(width) / static_cast<float>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
 
 
 
