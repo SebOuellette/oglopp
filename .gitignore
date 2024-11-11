@@ -1,5 +1,6 @@
-*.o
-.vscode/*
+.vscode/**
 .vscode
-build/*
-main
+build
+build/**
+glad
+glad/**

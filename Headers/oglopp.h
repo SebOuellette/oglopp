@@ -8,7 +8,7 @@
 #include <vector>
 #include <iostream>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -32,7 +32,11 @@
 //#define HLGL_STRIDE_ELEMENTS 	(HLGL_VEC_COMPONENTS + HLGL_COL_COMPONENTS + HLGL_TEX_COMPONENTS)
 //#define HLGL_STRIDE_BYTES		(HLGL_STRIDE_ELEMENTS * sizeof(float))
 
+#ifdef GL_MAX_TEXTURE_UNITS
 #define HLGL_SHAPE_MAX_TEXTURES	(GL_MAX_TEXTURE_UNITS - GL_TEXTURE0)
+#else
+#define HLGL_SHAPE_MAX_TEXTURES (GL_MAX_TEXTURE_SIZE)
+#endif
 
 #define HLGL_DEFAULT_FOV		65.f
 
@@ -52,7 +56,7 @@ namespace oglopp {
 	std::ostream& operator<<(std::ostream& os, glm::vec4 const& obj);
 	std::ostream& operator<<(std::ostream& os, glm::vec3 const& obj);
 
-	/* @brief Utilities for matrix math. Translate, scale, and rotate coordinates. 
+	/* @brief Utilities for matrix math. Translate, scale, and rotate coordinates.
 	*/
 	class Matrix {
 	public:
@@ -145,7 +149,7 @@ namespace oglopp {
 		Camera& setAngle(glm::vec3 const& newAngle = glm::vec3(0, 0, 0));
 	};
 
-	/* @brief Texture 
+	/* @brief Texture
 	*/
 	class Texture {
 	public:
@@ -158,7 +162,7 @@ namespace oglopp {
 		int width = -1;
 		int height = -1;
 		int channels = -1;
-		
+
 		unsigned int TID = 0;
 
 		/* @brief Get color register that corresponds with some type. GL_RGB for jpg. GL_RGBA for png
@@ -186,7 +190,7 @@ namespace oglopp {
 		*/
 		Texture& load(const char* path, FileType type = FileType::JPG);
 
-		/* @brief Destroy the image. Called on destructor. 
+		/* @brief Destroy the image. Called on destructor.
 		*  @return A reference to this texture object
 		*/
 		Texture& destroy();
@@ -211,8 +215,8 @@ namespace oglopp {
 
 
 	enum ShaderType : uint8_t {
-		FILE,	// const char* vertex and const char* fragment represent a path to the respective shaders. 
-		RAW 	// const char* vertex and const char* fragment represent the fragment shader contents as a string. 
+		FILE,	// const char* vertex and const char* fragment represent a path to the respective shaders.
+		RAW 	// const char* vertex and const char* fragment represent the fragment shader contents as a string.
 	};
 
 	/* @brief Shader object
@@ -310,7 +314,7 @@ namespace oglopp {
 
 		unsigned int strideElements;
 
-		// The angle and position of this shape in the world. 
+		// The angle and position of this shape in the world.
 		glm::vec3 scaleVec;
 		glm::vec3 angle;
 		glm::vec3 position;
@@ -346,7 +350,7 @@ namespace oglopp {
 #if 1
 
 		/* @brief Push a single point to the shape.
-		* @param[in]	vec		The vector of the point 
+		* @param[in]	vec		The vector of the point
 		* @param[in]	col		The color of the vertex
 		* @param[in]	texPos	The texture position
 		* @return 		A reference to this shape object
@@ -354,21 +358,21 @@ namespace oglopp {
 		Shape& pushPoint(glm::vec3 vec, glm::vec3 col, glm::vec2 texPos);
 
 		/* @brief Push a single point to the shape.
-		* @param[in]	vec		The vector of the point 
+		* @param[in]	vec		The vector of the point
 		* @param[in]	col		The color of the vertex
 		* @return 		A reference to this shape object
 		*/
 		Shape& pushPoint(glm::vec3 vec, glm::vec3 col);
 
 		/* @brief Push a single point to the shape.
-		* @param[in]	vec		The vector of the point 
+		* @param[in]	vec		The vector of the point
 		* @param[in]	texPos	The texture position
 		* @return 		A reference to this shape object
 		*/
 		Shape& pushPoint(glm::vec3 vec, glm::vec2 texPos);
 
 		/* @brief Push a single point to the shape.
-		* @param[in]	vec		The vector of the point 
+		* @param[in]	vec		The vector of the point
 		* @return 		A reference to this shape object
 		*/
 		Shape& pushPoint(glm::vec3 vec);
@@ -376,19 +380,19 @@ namespace oglopp {
 
 		/* @brief Push a triangle to the indicies list. A triangle is constructed of the following verticies which were defined with pushPoint
 		 * @param[in] vertA	The A vertex index out of the point list, where the first point is 0
-		 * @param[in] vertB	The B vertex index 
+		 * @param[in] vertB	The B vertex index
 		 * @param[in] vertC	The C vertex index
 		 * @return			A reference to this shape object
 		*/
 		Shape& pushTriangle(unsigned int vertA, unsigned int vertB, unsigned int vertC);
 
-		/* @brief Push a texture onto the back of the texture stack. 
+		/* @brief Push a texture onto the back of the texture stack.
 		 * @param[in] newTexture	The texture object to set to
 		 * @return					A reference to this shape object
 		*/
 		Shape& pushTexture(Texture const& newTexture);
-		
-		/* @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified. 
+
+		/* @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified.
 		 * @return	A reference to this shape object
 		*/
 		Shape& updateVAO(bool color = true, bool texture = true);

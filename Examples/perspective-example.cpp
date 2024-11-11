@@ -151,8 +151,8 @@ int main() {
 	// Camera cam;
 	float angle = 0;
 
-	Texture container("/network/Programming/OpenGL/Examples/assets/container.jpg");
-	Texture face("/network/Programming/OpenGL/Examples/assets/awesomeface.png", oglopp::Texture::PNG);
+	Texture container("/network/Programming/opengl/Examples/assets/container.jpg");
+	Texture face("/network/Programming/opengl/Examples/assets/awesomeface.png", oglopp::Texture::PNG);
 
 	tri.pushTexture(face);
 	rect.pushTexture(container);

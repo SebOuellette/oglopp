@@ -11,7 +11,7 @@ namespace oglopp {
 	Window::Window() {
 		this->_window = nullptr;
 
-		
+
 	}
 
 	Window::~Window() {
@@ -42,7 +42,7 @@ namespace oglopp {
 
 
 		// Initialize GLAD before we call any OpenGL functions
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		if (!gladLoadGL((GLADloadfunc)glfwGetProcAddress)) {
 			std::cout << "Failed to initialize GLAD" << std::endl;
 			this->destroy();
 	        exit(1);
