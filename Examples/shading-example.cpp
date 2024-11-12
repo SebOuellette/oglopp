@@ -59,22 +59,7 @@ void handleInput(Window& window) {
 		glfwGetCursorPos(window.getWindow(), &cursorX, &cursorY);
 		glfwSetCursorPos(window.getWindow(), 0, 0);
 
-		glm::vec3 angle = window.getCam().getAngle();
-
-		cursorX *= 0.04;
-		cursorY *= 0.04;
-
-		angle.y += cursorX;
-		angle.x += cursorY;
-
-		
-		if (angle.z >= 89.0)
-			angle.z = 89.0;
-		if (angle.z <= -89.0)
-			angle.z = -89.0;
-
-		window.getCam().setAngle(angle);
-
+		window.getCam().aimBy(cursorY, cursorX);
 	}
 
 	if (eventRecevied) {
@@ -104,48 +89,76 @@ int main() {
 	Cube coob;
 	Cube coob2;
 	Cube coob3;
+	Cube floor;
 
 	coob.scale(glm::vec3(0.5));
 	coob2.scale(glm::vec3(0.5, 0.5, 0.6));
 	coob3.scale(glm::vec3(3.0));
+	floor.scale(glm::vec3(100.f, 0.5, 100.f));
+	floor.setPosition(glm::vec3(0.f, -2.f, 0.f));
 
 	// // Initialize our shader object
-	Shader ourShader(
+	Shader shader(
+		// Vertex
 		"#version 330 core\n"\
 		"layout (location = 0) in vec3 aPos;\n"\
-		"layout (location = 1) in vec3 aColor;\n"\
+		"layout (location = 1) in vec3 aNormal;\n"\
 		"layout (location = 2) in vec2 aTexCoord;\n"\
 		\
 		"uniform mat4 model;\n"\
 		"uniform mat4 view;\n"\
 		"uniform mat4 projection;\n"\
-		"uniform vec4 objectCol;\n"\
+		"uniform mat4 rotation;\n"\
+		"uniform vec3 lightPos;\n"\
 		\
-		"out vec4 vertexColor;\n"\
+		"out vec3 FragPos;\n"\
+		"out vec3 Normal;\n"\
 		"out vec2 texCoord;\n"\
-		"out vec4 objCol;\n"\
 		\
 		"void main() {\n"\
 			"gl_Position = projection * view * model * vec4(aPos, 1.0);\n"\
-			"vertexColor = vec4(aColor, 1.0);\n"\
+			"FragPos = vec3(model * vec4(aPos, 1.0));\n"\
 			"texCoord = aTexCoord;\n"\
-			"objCol = objectCol;\n"\
-		"}\n",
+			"Normal = vec3(rotation * vec4(aNormal, 1.0));\n"\
+		"}\n", // End of vertex
 
-
+		// Fragment
 		"#version 330 core\n"\
-		"out vec4 FragColor;\n"\
-		"in vec4 objCol;\n"\
-		\
 		"uniform sampler2D texture1;\n"\
 		"uniform sampler2D texture2;\n"\
+		"uniform vec3 albedo;\n"\
+		"uniform vec3 lightColor;\n"\
+		"uniform vec3 lightPos;\n"\
+		"uniform vec3 viewPos;\n"\
+		\
+		"in vec3 FragPos;\n"\
+		"in vec3 Normal;\n"\
+		"in vec2 texCoord;\n"\
+		\
+		"out vec4 FragColor;\n"\
 		\
 		"void main() {\n"\
 			"float ambientStrength = 0.1;\n"\
-			"FragColor = vec4(0.1) + objCol;\n"\
-		"}\n", 
+			"vec3 ambient = ambientStrength * lightColor;\n"\
+			\
+			"vec3 norm = normalize(Normal);\n"\
+			"vec3 lightDir = normalize(lightPos - FragPos);\n"\
+			\
+			"float diff = max(dot(norm, lightDir), 0.0);\n"\
+			"vec3 diffuse = diff * lightColor;\n"\
+			\
+			"float specularStrength = 0.1;\n"\
+			"vec3 viewDir = normalize(viewPos - FragPos);\n"\
+			"vec3 reflectDir = reflect(-lightDir, norm);\n"\
+			\
+			"float spec = pow(max(dot(viewDir, reflectDir), 0.0), 256);\n"\
+			"vec3 specular = specularStrength * spec * lightColor;\n"\
+			\
+			"vec3 result = (ambient + diffuse + specular) * albedo;\n"\
+			"FragColor = vec4(result, 1.0);\n"\
+		"}\n", // End of fragment
 
-		ShaderType::RAW); 
+		ShaderType::RAW);
 
 	// Camera cam;
 	float angle = 0;
@@ -155,37 +168,45 @@ int main() {
 	window.getCam().setPos(glm::vec3(0.0, 0.0, -4.0)).setAngle(glm::vec3(00, -90, 0));
 	window.getCam().setFov(65);
 
+
+
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
 		// Process events
 		handleInput(window);
-		
-		
+
+
 		angle += 0.02;
 
 		//window.getCam().setAngle(glm::vec3(angle * 10, 0, 0.0));
 
 		// Uniforms
 		coob.rotate(glm::vec3(0.01));
-		
 		coob2.setPosition(glm::vec3(sin(angle), cos(angle), 0.0));
-		
 		coob3.setPosition(glm::vec3(sin(angle / 10) * 4, cos(angle / 10) * 4, cos(angle / 10) * sin(angle / 10) * 4));
 		//coob2.translate(glm::vec3(0, 1.0, 0.0));
 
 		//window.getCam().setPos(glm::vec3(sin(angle) * 4, 3.0, cos(angle) * 4));
 
 		// Prepare render layer
-		ourShader.use();
+		shader.use();
+		//shader.use();
+		shader.setVec3("viewPos", window.getCam().getPos());
+		shader.setVec3("lightColor", glm::vec3(1.0));
+		shader.setVec3("lightPos", glm::vec3(0.0, 4.0, 0.0));
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		ourShader.setVec4("objectCol", glm::vec4(1.0, 0.5, 0.0, 1.0));
-		coob.draw(window, &ourShader);
 
-		ourShader.setVec4("objectCol", glm::vec4(1.0));
-		coob2.draw(window, &ourShader);
-		
-		coob3.draw(window, &ourShader);
+		shader.setVec3("albedo", glm::vec3(1.0, 0.5, 0.0));
+		coob.draw(window, &shader);
+
+		shader.setVec3("albedo", glm::vec3(1.0));
+		coob2.draw(window, &shader);
+
+		coob3.draw(window, &shader);
+
+		shader.setVec3("albedo", glm::vec3(0.2, 0.2, 1.0));
+		floor.draw(window, &shader);
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer
 		// When drawing on the front buffer, aka the actual pixels on the screen, you can get screen tearing and watch the pixels draw

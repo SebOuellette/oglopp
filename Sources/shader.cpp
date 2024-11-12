@@ -113,6 +113,14 @@ namespace oglopp {
 	    glUniform1f(glGetUniformLocation(this->ID, name.c_str()), value);
 	}
 
+	void Shader::setVec2(const std::string &name, glm::vec2 const& value) const {
+		glUniform2f(glGetUniformLocation(this->ID, name.c_str()), value[0], value[1]);
+	}
+
+	void Shader::setVec3(const std::string &name, glm::vec3 const& value) const {
+		glUniform3f(glGetUniformLocation(this->ID, name.c_str()), value[0], value[1], value[2]);
+	}
+
 	void Shader::setVec4(const std::string &name, glm::vec4 const& value) const {
 		glUniform4f(glGetUniformLocation(this->ID, name.c_str()), value[0], value[1], value[2], value[3]);
 	}

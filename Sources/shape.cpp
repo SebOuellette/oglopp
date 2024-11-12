@@ -35,31 +35,31 @@ namespace oglopp {
 		// ..:: Model Matrix ::..
 		glm::mat4 model(1.f); // Accumulate changes
 		model = glm::scale(model, this->getScale());
-		model = glm::rotate<float>(model, this->getAngle().x, glm::vec3(1.0, 0.0, 0.0f));
-		model = glm::rotate<float>(model, this->getAngle().y, glm::vec3(0.0, 1.0, 0.0f));
-		model = glm::rotate<float>(model, this->getAngle().z, glm::vec3(0.0, 0.0, 1.0f));
-		model = glm::translate(model, this->position);
+		glm::mat4 rotation(1.f); // Used for transforming normals
+		rotation = glm::rotate<float>(rotation, this->getAngle().x, glm::vec3(1.0, 0.0, 0.0f));
+		rotation = glm::rotate<float>(rotation, this->getAngle().y, glm::vec3(0.0, 1.0, 0.0f));
+		rotation = glm::rotate<float>(rotation, this->getAngle().z, glm::vec3(0.0, 0.0, 1.0f));
+		model *= glm::translate(rotation, this->position);
 
 		// ..:: View Matrix ::..
-		glm::mat4 view = window.getCam().lookAt(-window.getCam().getBack() + window.getCam().getPos()); //(-window.getCam().getTarget());
-		
+		glm::mat4 view = window.getCam().face(-window.getCam().getBack());
+
 		//glm::mat4 view(1.0f);
 		//view = glm::translate(view, -window.getCam().getPos());
 		//view = glm::rotate(view, glm::radians(45.f), glm::vec3(1.0, 0.0, 0.0));
 		//view = glm::rotate(view, glm::radians(0.f), glm::vec3(0.0, 1.0, 0.0));
-		
+
 
 		// ..:: Projection Matrix ::..
 		glm::mat4 projection(1.0f);
 		projection = glm::perspective<float>(glm::radians(window.getCam().getFov()), static_cast<float>(width) / static_cast<float>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
-
-
 
 		// ..:: Apply Elements ::..
 		pShader->use();
 		pShader->setMat4("model", model);
 		pShader->setMat4("view", view);
 		pShader->setMat4("projection", projection);
+		pShader->setMat4("rotation", rotation);
 
 		return *this;
 	}
@@ -86,8 +86,8 @@ namespace oglopp {
 		return *this;
 	}
 
-	Shape& Shape::updateVAO(bool color, bool texture) { 
-		// Calculate the stride bytes 
+	Shape& Shape::updateVAO(bool color, bool texture) {
+		// Calculate the stride bytes
 		this->strideElements = HLGL_VEC_COMPONENTS + (color ? HLGL_COL_COMPONENTS : 0) + (texture ? HLGL_TEX_COMPONENTS : 0);
 		const unsigned int STRIDE_BYTES = this->strideElements * sizeof(float);
 
@@ -113,8 +113,9 @@ namespace oglopp {
 		glEnableVertexAttribArray(index);
 		offset += HLGL_VEC_COMPONENTS * sizeof(float);
 		index++;
-		
 
+
+		// Color (Used for Normals now uhhh idk man how this stuff is supposed to be generalized now.. I Need like a billion templates and stuff I don't wanna)
 		if (color) {
 			// 4. Set the colour attribute
 			glVertexAttribPointer(index, HLGL_COL_COMPONENTS, GL_FLOAT, GL_FALSE, STRIDE_BYTES, (void*)offset);
@@ -123,7 +124,7 @@ namespace oglopp {
 
 		}
 		index++;
-		
+
 		if (texture) {
 			// 5. Set the texture attribute
 			glVertexAttribPointer(index, HLGL_TEX_COMPONENTS, GL_FLOAT, GL_FALSE, STRIDE_BYTES, (void*)offset);
@@ -131,7 +132,7 @@ namespace oglopp {
 			offset += HLGL_TEX_COMPONENTS * sizeof(float);
 		}
 		index++;
-			
+
 
 		// Unbind the vertex array
 		glBindVertexArray(0);
@@ -157,7 +158,7 @@ namespace oglopp {
 	}
 
 	/* @brief Push a single point to the shape.
-	* @param[in]	vec		The vector of the point 
+	* @param[in]	vec		The vector of the point
 	* @param[in]	col		The color of the vertex
 	* @param[in]	texPos	The texture position
 	* @return 		A reference to this shape object
@@ -167,7 +168,7 @@ namespace oglopp {
 		this->vertices.push_back(vec.x);
 		this->vertices.push_back(vec.y);
 		this->vertices.push_back(vec.z);
-		
+
 		// Push color
 		this->vertices.push_back(col.x);
 		this->vertices.push_back(col.y);
@@ -184,7 +185,7 @@ namespace oglopp {
 	}
 
 	/* @brief Push a single point to the shape.
-	* @param[in]	vec		The vector of the point 
+	* @param[in]	vec		The vector of the point
 	* @param[in]	col		The color of the vertex
 	* @return 		A reference to this shape object
 	*/
@@ -204,7 +205,7 @@ namespace oglopp {
 	}
 
 	/* @brief Push a single point to the shape.
-	* @param[in]	vec		The vector of the point 
+	* @param[in]	vec		The vector of the point
 	* @param[in]	texPos	The texture position
 	* @return 		A reference to this shape object
 	*/
@@ -222,7 +223,7 @@ namespace oglopp {
 	}
 
 	/* @brief Push a single point to the shape.
-	* @param[in]	vec		The vector of the point 
+	* @param[in]	vec		The vector of the point
 	* @return 		A reference to this shape object
 	*/
 	Shape& Shape::pushPoint(glm::vec3 vec) {
@@ -237,7 +238,7 @@ namespace oglopp {
 
 	/* @brief Push a triangle to the indicies list. A triangle is constructed of the following verticies which were defined with pushPoint
 	 * @param[in] vertA	The A vertex index out of the point list, where the first point is 0
-	 * @param[in] vertB	The B vertex index 
+	 * @param[in] vertB	The B vertex index
 	 * @param[in] vertC	The C vertex index
 	 * @return			A reference to this shape object
 	 */
@@ -246,12 +247,12 @@ namespace oglopp {
 		this->indices.push_back(vertB);
 		this->indices.push_back(vertC);
 
-		this->indexCount++; 
+		this->indexCount++;
 
 		return *this;
 	}
 
-	/* @brief Set the texture 
+	/* @brief Set the texture
 	* @param[in] texture	The texture object to set to
 	* @return				A reference to this shape object
 	*/
@@ -260,7 +261,7 @@ namespace oglopp {
 
 		return *this;
 	}
-	
+
 	unsigned int Shape::getVAO() {
 		return this->VAO;
 	}
@@ -285,8 +286,8 @@ namespace oglopp {
 	Shape& Shape::draw(Window& window, Shader* pShader) {
 		if (pShader != nullptr) {
 			pShader->use();
-			
-			// Perform the model - view - projection calculation and pass through to the 
+
+			// Perform the model - view - projection calculation and pass through to the
 			this->updateUniformMVP(window, pShader);
 		}
 
@@ -302,7 +303,7 @@ namespace oglopp {
 
 			glActiveTexture(myRegister);
 			glBindTexture(GL_TEXTURE_2D, this->textures[i].getTexture());
-			
+
 			if (pShader != nullptr) {
 				pShader->setInt(Shape::getTextureString(i), i);
 			}
@@ -311,7 +312,7 @@ namespace oglopp {
 		// Bind vertex array
 		glBindVertexArray(this->VAO);
 
-		// Draw 
+		// Draw
 		if (this->indexCount > 0) {
 			glDrawElements(GL_TRIANGLES, this->strideElements, GL_UNSIGNED_INT, 0);
 		} else {

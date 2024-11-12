@@ -59,26 +59,23 @@ void handleInput(Window& window) {
 		glfwGetCursorPos(window.getWindow(), &cursorX, &cursorY);
 		glfwSetCursorPos(window.getWindow(), 0, 0);
 
-		glm::vec3 angle = window.getCam().getAngle();
+		// glm::vec3 angle = window.getCam().getAngle();
 
+		// cursorX *= 0.04;
+		// cursorY *= 0.04;
 
+		// angle.y += cursorX;
+		// angle.x += cursorY;
 
-		cursorX *= 0.04;
-		cursorY *= 0.04;
+		// if (angle.x >= 89.0)
+		// 	angle.x = 89.0;
+		// else if (angle.x <= -89.0)
+		// 	angle.x = -89.0;
 
-		angle.y += cursorX;
-		angle.x += cursorY;
+		// window.getCam().setAngle(angle);
+		//
 
-		
-		if (angle.z >= 89.0)
-			angle.z = 89.0;
-		if (angle.z <= -89.0)
-			angle.z = -89.0;
-
-
-
-		window.getCam().setAngle(angle);
-
+		window.getCam().aimBy(cursorY, cursorX);
 	}
 
 	if (eventRecevied) {
@@ -144,9 +141,9 @@ int main() {
 		\
 		"void main() {\n"\
 			"FragColor =  (vertexColor + texture(texture1, texCoord) + texture(texture2, texCoord)) / 3.0;\n"\
-		"}\n", 
+		"}\n",
 
-		ShaderType::RAW); 
+		ShaderType::RAW);
 
 	// Camera cam;
 	float angle = 0;
@@ -172,11 +169,11 @@ int main() {
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
-		
+
 		// Process events
 		//window.processInput();
 		handleInput(window);
-		
+
 		angle += 0.02;
 
 		//window.getCam().setAngle(glm::vec3(angle * 10, 0, 0.0));

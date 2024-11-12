@@ -39,6 +39,7 @@
 #endif
 
 #define HLGL_DEFAULT_FOV		65.f
+#define HLGL_SENSITIVITY		0.03f
 
 namespace oglopp {
 
@@ -140,6 +141,12 @@ namespace oglopp {
 
 		glm::mat4 const& getView();
 
+		/* @brief Face a target vector
+		 * @param[in] vector	The normalized vector to face.
+		 * @return				A constant reference to the updated view
+		*/
+		glm::mat4 const& face(glm::vec3 vector) ;
+
 		// Alternative for all the crap above?
 		glm::mat4 const& lookAt(glm::vec3 target);
 
@@ -147,6 +154,13 @@ namespace oglopp {
 		Camera& translate(glm::vec3 const& offset);
 		Camera& setTarget(glm::vec3 const& newPos = glm::vec3(0.0f, 0.0f, 0.0f));
 		Camera& setAngle(glm::vec3 const& newAngle = glm::vec3(0, 0, 0));
+
+		/* @brief Aim the camera by a pitch/yaw
+		 * @param[in] pitch	The pitch in degrees to rotate by
+		 * @param[in] yaw	The yaw in degrees to rotate by
+		 * @return 			A reference to this Camera object
+	 	*/
+		Camera& aimBy(float pitch, float yaw);
 	};
 
 	/* @brief Texture
@@ -234,6 +248,8 @@ namespace oglopp {
 		void setBool(const std::string &name, bool value) const;
 		void setInt(const std::string &name, int vlaue) const;
 		void setFloat(const std::string &name, float value) const;
+		void setVec2(const std::string &name, glm::vec2 const& value) const;
+		void setVec3(const std::string &name, glm::vec3 const& value) const;
 		void setVec4(const std::string &name, glm::vec4 const& vector) const;
 		void setMat4(const std::string &name, glm::mat4 const& matrix) const;
 	};

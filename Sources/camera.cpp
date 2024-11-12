@@ -1,4 +1,5 @@
 #include "../Headers/oglopp.h"
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/quaternion_geometric.hpp>
 
 namespace oglopp {
@@ -48,6 +49,16 @@ namespace oglopp {
 	}
 
 	glm::mat4 const& Camera::getView() {
+
+		return this->_view;
+	}
+
+	/* @brief Face a target vector
+	 * @param[in] vector	The normalized vector to face.
+	 * @return				A constant reference to the updated view
+	*/
+	glm::mat4 const& Camera::face(glm::vec3 vector) {
+		this->_view = glm::lookAt(this->_pos, this->_pos + vector, HLGL_WORLD_UP);
 
 		return this->_view;
 	}
@@ -117,11 +128,32 @@ namespace oglopp {
 		this->_backward = glm::normalize(direction);
 		this->_target = this->getPos() - this->_backward;
 
-		this->lookAt(this->_target);
+		this->face(-this->_backward);
 
 		this->_updateRight();
-		
+
 		return *this;
 	}
 
+	/* @brief Aim the camera by a pitch/yaw
+	 * @param[in] pitch	The pitch in degrees to rotate by
+	 * @param[in] yaw	The yaw in degrees to rotate by
+	 * @return 			A reference to this Camera object
+ 	*/
+	Camera& Camera::aimBy(float pitch, float yaw) {
+		glm::vec3 angleCopy = this->_angle;
+
+		yaw *= 0.04;
+		pitch *= 0.04;
+
+		angleCopy.y += yaw;
+		angleCopy.x += pitch;
+
+		if (angleCopy.x >= 89.0)
+			angleCopy.x = 89.0;
+		else if (angleCopy.x <= -89.0)
+			angleCopy.x = -89.0;
+
+		return this->setAngle(angleCopy);
+	}
 }
