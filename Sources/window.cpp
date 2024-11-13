@@ -6,6 +6,9 @@ namespace oglopp {
 	void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		//std::cout << "Window resized [" << width << ", " << height << "]" << std::endl;
 		glViewport(0, 0, width, height);
+
+		// If the window is resized and moved around while the cursor is locked, free the cursor since it could be locked outside the window.
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 
 	Window::Window() {
@@ -122,6 +125,58 @@ namespace oglopp {
 	*/
 	Window& Window::getSize(int* width, int* height) {
 		glfwGetWindowSize(this->_window, width, height);
+		return *this;
+	}
+
+
+	/* @brief Lock and hide cursor in the window
+	 * @return A reference to this window object
+ 	*/
+	Window& Window::cursorCapture() {
+		glfwSetInputMode(this->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		return *this;
+	}
+
+	/* @brief Release the cursor back to the user
+	 * @return A reference to this window object
+ 	*/
+	Window& Window::cursorRelease() {
+		glfwSetInputMode(this->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		return *this;
+	}
+
+	/* @brief Check if the cursor is captured
+	 * @return True if the cursor is captured by this window, false otherwise.
+ 	*/
+	bool Window::isCursorCaptured() {
+		return glfwGetInputMode(this->getWindow(), GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
+	}
+
+
+	/* @brief Check if a glfw key is pressed down
+	 * @param[in] key	The GLFW key code to check
+	 * @return			True if the key is pressed, false otherwise
+ 	*/
+	bool Window::keyPressed(uint16_t const& key) {
+		return glfwGetKey(this->getWindow(), key) == GLFW_PRESS;
+	}
+
+	/* @brief Get the cursor position
+	 * @return The cursor X and Y position
+ 	*/
+	glm::dvec2 Window::getCursorPos() {
+		glm::dvec2 ret;
+		glfwGetCursorPos(this->getWindow(), &ret.x, &ret.y);
+
+		return ret;
+	}
+
+	/* @brief Set the cursor position
+	 * @param[in] pos	The new position to set the cursor to
+	 * @return 			A reference to this window object
+ 	*/
+	Window& Window::setCursorPos(glm::dvec2 const& pos) {
+		glfwSetCursorPos(this->getWindow(), pos.x, pos.y);
 		return *this;
 	}
 }

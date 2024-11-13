@@ -120,7 +120,7 @@ int main() {
 		\
 		"uniform mat4 model;\n"\
 		"uniform mat4 view;\n"\
-		"uniform mat4 projection;\n"\
+		"uniform mat4 projection;"\
 		\
 		"out vec4 vertexColor;\n"\
 		"out vec2 texCoord;\n"\

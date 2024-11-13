@@ -112,15 +112,11 @@ int main() {
 	// // Initialize our shader object
 	Shader shader(
 		// Vertex
-		"#version 330 core\n"\
+		(std::string(oglopp::Shader::GLSL_VERSION_STRING) +
 		"layout (location = 0) in vec3 aPos;\n"\
 		"layout (location = 1) in vec3 aNormal;\n"\
-		"layout (location = 2) in vec2 aTexCoord;\n"\
-		\
-		"uniform mat4 model;\n"\
-		"uniform mat4 view;\n"\
-		"uniform mat4 projection;\n"\
-		"uniform mat4 rotation;\n"\
+		"layout (location = 2) in vec2 aTexCoord;\n" +
+		oglopp::Shader::MODEL_VIEW_PROJECTION_MATRICES +
 		"uniform vec3 lightPos;\n"\
 		\
 		"out vec3 FragPos;\n"\
@@ -132,13 +128,13 @@ int main() {
 			"FragPos = vec3(model * vec4(aPos, 1.0));\n"\
 			"texCoord = aTexCoord;\n"\
 			"Normal = vec3(rotation * vec4(aNormal, 1.0));\n"\
-		"}\n", // End of vertex
+		"}\n").c_str(), // End of vertex
 
 		// Fragment
-		"#version 330 core\n"\
-		"uniform sampler2D texture1;\n"\
-		"uniform sampler2D texture2;\n"\
-		"uniform vec3 albedo;\n"\
+		(std::string(oglopp::Shader::GLSL_VERSION_STRING) +
+		oglopp::Shader::COLOR_STRUCT +
+		oglopp::Shader::MATERIAL_STRUCT +
+		"uniform Material material;\n"\
 		"uniform vec3 lightColor;\n"\
 		"uniform vec3 lightPos;\n"\
 		"uniform vec3 viewPos;\n"\
@@ -150,8 +146,7 @@ int main() {
 		"out vec4 FragColor;\n"\
 		\
 		"void main() {\n"\
-			"float ambientStrength = 0.1;\n"\
-			"vec3 ambient = ambientStrength * lightColor;\n"\
+			"vec3 ambient = material.color.ambient * lightColor;\n"\
 			\
 			"vec3 norm = normalize(Normal);\n"\
 			"vec3 lightDir = normalize(lightPos - FragPos);\n"\
@@ -159,16 +154,15 @@ int main() {
 			"float diff = max(dot(norm, lightDir), 0.0);\n"\
 			"vec3 diffuse = diff * lightColor;\n"\
 			\
-			"float specularStrength = 0.3;\n"\
 			"vec3 viewDir = normalize(viewPos - FragPos);\n"\
 			"vec3 reflectDir = reflect(-lightDir, norm);\n"\
 			\
-			"float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);\n"\
-			"vec3 specular = specularStrength * spec * lightColor;\n"\
+			"float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"\
+			"vec3 specular = material.color.specular * spec * lightColor;\n"\
 			\
-			"vec3 result = (ambient + diffuse + specular) * albedo;\n"\
+			"vec3 result = (ambient + diffuse + specular) //* material.color.diffuse;\n"\
 			"FragColor = vec4(result, 1.0);\n"\
-		"}\n", // End of fragment
+		"}\n").c_str(), // End of fragment
 
 		ShaderType::RAW);
 
@@ -180,7 +174,10 @@ int main() {
 	window.getCam().setPos(glm::vec3(0.0, 0.0, -4.0)).setAngle(glm::vec3(00, -90, 0));
 	window.getCam().setFov(65);
 
-
+	shader.use();
+	shader.setFloat("material.shininess", 32.f);
+	shader.setVec3("material.color.ambient", glm::vec3(1.0, 0.0, 0.0));
+	shader.setVec3("material.color.specular", glm::vec3(0.0, 1.0, 0.0));
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
@@ -201,23 +198,23 @@ int main() {
 		//window.getCam().setPos(glm::vec3(sin(angle) * 4, 3.0, cos(angle) * 4));
 
 		// Prepare render layer
+
 		shader.use();
-		//shader.use();
 		shader.setVec3("viewPos", window.getCam().getPos());
 		shader.setVec3("lightColor", glm::vec3(1.0));
 		shader.setVec3("lightPos", glm::vec3(0.0, 4.0, 0.0));
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		shader.setVec3("albedo", glm::vec3(1.0, 0.5, 0.0));
+		shader.setVec3("material.color.diffuse", glm::vec3(1.0, 0.5, 0.0));
 		coob.draw(window, &shader);
 
-		shader.setVec3("albedo", glm::vec3(1.0));
+		shader.setVec3("material.color.diffuse", glm::vec3(1.0));
 		coob2.draw(window, &shader);
 
 		coob3.draw(window, &shader);
 
-		shader.setVec3("albedo", glm::vec3(0.2, 0.2, 1.0));
+		shader.setVec3("material.color.diffuse", glm::vec3(0.2, 0.2, 1.0));
 		floor.draw(window, &shader);
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer

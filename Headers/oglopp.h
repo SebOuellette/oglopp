@@ -4,6 +4,7 @@
 // Includes
 #include <cstdlib>
 #include <cstring>
+#include <glm/ext/vector_double2_precision.hpp>
 #include <glm/ext/vector_float2_precision.hpp>
 #include <vector>
 #include <iostream>
@@ -40,6 +41,9 @@
 
 #define HLGL_DEFAULT_FOV		65.f
 #define HLGL_SENSITIVITY		0.03f
+
+#define HLGL_SCROLL_CB_TYPE ()
+#define HLGL_SCROLL_CALLBACK ()
 
 namespace oglopp {
 
@@ -227,7 +231,6 @@ namespace oglopp {
 		unsigned int getTexture();
 	};
 
-
 	enum ShaderType : uint8_t {
 		FILE,	// const char* vertex and const char* fragment represent a path to the respective shaders.
 		RAW 	// const char* vertex and const char* fragment represent the fragment shader contents as a string.
@@ -239,6 +242,42 @@ namespace oglopp {
 	private:
 		unsigned int ID;
 	public:
+		static constexpr const char* GLSL_VERSION_STRING = "#version 330 core\n";
+
+		static constexpr const char* COLOR_STRUCT = // struct Material
+		"struct Color {"\
+			"vec3 ambient;"\
+			"vec3 diffuse;"\
+			"vec3 specular;"\
+		"};\n";
+
+		static constexpr const char* MATERIAL_STRUCT =  // struct Material
+		"struct Material {"\
+		 	"float color;"\
+		 	"float shininess;"\
+		"};\n";
+
+		static constexpr const char* LIGHT_DIR_STRUCT = // struct LightD
+		"struct LightD {"\
+			"Color color;"\
+			"vec3 direction;"\
+		"};\n";
+
+		static constexpr const char* LIGHT_POINT_STRUCT = // struct LightD
+		"struct LightP {"\
+			"Color color;"\
+			"vec3 position;"\
+			"float constant;"\
+			"float linear;"\
+			"float quadratic;"\
+		"};\n";
+
+		static constexpr const char* MODEL_VIEW_PROJECTION_MATRICES = //
+		"uniform mat4 model;\n"\
+		"uniform mat4 view;\n"\
+		"uniform mat4 projection;\n"\
+		"uniform mat4 rotation;\n";
+
 		/* @brief Create a new shader
 		*/
 		Shader(const char* vertex, const char* fragment, ShaderType type);
@@ -309,6 +348,41 @@ namespace oglopp {
 		 * @return				A reference to this window object
 		*/
 		Window& getSize(int* width, int* height);
+
+
+		/* @brief Lock and hide cursor in the window
+		 * @return A reference to this window object
+	 	*/
+		Window& cursorCapture();
+
+		/* @brief Release the cursor back to the user
+		 * @return A reference to this window object
+	 	*/
+		Window& cursorRelease();
+
+		/* @brief Check if the cursor is captured
+		 * @return True if the cursor is captured by this window, false otherwise.
+	 	*/
+		bool isCursorCaptured();
+
+
+
+		/* @brief Check if a glfw key is pressed down
+		 * @param[in] key	The GLFW key code to check
+		 * @return			True if the key is pressed, false otherwise
+	 	*/
+		bool keyPressed(uint16_t const& key);
+
+		/* @brief Get the cursor position
+		 * @return The cursor X and Y position
+	 	*/
+		glm::dvec2 getCursorPos();
+
+		/* @brief Set the cursor position
+		 * @param[in] pos	The new position to set the cursor to
+		 * @return 			A reference to this window object
+	 	*/
+		Window& setCursorPos(glm::dvec2 const& pos);
 	};
 
 

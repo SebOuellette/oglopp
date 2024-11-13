@@ -65,6 +65,7 @@ namespace oglopp {
 		if(!success) {
 			glGetShaderInfoLog(vertexi, 512, NULL, infoLog);
 			std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+			std::cout << vertexCode << std::endl;
 		};
 
 		// similiar for Fragment Shader
@@ -77,6 +78,7 @@ namespace oglopp {
 		if(!success) {
 			glGetShaderInfoLog(fragmenti, 512, NULL, infoLog);
 			std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+			std::cout << fragmentCode << std::endl;
 		};
 
 		// shader Program

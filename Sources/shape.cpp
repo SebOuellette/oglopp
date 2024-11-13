@@ -287,7 +287,7 @@ namespace oglopp {
 		if (pShader != nullptr) {
 			pShader->use();
 
-			// Perform the model - view - projection calculation and pass through to the
+			// Perform the model - view - projection calculation and pass through to the shader
 			this->updateUniformMVP(window, pShader);
 		}
 
