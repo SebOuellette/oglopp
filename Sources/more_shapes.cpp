@@ -1,4 +1,4 @@
-#include "../Headers/oglopp.h"
+#include "oglopp/more_shapes.h"
 
 namespace oglopp {
 	Rectangle::Rectangle() {

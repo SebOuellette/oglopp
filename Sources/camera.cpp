@@ -1,6 +1,8 @@
-#include "../Headers/oglopp.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/quaternion_geometric.hpp>
+
+#include "oglopp/defines.h"
+#include "oglopp/camera.h"
 
 namespace oglopp {
 	Camera::Camera(glm::vec3 pos) {

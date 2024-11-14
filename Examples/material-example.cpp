@@ -4,8 +4,7 @@
 // For 3d
 // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
-#include "../Headers/oglopp.h"
-#include <GLFW/glfw3.h>
+#include "oglopp.h"
 #include <iostream>
 #include <cmath>
 
@@ -146,21 +145,19 @@ int main() {
 		"out vec4 FragColor;\n"\
 		\
 		"void main() {\n"\
-			"vec3 ambient = material.color.ambient * lightColor;\n"\
+			"vec3 ambient = lightColor * material.color.ambient;\n"\
 			\
 			"vec3 norm = normalize(Normal);\n"\
 			"vec3 lightDir = normalize(lightPos - FragPos);\n"\
-			\
 			"float diff = max(dot(norm, lightDir), 0.0);\n"\
-			"vec3 diffuse = diff * lightColor;\n"\
+			"vec3 diffuse = lightColor * (diff * material.color.diffuse);\n"\
 			\
 			"vec3 viewDir = normalize(viewPos - FragPos);\n"\
 			"vec3 reflectDir = reflect(-lightDir, norm);\n"\
-			\
 			"float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"\
-			"vec3 specular = material.color.specular * spec * lightColor;\n"\
+			"vec3 specular = lightColor * (spec * material.color.specular);\n"\
 			\
-			"vec3 result = (ambient + diffuse + specular) //* material.color.diffuse;\n"\
+			"vec3 result = ambient + diffuse + specular;\n"\
 			"FragColor = vec4(result, 1.0);\n"\
 		"}\n").c_str(), // End of fragment
 
@@ -175,9 +172,11 @@ int main() {
 	window.getCam().setFov(65);
 
 	shader.use();
-	shader.setFloat("material.shininess", 32.f);
-	shader.setVec3("material.color.ambient", glm::vec3(1.0, 0.0, 0.0));
-	shader.setVec3("material.color.specular", glm::vec3(0.0, 1.0, 0.0));
+	shader.setFloat("material.shininess", 64.f);
+	shader.setVec3("material.color.ambient", glm::vec3(0.01));
+	shader.setVec3("material.color.specular", glm::vec3(0.3));
+	shader.setVec3("lightColor", glm::vec3(1.0));
+	shader.setVec3("lightPos", glm::vec3(0.0, 4.0, 0.0));
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
@@ -201,8 +200,6 @@ int main() {
 
 		shader.use();
 		shader.setVec3("viewPos", window.getCam().getPos());
-		shader.setVec3("lightColor", glm::vec3(1.0));
-		shader.setVec3("lightPos", glm::vec3(0.0, 4.0, 0.0));
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 

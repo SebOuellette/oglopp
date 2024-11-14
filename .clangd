@@ -1,3 +1,4 @@
 CompileFlags:
 	Add:
-		- "-I/network/Programming/opengl/glad/include/"
+		- "-I/network/Programming/opengl/Headers/"
+		- "-I/network/Programming/usr/include/"

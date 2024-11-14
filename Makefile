@@ -2,13 +2,22 @@ LIB_NAME := oglopp
 
 GLAD_HEADER := gl.h
 
+INSTALL_DIR := ../usr/
 EXAMPLE_DIR := Examples/
 SOURCE_DIR := Sources/
 BUILD_DIR := build/
+INCLUDE_DIR := Headers/
+FULLINC_DIR := $(INCLUDE_DIR)$(LIB_NAME)
 GLAD_DIR := glad/
 GLAD_PATH := $(GLAD_DIR)include/glad/$(GLAD_HEADER)
+GLADCOPY_DIR := $(FULLINC_DIR)/$(GLAD_DIR)
+GLADCOPY_PATH := $(GLADCOPY_DIR)$(GLAD_HEADER)
 EXAMPLE_FILES := $(wildcard $(EXAMPLE_DIR)*.cpp)
 SOURCE_FILES := $(wildcard $(SOURCE_DIR)*.cpp)
+
+
+INSTALL_IPATH := $(INSTALL_DIR)include/$(LIB_NAME)/
+INSTALL_LPATH := $(INSTALL_DIR)lib/
 
 EXAMPLE_OBJECTS := $(patsubst $(EXAMPLE_DIR)%.cpp,$(BUILD_DIR)%.oex, $(EXAMPLE_FILES))
 SOURCE_OBJECTS := $(patsubst $(SOURCE_DIR)%.cpp,$(BUILD_DIR)%.o, $(SOURCE_FILES))
@@ -18,26 +27,35 @@ CXX = g++
 #-ggdb
 SO_COPTS := -fPIC -shared
 SO_LOPTS := -ldl
-IOPTS := -g3 -O0 -Wall -I../usr/include/ -Iglad/include
+IOPTS := -g3 -O0 -Wall -I../usr/include/ -I$(INCLUDE_DIR)
 LOPTS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lglad
 
 all: liba examples
 
-.PHONY: 
+.PHONY:
 
 .PHONY: liba
-liba: $(GLAD_PATH) $(BUILD_DIR) $(SOURCE_OBJECTS)
-	ar rcs $(BUILD_DIR)$(LIB_NAME).a $(SOURCE_OBJECTS)
+liba: $(GLADCOPY_PATH) $(BUILD_DIR) $(BUILD_DIR)$(LIB_NAME).a
 
-.PHONY: libso
-libso: setupPIC $(SOURCE_OBJECTS)
-	$(CXX) $(SOURCE_OBJECTS) $(SO_LOPTS) -o $(BUILD_DIR)$(LIB_NAME).so $(LOPTS) 
-
-setupPIC:
-	$(eval IOPTS += $(SO_COPTS))
+#.PHONY: libso
+#libso: setupPIC $(SOURCE_OBJECTS)
+#	$(CXX) $(SOURCE_OBJECTS) $(SO_LOPTS) -o $(BUILD_DIR)$(LIB_NAME).so $(LOPTS)
+#setupPIC:
+#	$(eval IOPTS += $(SO_COPTS))
 
 .PHONY: examples
-examples: $(GLAD_PATH) $(BUILD_DIR) $(EXAMPLE_EXECS)
+examples: $(GLADCOPY_PATH) $(BUILD_DIR) $(EXAMPLE_EXECS)
+
+.PHONY: install
+install: $(BUILD_DIR)$(LIB_NAME).a
+	-cp $(BUILD_DIR)$(LIB_NAME).a $(INSTALL_LPATH).
+	-cp -r $(INCLUDE_DIR)* $(INSTALL_DIR)include/.
+
+.PHONY: uninstall
+uninstall:
+	-rm -r $(INSTALL_IPATH)
+	-rm $(INSTALL_DIR)include/$(LIB_NAME).h
+	-rm $(INSTALL_LPATH)$(LIB_NAME).a
 
 # Build static library
 $(BUILD_DIR)$(LIB_NAME).a: $(SOURCE_OBJECTS)
@@ -59,6 +77,10 @@ $(BUILD_DIR)%.o: $(SOURCE_DIR)%.cpp
 $(GLAD_PATH):
 	mkdir -p $(GLAD_DIR)
 	glad --api gl:core=3.3,gles2 --out-path $(GLAD_DIR) c
+
+$(GLADCOPY_PATH): $(GLAD_PATH)
+	mkdir -p $(GLADCOPY_DIR)
+	cp $(GLAD_PATH) $(GLADCOPY_PATH)
 
 .PRECIOUS: $(BUILD_DIR)
 $(BUILD_DIR):

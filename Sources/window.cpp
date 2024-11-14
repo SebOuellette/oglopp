@@ -1,5 +1,6 @@
-#include "../Headers/oglopp.h"
-#include <GLFW/glfw3.h>
+#include <iostream>
+
+#include "oglopp/window.h"
 
 namespace oglopp {
 	// Callback function to automatically change viewport when window is resized

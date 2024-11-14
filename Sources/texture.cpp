@@ -1,7 +1,9 @@
-#include "../Headers/oglopp.h"
-
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <iostream>
+
+#include "oglopp/texture.h"
+#include "oglopp/defines.h"
 
 namespace oglopp {
 
@@ -69,7 +71,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Destroy the image. Called on destructor. 
+	/* @brief Destroy the image. Called on destructor.
 	*  @return A reference to this texture object
 	*/
 	Texture& Texture::destroy() {

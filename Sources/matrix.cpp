@@ -1,7 +1,8 @@
-#include "../Headers/oglopp.h"
 #include <glm/ext/matrix_transform.hpp>
-
+#include <iostream>
 #include <sstream>
+
+#include "oglopp/matrix.h"
 
 namespace oglopp {
 
@@ -27,7 +28,7 @@ namespace oglopp {
 	template<class T>
 	std::ostream& Matrix::printMatrix(std::ostream& os, T matrix, short int cols, short int rows) {
 		std::ostringstream outStream;
-		
+
 		for (uint8_t r=0;r<rows;r++) {
 			if (r == 0) {
 				outStream << "/";
@@ -64,7 +65,7 @@ namespace oglopp {
 	template<class T>
 	std::ostream& Matrix::printVector(std::ostream& os, T matrix, short int rows) {
 		std::ostringstream outStream;
-		
+
 		for (uint8_t r=0;r<rows;r++) {
 			if (r == 0) {
 				outStream << "/";

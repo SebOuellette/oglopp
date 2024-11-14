@@ -1,9 +1,23 @@
-#include "../Headers/oglopp.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <sstream>
+#include <iostream>
+
+#include "oglopp/defines.h"
+#include "oglopp/shader.h"
 
 namespace oglopp {
+	/* @brief Get the texture uniform string for use in fragment shaders
+	 * @param[in] textureId	The texture number from 0 to 32
+	*/
+	std::string Shader::getTextureUniform(uint8_t textureId) {
+		if (textureId >= HLGL_SHAPE_MAX_TEXTURES) {
+			return "";
+		}
+
+		return "uniform sampler2D texture" + std::to_string(textureId) + ";\n";
+	}
+
 	Shader::Shader(const char* vertex, const char* fragment, ShaderType type) {
 		// 1. retrieve the vertex/fragment source code from filePath
 		std::string vertexCode;

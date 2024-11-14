@@ -1,6 +1,9 @@
-#include "../Headers/oglopp.h"
 #include <cstdlib>
 #include <cstdint>
+#include <iostream>
+
+#include "oglopp/defines.h"
+#include "oglopp/shape.h"
 
 //#define VERTS 18
 //#define VERT_SIZE (VERTS * sizeof(float))

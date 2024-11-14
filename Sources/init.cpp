@@ -1,4 +1,7 @@
-#include "../Headers/oglopp.h"
+#include <iostream>
+
+#include "oglopp/defines.h"
+#include "oglopp/init.h"
 
 namespace oglopp {
 	_HoneyLib_InitGL::_HoneyLib_InitGL() {
@@ -15,7 +18,7 @@ namespace oglopp {
 
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	}
-	
+
 	_HoneyLib_InitGL::~_HoneyLib_InitGL() {
 		glfwTerminate();
 		std::cout << "Terminate glfw" << std::endl;

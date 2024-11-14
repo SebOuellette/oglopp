@@ -2,5 +2,7 @@
 .vscode
 build
 build/**
+
 glad
 glad/**
+Headers/oglopp/glad/**
