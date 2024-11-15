@@ -95,23 +95,54 @@ int main() {
 	// // Initialize our shader object
 	Shader shader(
 		// Vertex
-		(std::string(oglopp::Shader::GLSL_VERSION_STRING) +
+		"#version 330 core\n"\
 		"layout (location = 0) in vec3 aPos;\n"\
 		"layout (location = 1) in vec3 aNormal;\n"\
-		"layout (location = 2) in vec2 aTexCoord;\n" +
-		oglopp::Shader::MODEL_VIEW_PROJECTION_MATRICES +
-		"uniform vec3 lightPos;\n"\
+		"layout (location = 2) in vec2 aTexCoord;\n"\
+		"uniform mat4 model;\n"\
+		"uniform mat4 view;\n"\
+		"uniform mat4 rotation;\n"\
+		\
+		"out VS_OUT {\n"\
+			"vec3 vNormal;\n"\
+			"vec2 vTexCoord;\n"\
+			"vec3 vFragPos;\n"\
+		"} vs_out;\n"\
+		\
+		"void main() {\n"\
+			"gl_Position = view * model * vec4(aPos, 1.0);\n"\
+			"vs_out.vFragPos = vec3(model * vec4(aPos, 1.0));\n"\
+			"vs_out.vTexCoord = aTexCoord;\n"\
+			"vs_out.vNormal = vec3(rotation * vec4(aNormal, 1.0));\n"\
+		"}\n", // End of vertex
+
+		// Geometry
+		"#version 330 core\n"\
+		"layout (triangles) in;\n"\
+		"layout (triangle_strip, max_vertices = 3) out;\n"\
+		\
+		"uniform mat4 projection;\n"\
+		\
+		"in VS_OUT {\n"\
+			"vec3 vNormal;\n"\
+			"vec2 vTexCoord;\n"\
+			"vec3 vFragPos;\n"\
+		"} gs_in[];\n"\
 		\
 		"out vec3 FragPos;\n"\
 		"out vec3 Normal;\n"\
 		"out vec2 texCoord;\n"\
 		\
 		"void main() {\n"\
-			"gl_Position = projection * view * model * vec4(aPos, 1.0);\n"\
-			"FragPos = vec3(model * vec4(aPos, 1.0));\n"\
-			"texCoord = aTexCoord;\n"\
-			"Normal = vec3(rotation * vec4(aNormal, 1.0));\n"\
-		"}\n").c_str(), // End of vertex
+			"for (int i=0;i<3;i++) {\n"\
+				"gl_Position = projection * gl_in[i].gl_Position;\n"\
+				"Normal = gs_in[i].vNormal;\n"\
+				"texCoord = gs_in[i].vTexCoord;\n"\
+				"FragPos = gs_in[i].vFragPos;\n"\
+				"EmitVertex();\n"\
+			"}\n"\
+			"EndPrimitive();\n"\
+		"}\n",
 
 		// Fragment
 		(std::string(oglopp::Shader::GLSL_VERSION_STRING) +

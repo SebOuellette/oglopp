@@ -85,10 +85,9 @@ Window* InputBuffer::windowPtr  = nullptr;
 
 int main() {
 
-
 	// Create the window
 	Window window;
-	window.create(800, 800, "HoneyLib OpenGL - Materials");
+	window.create(800, 800, "HoneyLib OpenGL - Specular Map Example");
 	InputBuffer::windowPtr = &window;
 	glfwSetScrollCallback(window.getWindow(), InputBuffer::scrollCallback);
 
@@ -115,11 +114,10 @@ int main() {
 
 		// Fragment
 		(std::string(oglopp::Shader::GLSL_VERSION_STRING) +
-		oglopp::Shader::COLOR_STRUCT +
-		oglopp::Shader::MATERIAL_STRUCT +
+		"struct Material {sampler2D diffuse;sampler2D specular;float shininess;};\n"\
+		"struct Light {vec3 diffuse; vec3 ambient; vec3 specular; vec3 position;};\n"\
 		"uniform Material material;\n"\
-		"uniform vec3 lightColor;\n"\
-		"uniform vec3 lightPos;\n"\
+		"uniform Light light;\n"\
 		"uniform vec3 viewPos;\n"\
 		\
 		"in vec3 FragPos;\n"\
@@ -129,20 +127,22 @@ int main() {
 		"out vec4 FragColor;\n"\
 		\
 		"void main() {\n"\
-			"vec3 ambient = lightColor * material.color.ambient;\n"\
+			"vec3 ambient = light.ambient * vec3(texture(material.diffuse, texCoord));\n"\
 			\
 			"vec3 norm = normalize(Normal);\n"\
-			"vec3 lightDir = normalize(lightPos - FragPos);\n"\
+			"vec3 lightDir = normalize(light.position - FragPos);\n"\
 			"float diff = max(dot(norm, lightDir), 0.0);\n"\
-			"vec3 diffuse = lightColor * (diff * material.color.diffuse);\n"\
+			"vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, texCoord));\n"\
 			\
 			"vec3 viewDir = normalize(viewPos - FragPos);\n"\
 			"vec3 reflectDir = reflect(-lightDir, norm);\n"\
 			"float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"\
-			"vec3 specular = lightColor * (spec * material.color.specular);\n"\
+			"vec3 specular = light.specular * spec * vec3(texture(material.specular, texCoord));\n"\
 			\
 			"vec3 result = ambient + diffuse + specular;\n"\
 			"FragColor = vec4(result, 1.0);\n"\
+			\
+			"FragColor = vec4(ambient + diffuse + specular, 1.0);\n"\
 		"}\n").c_str(), // End of fragment
 
 		ShaderType::RAW);
@@ -152,32 +152,35 @@ int main() {
 	window.getSize(&width, &height);
 	std::cout << "Window size: [" << width << ", " << height << "]" << std::endl;
 
-	// Initialize the shape we want to draw
+
 	Cube coob;
-	coob.scale(glm::vec3(0.5));
+	coob.scale(glm::vec3(3.0));
 
-	Cube coob2;
-	coob2.scale(glm::vec3(0.5, 0.5, 0.6));
+	//Cube floor;
+	//floor.scale(glm::vec3(100.f, 0.5, 100.f));
+	//floor.setPosition(glm::vec3(0.f, -4.f, 0.f));
 
-	Cube coob3;
-	coob3.scale(glm::vec3(3.0));
+	// Load texture and specular map
+	Texture diffuse("/network/Programming/opengl/Examples/assets/container2.png", Texture::FileType::PNG);
+	Texture specular("/network/Programming/opengl/Examples/assets/container2_specular.png", Texture::FileType::PNG);
 
-	Cube floor;
-	floor.scale(glm::vec3(100.f, 0.5, 100.f));
-	floor.setPosition(glm::vec3(0.f, -4.f, 0.f));
+	coob.pushTexture(diffuse);
+	coob.pushTexture(specular);
 
 	// Camera cam;
 	float angle = 0;
-
-	window.getCam().setPos(glm::vec3(0.0, 0.0, -4.0)).setAngle(glm::vec3(00, -90, 0));
+	window.getCam().setPos(glm::vec3(6.0, 5.0, -6.0)).setAngle(glm::vec3(20, -45, 0));
 	window.getCam().setFov(65);
 
 	shader.use();
 	shader.setFloat("material.shininess", 64.f);
-	shader.setVec3("material.color.ambient", glm::vec3(0.05, 0.03, 0.01));
-	shader.setVec3("material.color.specular", glm::vec3(0.8));
-	shader.setVec3("lightColor", glm::vec3(1.0));
-	shader.setVec3("lightPos", glm::vec3(0.0, 4.0, 0.0));
+	shader.setInt("material.diffuse", 0);
+	shader.setInt("material.specular", 1);
+	shader.setVec3("light.ambient", glm::vec3(0.03));
+	shader.setVec3("light.diffuse", glm::vec3(1.0));
+	shader.setVec3("light.position", glm::vec3(0.0, 4.0, 0.0));
+	shader.setVec3("light.specular", glm::vec3(1.0, 0.0, 0.0));
+
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
@@ -190,9 +193,8 @@ int main() {
 		//window.getCam().setAngle(glm::vec3(angle * 10, 0, 0.0));
 
 		// Uniforms
-		coob.rotate(glm::vec3(0.01));
-		coob2.setPosition(glm::vec3(sin(angle), cos(angle), 0.0));
-		coob3.setPosition(glm::vec3(sin(angle / 10) * 4, cos(angle / 10) * 4, cos(angle / 10) * sin(angle / 10) * 4));
+		//coob.setPosition(glm::vec3(sin(angle / 10) * 4, cos(angle / 10) * 4, cos(angle / 10) * sin(angle / 10) * 4));
+		//coob.rotate(glm::vec3(angle / 10));
 		//coob2.translate(glm::vec3(0, 1.0, 0.0));
 
 		//window.getCam().setPos(glm::vec3(sin(angle) * 4, 3.0, cos(angle) * 4));
@@ -201,20 +203,15 @@ int main() {
 
 		shader.use();
 		shader.setVec3("viewPos", window.getCam().getPos());
-		shader.setVec3("lightPos", glm::vec3(sin(angle) * 10.0, 3.0, cos(angle) * 10.0));
+		shader.setVec3("light.position", glm::vec3(sin(angle) * 10.0, 4.0, cos(angle) * 10.0));
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		shader.setVec3("material.color.diffuse", glm::vec3(1.0, 0.5, 0.0));
 		coob.draw(window, &shader);
 
-		shader.setVec3("material.color.diffuse", glm::vec3(1.0));
-		coob2.draw(window, &shader);
 
-		coob3.draw(window, &shader);
-
-		shader.setVec3("material.color.diffuse", glm::vec3(0.2, 0.2, 1.0));
-		floor.draw(window, &shader);
+		//shader.setVec3("material.color.diffuse", glm::vec3(0.2, 0.2, 1.0));
+		//floor.draw(window, &shader);
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer
 		// When drawing on the front buffer, aka the actual pixels on the screen, you can get screen tearing and watch the pixels draw

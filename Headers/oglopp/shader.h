@@ -9,6 +9,7 @@
 #include <glm/mat4x4.hpp>
 
 #include "oglopp/defines.h"
+#include "oglopp/glad/gl.h"
 
 namespace oglopp {
 	enum ShaderType : uint8_t {
@@ -16,19 +17,48 @@ namespace oglopp {
 		RAW 	// const char* vertex and const char* fragment represent the fragment shader contents as a string.
 	};
 
+	enum ShaderStep : uint16_t {
+		VERTEX 		= GL_VERTEX_SHADER,
+		GEOMETRY	= GL_GEOMETRY_SHADER,
+		FRAGMENT	= GL_FRAGMENT_SHADER,
+	};
+
 	/* @brief Shader object
 	*/
 	class Shader {
 	private:
 		unsigned int ID;
+
+		/* @brief Load the shader file
+		 * @param[in] shader		The path to the shader, or the contents of the shader itself
+		 * @param[in] type			The type of the shader variable, either path or raw.
+		 * @param[in] step			The shader step: vertex, geometry, or fragment
+		 * @return 					The loaded shader index
+		*/
+		static uint32_t loadShaderFile(const char* shader, ShaderType type, ShaderStep step);
+
+		/* @brief Load a list of shaders into this shader object
+		 * @param[in] vertexShader		The vertex shader path or file contents
+		 * @param[in] geoShader			The geometry shader path or file contents. Nullptr for no geometry shader
+		 * @param[in] fragmentShader	The fragment shader path or file contents
+		 * @param[in] type				The shader type.  File or raw.
+	 	*/
+		void load(const char* vertexShader, const char* geoShader, const char* fragmentShader, ShaderType type);
+
 	public:
 		static constexpr const char* GLSL_VERSION_STRING = "#version 330 core\n";
 
-		static constexpr const char* COLOR_STRUCT = // struct Material
+		static constexpr const char* COLOR_STRUCT = // struct Color
 		"struct Color {"\
 			"vec3 ambient;"\
 			"vec3 diffuse;"\
 			"vec3 specular;"\
+		"};\n";
+
+		static constexpr const char* TEXTURE_COLOR_STRUCT = // struct Texture
+		"struct Color {"\
+			"sampler2D diffuse;"\
+			"sampler2D specualar;"\
 		"};\n";
 
 		static constexpr const char* MATERIAL_STRUCT =  // struct Material
@@ -63,6 +93,7 @@ namespace oglopp {
 		/* @brief Create a new shader
 		*/
 		Shader(const char* vertex, const char* fragment, ShaderType type);
+		Shader(const char* vertex, const char* geometry, const char* fragment, ShaderType type);
 		// use / activate the shader
 		void use();
 		// Utility uniform functions

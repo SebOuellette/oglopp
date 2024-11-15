@@ -27,7 +27,7 @@ CXX = g++
 #-ggdb
 SO_COPTS := -fPIC -shared
 SO_LOPTS := -ldl
-IOPTS := -g3 -O0 -Wall -I../usr/include/ -I$(INCLUDE_DIR)
+IOPTS := -g3 -O0 -Wall -I$(INCLUDE_DIR) -I../usr/include/
 LOPTS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lglad
 
 all: liba examples

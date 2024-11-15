@@ -41,7 +41,6 @@ namespace oglopp {
 	        exit(1);
 		}
 		glfwMakeContextCurrent(this->_window);
-
 		glfwShowWindow(this->_window);
 
 
@@ -62,6 +61,7 @@ namespace oglopp {
 
 		// Set the "background" colour of the window
 		glClearColor(0.0, 0.0, 0.0, 0.0);
+		glEnable(GL_DEPTH_TEST);
 
 	    return *this;
 	}
