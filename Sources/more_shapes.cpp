@@ -28,20 +28,20 @@ namespace oglopp {
 	Cube::Cube() {
 		//				Vector x, y, z			Normal x, y, z		Tex Coord x, y
 		// Front face
-		this->pushPoint({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f});
-		this->pushPoint({ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f});
-		this->pushPoint({ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f});
-		this->pushPoint({ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f});
-		this->pushPoint({-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f});
-		this->pushPoint({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f});
+		this->pushPoint({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f});
+		this->pushPoint({ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f});
+		this->pushPoint({ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f});
+		this->pushPoint({ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f});
+		this->pushPoint({-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f});
+		this->pushPoint({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f});
 
 		// Back face
-		this->pushPoint({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f});
-		this->pushPoint({ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f});
-		this->pushPoint({ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f});
-		this->pushPoint({ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f});
-		this->pushPoint({-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f});
-		this->pushPoint({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f});
+		this->pushPoint({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f});
+		this->pushPoint({ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f});
+		this->pushPoint({ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f});
+		this->pushPoint({ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f});
+		this->pushPoint({-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f});
+		this->pushPoint({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f});
 
 		// Left face
 		this->pushPoint({-0.5f,  0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f});

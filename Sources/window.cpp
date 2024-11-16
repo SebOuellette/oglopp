@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "oglopp/window.h"
+#include "oglopp/init.h"
 
 namespace oglopp {
 	// Callback function to automatically change viewport when window is resized
@@ -33,6 +34,13 @@ namespace oglopp {
 	 * @return				A reference to this window object
 	 */
 	Window& Window::create(unsigned int width, unsigned int height, const char* title) {
+		// FORCE the singleton to be initialized.
+		// When linking liboglopp.a, the singleton often does not run, which means windows fail.
+		// By just accessing a pointer to the singleton instance and storing it in a volatile pointer,
+		// 	we can force the compiler to ensure the singleton instance exists before creating a window, without creating more initgl instances.
+		volatile _HoneyLib_InitGL* inst = &_instance;
+		// This throws a compiler warning cause "inst" is unused. Idk man what do you want me to do with it? It's being used as intended just here.
+
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 	    this->_window = glfwCreateWindow(width, height, title, NULL, NULL);
 		if (_window == NULL) {
@@ -62,6 +70,8 @@ namespace oglopp {
 		// Set the "background" colour of the window
 		glClearColor(0.0, 0.0, 0.0, 0.0);
 		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_CULL_FACE);
+		//glCullFace(GL_FRONT);
 
 	    return *this;
 	}

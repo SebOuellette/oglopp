@@ -23,19 +23,22 @@ EXAMPLE_OBJECTS := $(patsubst $(EXAMPLE_DIR)%.cpp,$(BUILD_DIR)%.oex, $(EXAMPLE_F
 SOURCE_OBJECTS := $(patsubst $(SOURCE_DIR)%.cpp,$(BUILD_DIR)%.o, $(SOURCE_FILES))
 EXAMPLE_EXECS := $(patsubst $(EXAMPLE_DIR)%.cpp,$(BUILD_DIR)%, $(EXAMPLE_FILES))
 
+LIB_BIN := $(BUILD_DIR)lib$(LIB_NAME).a
+
 CXX = g++
 #-ggdb
 SO_COPTS := -fPIC -shared
 SO_LOPTS := -ldl
 IOPTS := -g3 -O0 -Wall -I$(INCLUDE_DIR) -I../usr/include/
 LOPTS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lglad
+#-lassimp ; pacman -S assimp
 
 all: liba examples
 
 .PHONY:
 
 .PHONY: liba
-liba: $(GLADCOPY_PATH) $(BUILD_DIR) $(BUILD_DIR)$(LIB_NAME).a
+liba: $(GLADCOPY_PATH) $(BUILD_DIR) $(LIB_BIN)
 
 #.PHONY: libso
 #libso: setupPIC $(SOURCE_OBJECTS)
@@ -47,18 +50,18 @@ liba: $(GLADCOPY_PATH) $(BUILD_DIR) $(BUILD_DIR)$(LIB_NAME).a
 examples: $(GLADCOPY_PATH) $(BUILD_DIR) $(EXAMPLE_EXECS)
 
 .PHONY: install
-install: $(BUILD_DIR)$(LIB_NAME).a
-	-cp $(BUILD_DIR)$(LIB_NAME).a $(INSTALL_LPATH).
+install: $(LIB_BIN)
+	-cp $(LIB_BIN) $(INSTALL_LPATH).
 	-cp -r $(INCLUDE_DIR)* $(INSTALL_DIR)include/.
 
 .PHONY: uninstall
 uninstall:
 	-rm -r $(INSTALL_IPATH)
 	-rm $(INSTALL_DIR)include/$(LIB_NAME).h
-	-rm $(INSTALL_LPATH)$(LIB_NAME).a
+	-rm $(LIB_BIN)
 
 # Build static library
-$(BUILD_DIR)$(LIB_NAME).a: $(SOURCE_OBJECTS)
+$(LIB_BIN): $(SOURCE_OBJECTS)
 	ar rcs $@ $^
 
 # Link examples

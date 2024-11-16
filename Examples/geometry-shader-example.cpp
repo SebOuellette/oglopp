@@ -99,21 +99,16 @@ int main() {
 		"layout (location = 0) in vec3 aPos;\n"\
 		"layout (location = 1) in vec3 aNormal;\n"\
 		"layout (location = 2) in vec2 aTexCoord;\n"\
-		"uniform mat4 model;\n"\
-		"uniform mat4 view;\n"\
-		"uniform mat4 rotation;\n"\
 		\
 		"out VS_OUT {\n"\
 			"vec3 vNormal;\n"\
 			"vec2 vTexCoord;\n"\
-			"vec3 vFragPos;\n"\
 		"} vs_out;\n"\
 		\
 		"void main() {\n"\
-			"gl_Position = view * model * vec4(aPos, 1.0);\n"\
-			"vs_out.vFragPos = vec3(model * vec4(aPos, 1.0));\n"\
+			"gl_Position = vec4(aPos, 1.0);\n"\
 			"vs_out.vTexCoord = aTexCoord;\n"\
-			"vs_out.vNormal = vec3(rotation * vec4(aNormal, 1.0));\n"\
+			"vs_out.vNormal = aNormal;\n"\
 		"}\n", // End of vertex
 
 		// Geometry
@@ -122,11 +117,13 @@ int main() {
 		"layout (triangle_strip, max_vertices = 3) out;\n"\
 		\
 		"uniform mat4 projection;\n"\
+		"uniform mat4 view;\n"\
+		"uniform mat4 model;\n"\
+		"uniform mat4 rotation;\n"\
 		\
 		"in VS_OUT {\n"\
 			"vec3 vNormal;\n"\
 			"vec2 vTexCoord;\n"\
-			"vec3 vFragPos;\n"\
 		"} gs_in[];\n"\
 		\
 		"out vec3 FragPos;\n"\
@@ -135,10 +132,14 @@ int main() {
 		\
 		"void main() {\n"\
 			"for (int i=0;i<3;i++) {\n"\
-				"gl_Position = projection * gl_in[i].gl_Position;\n"\
-				"Normal = gs_in[i].vNormal;\n"\
+				"vec4 scale = vec4(1.0, 5.0, 1.0, 1.0);\n"\
+				"vec4 newPos = (scale * gl_in[i].gl_Position);\n"\
+				"vec4 newNormal = (rotation * scale * vec4(gs_in[i].vNormal, 1.0));\n"\
+				\
+				"gl_Position = projection * view * model * newPos;\n"\
+				"Normal = newNormal.xyz;\n"\
 				"texCoord = gs_in[i].vTexCoord;\n"\
-				"FragPos = gs_in[i].vFragPos;\n"\
+				"FragPos = vec3(model * gl_in[i].gl_Position);\n"\
 				"EmitVertex();\n"\
 			"}\n"\
 			"EndPrimitive();\n"\
