@@ -23,11 +23,18 @@ namespace oglopp {
 		FRAGMENT	= GL_FRAGMENT_SHADER,
 	};
 
+	enum DrawType : uint8_t {
+		TRIANGLES 	= 0x00,
+		POINTS,
+	};
+
 	/* @brief Shader object
 	*/
 	class Shader {
 	private:
 		unsigned int ID;
+
+		DrawType drawType;
 
 		/* @brief Load the shader file
 		 * @param[in] shader		The path to the shader, or the contents of the shader itself
@@ -104,6 +111,17 @@ namespace oglopp {
 		void setVec3(const std::string &name, glm::vec3 const& value) const;
 		void setVec4(const std::string &name, glm::vec4 const& vector) const;
 		void setMat4(const std::string &name, glm::mat4 const& matrix) const;
+
+		/* @brief Get a constant reference to the current draw type
+		 * @return A constant reference
+	 	*/
+		DrawType const& getDrawType();
+
+		/* @brief Set the draw type
+		 * @param[in] type	The new type to set the draw type to
+		 * @return			A reference to this shape object
+	 	*/
+		Shader& setDrawType(DrawType const& type);
 	};
 }
 

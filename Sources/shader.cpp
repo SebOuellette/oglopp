@@ -135,10 +135,16 @@ namespace oglopp {
 	}
 
 	Shader::Shader(const char* vertex, const char* fragment, ShaderType type) {
+		this->drawType = TRIANGLES;
+		this->ID = 0;
+
 		this->load(vertex, nullptr, fragment, type);
 	}
 
 	Shader::Shader(const char* vertex, const char* geometry, const char* fragment, ShaderType type) {
+		this->drawType = TRIANGLES;
+		this->ID = 0;
+
 		this->load(vertex, geometry, fragment, type);
 	}
 
@@ -172,5 +178,22 @@ namespace oglopp {
 
 	void Shader::setMat4(const std::string &name, glm::mat4 const& matrix) const {
 		glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(*const_cast<glm::mat4*>(&matrix)));
+	}
+
+	/* @brief Get a constant reference to the current draw type
+	 * @return A constant reference
+ 	*/
+	DrawType const& Shader::getDrawType() {
+		return this->drawType;
+	}
+
+	/* @brief Set the draw type
+	 * @param[in] type	The new type to set the draw type to
+	 * @return			A reference to this shape object
+ 	*/
+	Shader& Shader::setDrawType(DrawType const& type) {
+		this->drawType = type;
+
+		return *this;
 	}
 }

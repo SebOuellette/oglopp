@@ -5,6 +5,7 @@
 // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
 #include "oglopp.h"
+#include "oglopp/shader.h"
 #include <iostream>
 #include <cmath>
 
@@ -107,6 +108,7 @@ int main() {
 		\
 		"void main() {\n"\
 			"gl_Position = vec4(aPos, 1.0);\n"\
+			"gl_PointSize = 2000.0;\n"\
 			"vs_out.vTexCoord = aTexCoord;\n"\
 			"vs_out.vNormal = aNormal;\n"\
 		"}\n", // End of vertex
@@ -132,10 +134,11 @@ int main() {
 		\
 		"void main() {\n"\
 			"for (int i=0;i<3;i++) {\n"\
-				"vec4 scale = vec4(1.0, 5.0, 1.0, 1.0);\n"\
+				"vec4 scale = vec4(1.0, 1.0, 1.0, 1.0);\n"\
 				"vec4 newPos = (scale * gl_in[i].gl_Position);\n"\
 				"vec4 newNormal = (rotation * scale * vec4(gs_in[i].vNormal, 1.0));\n"\
 				\
+				"gl_PointSize = 2000.0;\n"\
 				"gl_Position = projection * view * model * newPos;\n"\
 				"Normal = newNormal.xyz;\n"\
 				"texCoord = gs_in[i].vTexCoord;\n"\
@@ -210,6 +213,7 @@ int main() {
 	shader.setVec3("material.color.specular", glm::vec3(0.8));
 	shader.setVec3("lightColor", glm::vec3(1.0));
 	shader.setVec3("lightPos", glm::vec3(0.0, 4.0, 0.0));
+	//shader.setDrawType(POINTS);
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
@@ -241,9 +245,13 @@ int main() {
 		coob.draw(window, &shader);
 
 		shader.setVec3("material.color.diffuse", glm::vec3(1.0));
+		shader.setDrawType(POINTS);
 		coob2.draw(window, &shader);
+		shader.setDrawType(TRIANGLES);
+
 
 		coob3.draw(window, &shader);
+
 
 		shader.setVec3("material.color.diffuse", glm::vec3(0.2, 0.2, 1.0));
 		floor.draw(window, &shader);

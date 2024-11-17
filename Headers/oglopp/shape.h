@@ -62,8 +62,6 @@ namespace oglopp {
 		Shape();
 		~Shape();
 
-#if 1
-
 		/* @brief Push a single point to the shape.
 		* @param[in]	vec		The vector of the point
 		* @param[in]	col		The color of the vertex
@@ -91,7 +89,6 @@ namespace oglopp {
 		* @return 		A reference to this shape object
 		*/
 		Shape& pushPoint(glm::vec3 vec);
-#endif
 
 		/* @brief Push a triangle to the indicies list. A triangle is constructed of the following verticies which were defined with pushPoint
 		 * @param[in] vertA	The A vertex index out of the point list, where the first point is 0

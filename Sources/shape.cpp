@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "oglopp/defines.h"
+#include "oglopp/shader.h"
 #include "oglopp/shape.h"
 
 //#define VERTS 18
@@ -38,11 +39,12 @@ namespace oglopp {
 		// ..:: Model Matrix ::..
 		glm::mat4 model(1.f); // Accumulate changes
 		model = glm::scale(model, this->getScale());
+		model *= glm::translate(model, this->position); // This is kinda backwards but it gives the correct result
 		glm::mat4 rotation(1.f); // Used for transforming normals
 		rotation = glm::rotate<float>(rotation, this->getAngle().x, glm::vec3(1.0, 0.0, 0.0f));
 		rotation = glm::rotate<float>(rotation, this->getAngle().y, glm::vec3(0.0, 1.0, 0.0f));
 		rotation = glm::rotate<float>(rotation, this->getAngle().z, glm::vec3(0.0, 0.0, 1.0f));
-		model *= glm::translate(rotation, this->position);
+		model *= rotation;
 
 		// ..:: View Matrix ::..
 		glm::mat4 view = window.getCam().face(-window.getCam().getBack());
@@ -287,7 +289,11 @@ namespace oglopp {
 	* @return 				A reference to this shape
 	*/
 	Shape& Shape::draw(Window& window, Shader* pShader) {
+		DrawType drawType = TRIANGLES;
+
 		if (pShader != nullptr) {
+			drawType = pShader->getDrawType();
+
 			pShader->use();
 
 			// Perform the model - view - projection calculation and pass through to the shader
@@ -316,10 +322,20 @@ namespace oglopp {
 		glBindVertexArray(this->VAO);
 
 		// Draw
-		if (this->indexCount > 0) {
-			glDrawElements(GL_TRIANGLES, this->strideElements, GL_UNSIGNED_INT, 0);
-		} else {
-			glDrawArrays(GL_TRIANGLES, 0, this->vertCount);
+		switch (drawType) {
+			default:
+			case TRIANGLES: {
+				if (this->indexCount > 0) {
+					glDrawElements(GL_TRIANGLES, this->strideElements, GL_UNSIGNED_INT, 0);
+				} else {
+					glDrawArrays(GL_TRIANGLES, 0, this->vertCount);
+				}
+				break;
+			}
+
+			case POINTS: {
+				glDrawArrays(GL_POINTS, 0, this->vertCount);
+			}
 		}
 
 		// Unbind vertex array

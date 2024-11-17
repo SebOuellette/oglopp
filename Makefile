@@ -8,10 +8,13 @@ SOURCE_DIR := Sources/
 BUILD_DIR := build/
 INCLUDE_DIR := Headers/
 FULLINC_DIR := $(INCLUDE_DIR)$(LIB_NAME)
+
 GLAD_DIR := glad/
+GLAD_LIBDIR := $(GLAD_DIR)lib/
 GLAD_PATH := $(GLAD_DIR)include/glad/$(GLAD_HEADER)
 GLADCOPY_DIR := $(FULLINC_DIR)/$(GLAD_DIR)
 GLADCOPY_PATH := $(GLADCOPY_DIR)$(GLAD_HEADER)
+
 EXAMPLE_FILES := $(wildcard $(EXAMPLE_DIR)*.cpp)
 SOURCE_FILES := $(wildcard $(SOURCE_DIR)*.cpp)
 
@@ -23,6 +26,7 @@ EXAMPLE_OBJECTS := $(patsubst $(EXAMPLE_DIR)%.cpp,$(BUILD_DIR)%.oex, $(EXAMPLE_F
 SOURCE_OBJECTS := $(patsubst $(SOURCE_DIR)%.cpp,$(BUILD_DIR)%.o, $(SOURCE_FILES))
 EXAMPLE_EXECS := $(patsubst $(EXAMPLE_DIR)%.cpp,$(BUILD_DIR)%, $(EXAMPLE_FILES))
 
+GLAD_LIB_BIN := $(GLAD_LIBDIR)libglad.a
 LIB_BIN := $(BUILD_DIR)lib$(LIB_NAME).a
 
 CXX = g++
@@ -30,7 +34,7 @@ CXX = g++
 SO_COPTS := -fPIC -shared
 SO_LOPTS := -ldl
 IOPTS := -g3 -O0 -Wall -I$(INCLUDE_DIR) -I../usr/include/
-LOPTS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lglad
+LOPTS :=-L$(GLAD_LIBDIR) -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lglad
 #-lassimp ; pacman -S assimp
 
 all: liba examples
@@ -49,9 +53,13 @@ liba: $(GLADCOPY_PATH) $(BUILD_DIR) $(LIB_BIN)
 .PHONY: examples
 examples: $(GLADCOPY_PATH) $(BUILD_DIR) $(EXAMPLE_EXECS)
 
+.PHONY: glad
+glad: $(GLADCOPY_PATH) $(GLAD_LIB_BIN) 
+
 .PHONY: install
 install: $(LIB_BIN)
 	-cp $(LIB_BIN) $(INSTALL_LPATH).
+	-cp $(GLAD_LIB_BIN) $(INSTALL_LPATH).
 	-cp -r $(INCLUDE_DIR)* $(INSTALL_DIR)include/.
 
 .PHONY: uninstall
@@ -59,6 +67,7 @@ uninstall:
 	-rm -r $(INSTALL_IPATH)
 	-rm $(INSTALL_DIR)include/$(LIB_NAME).h
 	-rm $(LIB_BIN)
+	-rm $(GLAD_LIB_BIN)
 
 # Build static library
 $(LIB_BIN): $(SOURCE_OBJECTS)
@@ -80,6 +89,10 @@ $(BUILD_DIR)%.o: $(SOURCE_DIR)%.cpp
 $(GLAD_PATH):
 	mkdir -p $(GLAD_DIR)
 	glad --api gl:core=3.3,gles2 --out-path $(GLAD_DIR) c
+
+$(GLAD_LIB_BIN): $(GLADCOPY_PATH) 
+	mkdir -p $(dir $@)
+	gcc -c $(GLAD_DIR)src/gl.c -I$(FULLINC_DIR) -o $@
 
 $(GLADCOPY_PATH): $(GLAD_PATH)
 	mkdir -p $(GLADCOPY_DIR)
