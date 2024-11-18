@@ -34,7 +34,7 @@ CXX = g++
 SO_COPTS := -fPIC -shared
 SO_LOPTS := -ldl
 IOPTS := -g3 -O0 -Wall -I$(INCLUDE_DIR) -I../usr/include/
-LOPTS :=-L$(GLAD_LIBDIR) -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lglad
+LOPTS := -L$(GLAD_LIBDIR) -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lglad
 #-lassimp ; pacman -S assimp
 
 all: liba examples

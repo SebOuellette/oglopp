@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "oglopp/defines.h"
+#include "oglopp/glad/gl.h"
 #include "oglopp/shader.h"
 #include "oglopp/shape.h"
 
@@ -69,6 +70,13 @@ namespace oglopp {
 		return *this;
 	}
 
+	/* @brief Updated extra uniforms. obverloaded in each inherited class
+	 * @return A reference to this shape object
+ 	*/
+	Shape& Shape::updateExtraUniforms() {
+		return *this;
+	}
+
 	Shape& Shape::updateEBO() {
 		// Create the element buffer object
 		glGenBuffers(1, &this->EBO);
@@ -86,15 +94,22 @@ namespace oglopp {
 		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 
 		// Copy the vertex array data into the buffer
-		glBufferData(GL_ARRAY_BUFFER, this->vertCount * this->strideElements * sizeof(float), this->vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, this->vertCount * this->strideBytes/*this->strideElements * sizeof(float)*/, this->vertices.data(), GL_STATIC_DRAW);
 
 		return *this;
 	}
 
-	Shape& Shape::updateVAO(bool color, bool texture) {
+	/* @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified.
+	 * @param[in] color		Include the color/normal vec3
+	 * @param[in] texture	Include the texture coord vec2
+	 * @param[in] option	Include the option uint16_t
+	 * @return	A reference to this shape object
+	*/
+	Shape& Shape::updateVAO(bool color, bool texture, bool option) {
 		// Calculate the stride bytes
-		this->strideElements = HLGL_VEC_COMPONENTS + (color ? HLGL_COL_COMPONENTS : 0) + (texture ? HLGL_TEX_COMPONENTS : 0);
-		const unsigned int STRIDE_BYTES = this->strideElements * sizeof(float);
+		this->strideElements = HLGL_VEC_COMPONENTS + (color ? HLGL_COL_COMPONENTS : 0) + (texture ? HLGL_TEX_COMPONENTS : 0) + (option ? HLGL_OPT_COMPONENTS : 0);
+		this->strideBytes = this->strideElements * sizeof(float);
+			//HLGL_VEC_COMPONENTS * sizeof(float) + (color ? HLGL_COL_COMPONENTS * sizeof(float) : 0) + (texture ? HLGL_TEX_COMPONENTS * sizeof(float) : 0) + (option ? HLGL_OPT_COMPONENTS * sizeof(float) : 0);
 
 		glGenVertexArrays(1, &this->VAO);
 		// Initialization code (done once (unless your object frequently changes))
@@ -114,7 +129,7 @@ namespace oglopp {
 		int index = 0;
 
 		// 3. then set our vertex attributes pointers
-		glVertexAttribPointer(index, HLGL_VEC_COMPONENTS, GL_FLOAT, GL_FALSE, STRIDE_BYTES, (void*)offset);
+		glVertexAttribPointer(index, HLGL_VEC_COMPONENTS, GL_FLOAT, GL_FALSE, this->strideBytes, (void*)offset);
 		glEnableVertexAttribArray(index);
 		offset += HLGL_VEC_COMPONENTS * sizeof(float);
 		index++;
@@ -123,23 +138,30 @@ namespace oglopp {
 		// Color (Used for Normals now uhhh idk man how this stuff is supposed to be generalized now.. I Need like a billion templates and stuff I don't wanna)
 		if (color) {
 			// 4. Set the colour attribute
-			glVertexAttribPointer(index, HLGL_COL_COMPONENTS, GL_FLOAT, GL_FALSE, STRIDE_BYTES, (void*)offset);
+			glVertexAttribPointer(index, HLGL_COL_COMPONENTS, GL_FLOAT, GL_FALSE, this->strideBytes, (void*)offset);
 			glEnableVertexAttribArray(index);
 			offset += HLGL_COL_COMPONENTS * sizeof(float);
-
 		}
 		index++;
 
 		if (texture) {
 			// 5. Set the texture attribute
-			glVertexAttribPointer(index, HLGL_TEX_COMPONENTS, GL_FLOAT, GL_FALSE, STRIDE_BYTES, (void*)offset);
+			glVertexAttribPointer(index, HLGL_TEX_COMPONENTS, GL_FLOAT, GL_FALSE, this->strideBytes, (void*)offset);
 			glEnableVertexAttribArray(index);
 			offset += HLGL_TEX_COMPONENTS * sizeof(float);
 		}
 		index++;
 
+		if (option) {
+			// 5. Set the texture attribute
+			glVertexAttribPointer(index, HLGL_OPT_COMPONENTS, GL_FLOAT, GL_FALSE, this->strideBytes, (void*)offset);
+			glEnableVertexAttribArray(index);
+			offset += HLGL_OPT_COMPONENTS * sizeof(float);
+		}
+		index++;
 
 		// Unbind the vertex array
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
 		return *this;
@@ -160,6 +182,20 @@ namespace oglopp {
 		glDeleteBuffers(1, &this->VBO);
 		glDeleteBuffers(1, &this->EBO);
 		glDeleteVertexArrays(1, &this->VAO);
+	}
+
+	/* @brief Push a single point to the shape.
+	* @param[in]	vec		The vector of the point
+	* @param[in]	col		The color of the vertex
+	* @param[in]	texPos	The texture position
+	* @param[in]	option	The option to push
+	* @return 		A reference to this shape object
+	*/
+	Shape& Shape::pushPoint(glm::vec3 vec, glm::vec3 col, glm::vec2 texPos, float option) {
+		this->pushPoint(vec, col, texPos); // This does the vertCount++
+		this->vertices.push_back(option);
+
+		return *this;
 	}
 
 	/* @brief Push a single point to the shape.
@@ -307,13 +343,11 @@ namespace oglopp {
 			this->textures.pop_back(); // Cant fool me...
 		}
 
-		for (uint i=0;i<this->textures.size();i++) {
-			myRegister = Shape::getTextureCode(i);
+		if (pShader != nullptr) {
+			for (uint i=0;i<this->textures.size();i++) {
+				myRegister = Shape::getTextureCode(i);
 
-			glActiveTexture(myRegister);
-			glBindTexture(GL_TEXTURE_2D, this->textures[i].getTexture());
-
-			if (pShader != nullptr) {
+				this->textures[i].bind(myRegister);
 				pShader->setInt(Shape::getTextureString(i), i);
 			}
 		}

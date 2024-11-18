@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "oglopp/defines.h"
+#include "oglopp/glad/gl.h"
 
 namespace oglopp {
 	/* @brief Load the shader file

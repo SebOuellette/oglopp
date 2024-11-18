@@ -28,6 +28,7 @@ namespace oglopp {
 		std::vector<Texture> textures;
 
 		unsigned int strideElements;
+		unsigned int strideBytes;
 
 		// The angle and position of this shape in the world.
 		glm::vec3 scaleVec;
@@ -55,12 +56,26 @@ namespace oglopp {
 		*/
 		Shape& updateUniformMVP(Window& window, Shader* pShader);
 
+		/* @brief Updated extra uniforms. obverloaded in each inherited class
+		 * @return A reference to this shape object
+	 	*/
+		Shape& updateExtraUniforms();
+
 		Shape& updateEBO();
 		Shape& updateVBO();
 
 	public:
 		Shape();
 		~Shape();
+
+		/* @brief Push a single point to the shape.
+		* @param[in]	vec		The vector of the point
+		* @param[in]	col		The color of the vertex
+		* @param[in]	texPos	The texture position
+		* @param[in]	option	The option to push
+		* @return 		A reference to this shape object
+		*/
+		Shape& pushPoint(glm::vec3 vec, glm::vec3 col, glm::vec2 texPos, float option);
 
 		/* @brief Push a single point to the shape.
 		* @param[in]	vec		The vector of the point
@@ -105,9 +120,12 @@ namespace oglopp {
 		Shape& pushTexture(Texture const& newTexture);
 
 		/* @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified.
+		 * @param[in] color		Include the color/normal vec3
+		 * @param[in] texture	Include the texture coord vec2
+		 * @param[in] option	Include the option uint16_t
 		 * @return	A reference to this shape object
 		*/
-		Shape& updateVAO(bool color = true, bool texture = true);
+		Shape& updateVAO(bool color = true, bool texture = true, bool option = false);
 
 		unsigned int getVAO();
 		unsigned int getVBO();

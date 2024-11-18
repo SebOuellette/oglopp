@@ -75,6 +75,9 @@ namespace oglopp {
 	*  @return A reference to this texture object
 	*/
 	Texture& Texture::destroy() {
+		glDeleteTextures(1, &this->TID);
+		glDeleteBuffers(1, &this->TBO);
+
 		return *this;
 	}
 
@@ -103,5 +106,15 @@ namespace oglopp {
 	*/
 	unsigned int Texture::getTexture() {
 		return this->TID;
+	}
+
+	/* @brief Bind this texture to some texture ID. Called before drawing each shape
+	 * @param[in] id	The texture ID to bind to.
+ 	*/
+	Texture& Texture::bind(uint16_t id) {
+		glActiveTexture(id);
+		glBindTexture(GL_TEXTURE_2D, this->getTexture());
+
+		return *this;
 	}
 }
