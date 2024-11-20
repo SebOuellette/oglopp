@@ -192,6 +192,11 @@ int main() {
 
 		//window.getCam().setAngle(glm::vec3(angle * 10, 0, 0.0));
 
+		// Update the projection and view matrices for all the shapes to be drawn
+		int width, height;
+		window.getSize(&width, &height);
+		window.getCam().updateProjectionView(width, height);
+
 		// Uniforms
 		//coob.setPosition(glm::vec3(sin(angle / 10) * 4, cos(angle / 10) * 4, cos(angle / 10) * sin(angle / 10) * 4));
 		//coob.rotate(glm::vec3(angle / 10));

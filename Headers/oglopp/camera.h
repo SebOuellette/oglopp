@@ -20,6 +20,7 @@ namespace oglopp {
 
 		// Camera stuff
 		glm::mat4 _view;
+		glm::mat4 _projection;
 
 		float fov;
 
@@ -42,6 +43,8 @@ namespace oglopp {
 		glm::vec3 const& getAngle();
 
 		glm::mat4 const& getView();
+		glm::mat4 const& getProjection();
+
 
 		/* @brief Face a target vector
 		 * @param[in] vector	The normalized vector to face.
@@ -63,6 +66,13 @@ namespace oglopp {
 		 * @return 			A reference to this Camera object
 	 	*/
 		Camera& aimBy(float pitch, float yaw);
+
+		/* @brief Update the projection and view matrices to be referenced by each object
+		 * @brief width		The width of the window
+		 * @brief height	The height of the window
+		 * @return	A reference to this Camera object
+		*/
+		Camera& updateProjectionView(int const& width, int const& height);
 	};
 }
 

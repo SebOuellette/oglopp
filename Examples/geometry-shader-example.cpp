@@ -233,6 +233,11 @@ int main() {
 
 		//window.getCam().setPos(glm::vec3(sin(angle) * 4, 3.0, cos(angle) * 4));
 
+		// Update the projection and view matrices for all the shapes to be drawn
+		int width, height;
+		window.getSize(&width, &height);
+		window.getCam().updateProjectionView(width, height);
+
 		// Prepare render layer
 
 		shader.use();

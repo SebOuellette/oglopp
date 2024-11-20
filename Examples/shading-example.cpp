@@ -198,7 +198,10 @@ int main() {
 		coob3.setPosition(glm::vec3(sin(angle / 10) * 4, cos(angle / 10) * 4, cos(angle / 10) * sin(angle / 10) * 4));
 		//coob2.translate(glm::vec3(0, 1.0, 0.0));
 
-		//window.getCam().setPos(glm::vec3(sin(angle) * 4, 3.0, cos(angle) * 4));
+		// Update the projection and view matrices for all the shapes to be drawn
+		int width, height;
+		window.getSize(&width, &height);
+		window.getCam().updateProjectionView(width, height);
 
 		// Prepare render layer
 		shader.use();

@@ -49,9 +49,9 @@ int main() {
 		\
 		"void main() {\n"\
 			"FragColor = (vertexColor + texture(texture1, texCoord) + texture(texture2, texCoord)) / 3.0;\n"\
-		"}\n", 
+		"}\n",
 
-		ShaderType::RAW); 
+		ShaderType::RAW);
 
 	// Camera cam;
 	glm::mat4 transform(1.f);
@@ -69,6 +69,11 @@ int main() {
 		window.processInput();
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		// Update the projection and view matrices for all the shapes to be drawn
+		int width, height;
+		window.getSize(&width, &height);
+		window.getCam().updateProjectionView(width, height);
+
 		// Uniforms
 		float alphaValue = (sin(glfwGetTime()) / 2.0f) + 0.5f;
 
@@ -77,8 +82,8 @@ int main() {
 		ourShader.use();
 		ourShader.setMat4("transform", transform);
 		ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, alphaValue});
-		
-		
+
+
 		//Rendering
 		rect.draw(window, &ourShader);
 		tri.draw(window, &ourShader);

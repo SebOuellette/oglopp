@@ -1,3 +1,4 @@
+#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/quaternion_geometric.hpp>
 
@@ -7,11 +8,13 @@
 namespace oglopp {
 	Camera::Camera(glm::vec3 pos) {
 		this->_view = glm::mat4(1.f);
+		this->_projection = glm::mat4(1.f);
 
 		this->fov = HLGL_DEFAULT_FOV;
 		this->setAngle(glm::vec3(0.0));
 		this->setPos(pos);
 		this->lookAt(pos);
+
 
 		// Set target to default, done so nothing is corrupt by accident
 		//this->setTarget();
@@ -53,6 +56,10 @@ namespace oglopp {
 	glm::mat4 const& Camera::getView() {
 
 		return this->_view;
+	}
+
+	glm::mat4 const& Camera::getProjection() {
+		return this->_projection;
 	}
 
 	/* @brief Face a target vector
@@ -157,5 +164,20 @@ namespace oglopp {
 			angleCopy.x = -89.0;
 
 		return this->setAngle(angleCopy);
+	}
+
+	/* @brief Update the projection and view matrices to be referenced by each object
+	 * @brief width		The width of the window
+	 * @brief height	The height of the window
+	 * @return	A reference to this Camera object
+ 	*/
+	Camera& Camera::updateProjectionView(int const& width, int const& height) {
+		// Update the view matrix
+		this->face(-this->getBack());
+
+		// Update the projection matrix
+		this->_projection = glm::perspective<float>(glm::radians(this->getFov()), static_cast<float>(width) / static_cast<float>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
+
+		return *this;
 	}
 }

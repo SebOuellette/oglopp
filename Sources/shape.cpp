@@ -48,7 +48,7 @@ namespace oglopp {
 		model *= rotation;
 
 		// ..:: View Matrix ::..
-		glm::mat4 view = window.getCam().face(-window.getCam().getBack());
+		glm::mat4 view(window.getCam().getView()); //window.getCam().face(-window.getCam().getBack());
 
 		//glm::mat4 view(1.0f);
 		//view = glm::translate(view, -window.getCam().getPos());
@@ -57,8 +57,8 @@ namespace oglopp {
 
 
 		// ..:: Projection Matrix ::..
-		glm::mat4 projection(1.0f);
-		projection = glm::perspective<float>(glm::radians(window.getCam().getFov()), static_cast<float>(width) / static_cast<float>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
+		glm::mat4 projection(window.getCam().getProjection());
+		//projection = //glm::perspective<float>(glm::radians(window.getCam().getFov()), static_cast<float>(width) / static_cast<float>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
 
 		// ..:: Apply Elements ::..
 		pShader->use();

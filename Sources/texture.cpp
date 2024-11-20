@@ -1,3 +1,4 @@
+#include "oglopp/glad/gl.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <iostream>
@@ -30,8 +31,8 @@ namespace oglopp {
 
 	/* @brief Texture constructor. Load texture
 	*/
-	Texture::Texture(const char* path, FileType type) {
-		this->load(path, type);
+	Texture::Texture(const char* path, FileType type, bool nearest) {
+		this->load(path, type, nearest);
 	}
 
 	/* @brief Texture destructor
@@ -42,17 +43,19 @@ namespace oglopp {
 
 	/* @brief Load an image path into the texture
 	*  @param[in]	path	The filepath to load
+	*  @param[in]	type	The type of the texture file
+	*  @param[in]	nearest	Use nearest-neighbour texture filtering
 	*  @return				A reference to this texture object
 	*/
-	Texture& Texture::load(const char* path, FileType type) {
+	Texture& Texture::load(const char* path, FileType type, bool nearest) {
 		glGenTextures(1, &this->TID);
 		glBindTexture(GL_TEXTURE_2D, this->TID);
 
 		// Set texture filtering and wrapping options
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nearest ? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_LINEAR); //GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nearest ? GL_NEAREST : GL_LINEAR); //GL_LINEAR);
 
 		// Vertical flip first
 		stbi_set_flip_vertically_on_load(true);

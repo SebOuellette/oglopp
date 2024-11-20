@@ -61,7 +61,7 @@ namespace oglopp {
 
 		/* @brief Texture constructor. Load texture
 		*/
-		Texture(const char* path, FileType type = FileType::JPG);
+		Texture(const char* path, FileType type = FileType::JPG, bool nearest = false);
 
 		/* @brief Texture destructor
 		*/
@@ -69,9 +69,11 @@ namespace oglopp {
 
 		/* @brief Load an image path into the texture
 		*  @param[in]	path	The filepath to load
+		*  @param[in]	type	The type of the texture file
+		*  @param[in]	nearest	Use nearest-neighbour texture filtering
 		*  @return				A reference to this texture object
 		*/
-		Texture& load(const char* path, FileType type = FileType::JPG);
+		Texture& load(const char* path, FileType type = FileType::JPG, bool nearest = false);
 
 		/* @brief Load a data buffer into a Texture Buffer Object
 		*  @param[in]	path	The filepath to load
