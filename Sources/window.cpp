@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "oglopp/window.h"
+#include "oglopp/glad/gl.h"
 #include "oglopp/init.h"
 
 namespace oglopp {
@@ -15,7 +16,7 @@ namespace oglopp {
 
 	Window::Window() {
 		this->_window = nullptr;
-
+		this->clearMask = GL_COLOR_BUFFER_BIT; // Initialize with the color buffer bit
 
 	}
 
@@ -31,9 +32,10 @@ namespace oglopp {
 	 * @param[in]	width	The width (in pixels) of the window upon creation
 	 * @param[in]	height	The height (in pixels) of the window upon creation
 	 * @param[in]	title	The title of the window
+	 * @param[in]	settings	A pointer to an optional list of settings for the window
 	 * @return				A reference to this window object
 	 */
-	Window& Window::create(unsigned int width, unsigned int height, const char* title) {
+	Window& Window::create(unsigned int width, unsigned int height, const char* title, Settings const& settings) {
 		// FORCE the singleton to be initialized.
 		// When linking liboglopp.a, the singleton often does not run, which means windows fail.
 		// By just accessing a pointer to the singleton instance and storing it in a volatile pointer,
@@ -41,8 +43,11 @@ namespace oglopp {
 		volatile _HoneyLib_InitGL* inst = &_instance;
 		// This throws a compiler warning cause "inst" is unused. Idk man what do you want me to do with it? It's being used as intended just here.
 
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-	    this->_window = glfwCreateWindow(width, height, title, NULL, NULL);
+		// Set the resizable bit based on the settings input
+		glfwWindowHint(GLFW_RESIZABLE, settings.resizable ? GLFW_TRUE : GLFW_FALSE);
+
+		// Create the window, pass monitor and share if provided
+	    this->_window = glfwCreateWindow(width, height, title, settings.monitor, settings.share);
 		if (_window == NULL) {
 			std::cout << "Failed to create GLFW window" << std::endl;
 			this->destroy();
@@ -59,23 +64,64 @@ namespace oglopp {
 	        exit(1);
 		}
 
-#ifdef HLGL_DRAW_WIREFRAMES
-		// Use wireframe mode
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-#endif
+//#ifdef HLGL_DRAW_WIREFRAMES
+		// Wireframes mode
+		if (settings.wireframes) {
+			// Use wireframe mode
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		} else {
+			// Do not use wireframe mode
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+//#endif
 
 		// Callback function to automatically change viewport when window is resized
 		glfwSetFramebufferSizeCallback(this->_window, this->framebuffer_size_callback);
 
 		// Set the "background" colour of the window
-		glClearColor(0.0, 0.0, 0.0, 0.0);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_PROGRAM_POINT_SIZE);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
-		glFrontFace(GL_CW);
+		glClearColor(settings.clearColor.r, settings.clearColor.g, settings.clearColor.b, settings.clearColor.a);
+
+		// Check if the depth buffer should be enabled
+		if (settings.doDepthBuffer) {
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(settings.depthPass);
+
+			// Apply the depth clear bit
+			this->clearMask |= GL_DEPTH_BUFFER_BIT;
+
+			if (settings.depthReadonly) {
+				glDepthMask(GL_FALSE); // if readonly == true, depthMask = false
+			} else {
+				glDepthMask(GL_TRUE);
+			}
+		} else {
+			glDisable(GL_DEPTH_TEST);
+		}
+
+		// Modifying point size
+		if (settings.modifyPointSize) {
+			glEnable(GL_PROGRAM_POINT_SIZE);
+		} else {
+			glDisable(GL_PROGRAM_POINT_SIZE);
+		}
+
+		// Face culling
+		if (settings.doFaceCulling) {
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
+			glFrontFace(GL_CW);
+		} else {
+			glDisable(GL_CULL_FACE);
+		}
 
 	    return *this;
+	}
+
+	Window& Window::create(unsigned int width, unsigned int height, const char* title) {
+		// Create a default list of settings
+		Window::Settings settings;
+
+		return this->create(width, height, title, settings);
 	}
 
 	Window& Window::destroy() {
@@ -190,6 +236,14 @@ namespace oglopp {
  	*/
 	Window& Window::setCursorPos(glm::dvec2 const& pos) {
 		glfwSetCursorPos(this->getWindow(), pos.x, pos.y);
+		return *this;
+	}
+
+	/* @brief Clear the window
+	 * @return A reference to this window
+ 	*/
+	Window& Window::clear() {
+		glClear(this->clearMask);
 		return *this;
 	}
 }

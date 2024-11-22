@@ -42,10 +42,13 @@ namespace oglopp {
 		model = glm::scale(model, this->getScale());
 		model *= glm::translate(model, this->position); // This is kinda backwards but it gives the correct result
 		glm::mat4 rotation(1.f); // Used for transforming normals
-		rotation = glm::rotate<float>(rotation, this->getAngle().x, glm::vec3(1.0, 0.0, 0.0f));
-		rotation = glm::rotate<float>(rotation, this->getAngle().y, glm::vec3(0.0, 1.0, 0.0f));
-		rotation = glm::rotate<float>(rotation, this->getAngle().z, glm::vec3(0.0, 0.0, 1.0f));
-		model *= rotation;
+		if (this->getAngle() != glm::vec3(0)) {
+
+			rotation = glm::rotate<float>(rotation, this->getAngle().x, glm::vec3(1.0, 0.0, 0.0f));
+			rotation = glm::rotate<float>(rotation, this->getAngle().y, glm::vec3(0.0, 1.0, 0.0f));
+			rotation = glm::rotate<float>(rotation, this->getAngle().z, glm::vec3(0.0, 0.0, 1.0f));
+			model *= rotation;
+		}
 
 		// ..:: View Matrix ::..
 		glm::mat4 view(window.getCam().getView()); //window.getCam().face(-window.getCam().getBack());
@@ -338,13 +341,13 @@ namespace oglopp {
 
 		this->size = this->textures.size();
 
-		while (size > HLGL_SHAPE_MAX_TEXTURES) { // What the hell? Somebody is messing with me...
-			std::cerr << "Popping extra texture. Did you try to stuff the texture buffer? Do you really need more than " << HLGL_SHAPE_MAX_TEXTURES << "?" << std::endl;
-			this->textures.pop_back(); // Cant fool me...
-		}
+		//while (size > HLGL_SHAPE_MAX_TEXTURES) { // What the hell? Somebody is messing with me...
+		//	std::cerr << "Popping extra texture. Did you try to stuff the texture buffer? Do you really need more than " << HLGL_SHAPE_MAX_TEXTURES << "?" << std::endl;
+		//	this->textures.pop_back(); // Cant fool me...
+		//}
 
 		if (pShader != nullptr) {
-			for (uint i=0;i<this->textures.size();i++) {
+			for (int16_t i=0;i<this->size;i++) {
 				myRegister = Shape::getTextureCode(i);
 
 				this->textures[i].bind(myRegister);
@@ -375,7 +378,8 @@ namespace oglopp {
 		// Unbind vertex array
 		glBindVertexArray(0);
 
-		for (uint i=0;i<this->textures.size();i++) {
+		/*
+		for (uint i=0;i<this->size;i++) {
 			myRegister = Shape::getTextureCode(i);
 
 			glActiveTexture(myRegister);
@@ -384,7 +388,7 @@ namespace oglopp {
 			if (pShader != nullptr) {
 				pShader->setInt(Shape::getTextureString(i), 0);
 			}
-		}
+		}*/
 
 		return *this;
 	}

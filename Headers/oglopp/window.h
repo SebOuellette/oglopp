@@ -3,20 +3,48 @@
 
 #include "defines.h"
 #include "camera.h"
+//#include "oglopp/glad/gl.h"
 
 namespace oglopp {
 	/* @brief Window object
 	 * @param HLGL_DRAW_WIREFRAMES 	Macro defined at compiler time to draw just wireframes. Not defined by default to draw normally
 	*/
 	class Window {
-	private:
-	    GLFWwindow* _window;
-
-		Camera renderCamera;
-
-	    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
 	public:
+		enum DepthPass : uint16_t {
+			ALWAYS		= GL_ALWAYS,
+			NEVER		= GL_NEVER,
+			LESS		= GL_LESS,
+			LEQUAL		= GL_LEQUAL,
+			GREATER		= GL_GREATER,
+			NOTEQUAL	= GL_NOTEQUAL,
+			GEQUAL		= GL_GEQUAL
+		};
+
+		struct Settings {
+			// Window options
+			bool resizable = true;
+			GLFWmonitor* monitor = nullptr;
+			GLFWwindow* share = nullptr;
+
+			// Render options
+			bool wireframes = false;
+			glm::vec4 clearColor = glm::vec4(0.0);
+
+			// Depth buffer
+			bool doDepthBuffer = true;
+			bool depthReadonly = false;
+			DepthPass depthPass = DepthPass::LESS;
+
+			// Face culling
+			bool doFaceCulling = true;
+
+			// Allow defining point size
+			bool modifyPointSize = false;
+
+		};
+
+
 	    // Default Constructor
 	    Window();
 	    ~Window();
@@ -25,8 +53,10 @@ namespace oglopp {
 		 * @param[in]	width	The width (in pixels) of the window upon creation
 		 * @param[in]	height	The height (in pixels) of the window upon creation
 		 * @param[in]	title	The title of the window
+		 * @param[in]	settings	A pointer to an optional list of settings for the window
 		 * @return				A reference to this window object
 		 */
+		Window& create(unsigned int width, unsigned int height, const char* title, Settings const& settings );
 		Window& create(unsigned int width, unsigned int height, const char* title);
 
 	    // Close the window and clear memory
@@ -95,6 +125,20 @@ namespace oglopp {
 		 * @return 			A reference to this window object
 	 	*/
 		Window& setCursorPos(glm::dvec2 const& pos);
+
+		/* @brief Clear the window
+		 * @return A reference to this window
+	 	*/
+		Window& clear();
+
+	private:
+		uint32_t clearMask;
+
+	    GLFWwindow* _window;
+
+		Camera renderCamera;
+
+	    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	};
 }
 
