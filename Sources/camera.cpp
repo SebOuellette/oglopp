@@ -6,12 +6,12 @@
 #include "oglopp/camera.h"
 
 namespace oglopp {
-	Camera::Camera(glm::vec3 pos) {
-		this->_view = glm::mat4(1.f);
-		this->_projection = glm::mat4(1.f);
+	Camera::Camera(glm::dvec3 pos) {
+		this->_view = glm::dmat4(1.f);
+		this->_projection = glm::dmat4(1.f);
 
 		this->fov = HLGL_DEFAULT_FOV;
-		this->setAngle(glm::vec3(0.0));
+		this->setAngle(glm::dvec3(0.0));
 		this->setPos(pos);
 		this->lookAt(pos);
 
@@ -20,23 +20,23 @@ namespace oglopp {
 		//this->setTarget();
 	}
 
-	glm::vec3 Camera::getPos() {
+	glm::dvec3 Camera::getPos() {
 		return this->_pos;
 	}
 
-	glm::vec3 Camera::getTarget() {
+	glm::dvec3 Camera::getTarget() {
 		return this->_target;
 	}
 
-	glm::vec3 Camera::getBack() {
+	glm::dvec3 Camera::getBack() {
 		return this->_backward;
 	}
 
-	glm::vec3 Camera::getRight() {
+	glm::dvec3 Camera::getRight() {
 		return this->_right;
 	}
 
-	glm::vec3 Camera::getUp() {
+	glm::dvec3 Camera::getUp() {
 		return glm::cross(this->_backward, this->_right);
 	}
 
@@ -49,16 +49,16 @@ namespace oglopp {
 		return *this;
 	}
 
-	glm::vec3 const& Camera::getAngle() {
+	glm::dvec3 const& Camera::getAngle() {
 		return this->_angle;
 	}
 
-	glm::mat4 const& Camera::getView() {
+	glm::dmat4 const& Camera::getView() {
 
 		return this->_view;
 	}
 
-	glm::mat4 const& Camera::getProjection() {
+	glm::dmat4 const& Camera::getProjection() {
 		return this->_projection;
 	}
 
@@ -66,13 +66,13 @@ namespace oglopp {
 	 * @param[in] vector	The normalized vector to face.
 	 * @return				A constant reference to the updated view
 	*/
-	glm::mat4 const& Camera::face(glm::vec3 vector) {
+	glm::dmat4 const& Camera::face(glm::dvec3 vector) {
 		this->_view = glm::lookAt(this->_pos, this->_pos + vector, HLGL_WORLD_UP);
 
 		return this->_view;
 	}
 
-	glm::mat4 const& Camera::lookAt(glm::vec3 target) {
+	glm::dmat4 const& Camera::lookAt(glm::dvec3 target) {
 		// GLM function to calculate matrix with up, right, and back directions.
 		this->_view = glm::lookAt(this->_pos, target, HLGL_WORLD_UP);
 
@@ -80,16 +80,13 @@ namespace oglopp {
 	}
 
 	Camera& Camera::_updateRight() {
-		// Specify up direction in word coordinates
-		glm::vec3 up = HLGL_WORLD_UP;
-
 		// Update Right direction
-		this->_right = glm::normalize(glm::cross(up, this->_backward));
+		this->_right = glm::normalize(glm::cross(HLGL_WORLD_UP, this->_backward));
 
 		return *this;
 	}
 
-	Camera& Camera::setPos(glm::vec3 const& newPos) {
+	Camera& Camera::setPos(glm::dvec3 const& newPos) {
 		this->_pos = newPos;
 
 		return *this;
@@ -98,14 +95,14 @@ namespace oglopp {
 	/* @brief Translate the camera to a new position
 	 * @param[in] offset	The offset to translate by
 	*/
-	Camera& Camera::translate(glm::vec3 const& offset) {
+	Camera& Camera::translate(glm::dvec3 const& offset) {
 		this->setPos(this->getPos() + offset);
 
 		return *this;
 	}
 
 	// Set the coordinate this camera will begin facing
-	Camera& Camera::setTarget(glm::vec3 const& newPos) {
+	Camera& Camera::setTarget(glm::dvec3 const& newPos) {
 		// Copy argument to target variable
 		this->_target = newPos;
 
@@ -125,7 +122,7 @@ namespace oglopp {
 	 * @param[in] newAngle	The new angle to set
 	 * @return				A reference to this camera
 	*/
-	Camera& Camera::setAngle(glm::vec3 const& newAngle) {
+	Camera& Camera::setAngle(glm::dvec3 const& newAngle) {
 		this->_angle = newAngle;
 
 		glm::vec3 direction;
@@ -176,7 +173,7 @@ namespace oglopp {
 		this->face(-this->getBack());
 
 		// Update the projection matrix
-		this->_projection = glm::perspective<float>(glm::radians(this->getFov()), static_cast<float>(width) / static_cast<float>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
+		this->_projection = glm::perspective<double>(glm::radians(this->getFov()), static_cast<double>(width) / static_cast<double>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
 
 		return *this;
 	}

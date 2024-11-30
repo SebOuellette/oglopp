@@ -21,6 +21,7 @@ namespace oglopp {
 		VERTEX 		= GL_VERTEX_SHADER,
 		GEOMETRY	= GL_GEOMETRY_SHADER,
 		FRAGMENT	= GL_FRAGMENT_SHADER,
+		COMPUTE 	= GL_COMPUTE_SHADER
 	};
 
 	enum DrawType : uint8_t {
@@ -31,10 +32,8 @@ namespace oglopp {
 	/* @brief Shader object
 	*/
 	class Shader {
-	private:
-		unsigned int ID;
-
-		DrawType drawType;
+	protected:
+		GLuint ID; // Program ID
 
 		/* @brief Load the shader file
 		 * @param[in] shader		The path to the shader, or the contents of the shader itself
@@ -44,10 +43,15 @@ namespace oglopp {
 		*/
 		static uint32_t loadShaderFile(const char* shader, ShaderType type, ShaderStep step);
 
+
+
+	private:
+		DrawType drawType;
+
 		/* @brief Load a list of shaders into this shader object
-		 * @param[in] vertexShader		The vertex shader path or file contents
+		 * @param[in] vertexShader		The vertex shader path or file contents. Nullptr for no vertex shader
 		 * @param[in] geoShader			The geometry shader path or file contents. Nullptr for no geometry shader
-		 * @param[in] fragmentShader	The fragment shader path or file contents
+		 * @param[in] fragmentShader	The fragment shader path or file contents. Nullptr for no fragment shader
 		 * @param[in] type				The shader type.  File or raw.
 	 	*/
 		void load(const char* vertexShader, const char* geoShader, const char* fragmentShader, ShaderType type);
@@ -99,6 +103,7 @@ namespace oglopp {
 
 		/* @brief Create a new shader
 		*/
+		Shader() = default;
 		Shader(const char* vertex, const char* fragment, ShaderType type);
 		Shader(const char* vertex, const char* geometry, const char* fragment, ShaderType type);
 		// use / activate the shader
@@ -111,6 +116,8 @@ namespace oglopp {
 		void setVec3(const std::string &name, glm::vec3 const& value) const;
 		void setVec4(const std::string &name, glm::vec4 const& vector) const;
 		void setMat4(const std::string &name, glm::mat4 const& matrix) const;
+
+
 
 		/* @brief Get a constant reference to the current draw type
 		 * @return A constant reference

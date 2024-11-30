@@ -12,6 +12,7 @@
 
 #include "oglopp/texture.h"
 #include "oglopp/shader.h"
+#include "oglopp/compute.h"
 
 #include "oglopp/matrix.h"
 

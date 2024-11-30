@@ -45,6 +45,7 @@ namespace oglopp {
 
 		// Set the resizable bit based on the settings input
 		glfwWindowHint(GLFW_RESIZABLE, settings.resizable ? GLFW_TRUE : GLFW_FALSE);
+		glfwWindowHint(GLFW_VISIBLE, settings.visible ? GLFW_TRUE : GLFW_FALSE);
 
 		// Create the window, pass monitor and share if provided
 	    this->_window = glfwCreateWindow(width, height, title, settings.monitor, settings.share);
@@ -54,7 +55,7 @@ namespace oglopp {
 	        exit(1);
 		}
 		glfwMakeContextCurrent(this->_window);
-		glfwShowWindow(this->_window);
+		//glfwShowWindow(this->_window);
 
 
 		// Initialize GLAD before we call any OpenGL functions

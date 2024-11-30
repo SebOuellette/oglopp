@@ -11,7 +11,7 @@
 
 using namespace oglopp;
 
-#define CAMSPEED (0.05f)
+#define CAMSPEED (0.05)
 
 void handleInput(Window& window) {
 	// When escape is pressed...

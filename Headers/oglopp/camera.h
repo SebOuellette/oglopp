@@ -1,6 +1,8 @@
 #ifndef OGLOPP_CAMERA_H
 #define OGLOPP_CAMERA_H
 
+#include <glm/detail/qualifier.hpp>
+#include <glm/ext/vector_float3_precision.hpp>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
@@ -10,55 +12,55 @@ namespace oglopp {
 	class Camera {
 	private:
 		// Positions
-		glm::vec3 _pos;
-		glm::vec3 _target;
-		glm::vec3 _angle;
+		glm::dvec3 _pos;
+		glm::dvec3 _target;
+		glm::dvec3 _angle;
 
 		// Directions
-		glm::vec3 _backward; // The tutorial says this is the backward direction
-		glm::vec3 _right;
+		glm::dvec3 _backward; // The tutorial says this is the backward direction
+		glm::dvec3 _right;
 
 		// Camera stuff
-		glm::mat4 _view;
-		glm::mat4 _projection;
+		glm::dmat4 _view;
+		glm::dmat4 _projection;
 
 		float fov;
 
 		Camera& _updateRight();
 
 	public:
-		Camera(glm::vec3 pos = glm::vec3(0, 0.0, 0.0));
+		Camera(glm::dvec3 pos = glm::vec3(0, 0.0, 0.0));
 
 		// Positions
-		glm::vec3 getPos();
-		glm::vec3 getTarget();
+		glm::dvec3 getPos();
+		glm::dvec3 getTarget();
 		// Native directions
-		glm::vec3 getBack();
-		glm::vec3 getRight();
-		glm::vec3 getUp();
+		glm::dvec3 getBack();
+		glm::dvec3 getRight();
+		glm::dvec3 getUp();
 		float getFov();
 
 		Camera& setFov(float);
 
-		glm::vec3 const& getAngle();
+		glm::dvec3 const& getAngle();
 
-		glm::mat4 const& getView();
-		glm::mat4 const& getProjection();
+		glm::dmat4 const& getView();
+		glm::dmat4 const& getProjection();
 
 
 		/* @brief Face a target vector
 		 * @param[in] vector	The normalized vector to face.
 		 * @return				A constant reference to the updated view
 		*/
-		glm::mat4 const& face(glm::vec3 vector) ;
+		glm::dmat4 const& face(glm::dvec3 vector) ;
 
 		// Alternative for all the crap above?
-		glm::mat4 const& lookAt(glm::vec3 target);
+		glm::dmat4 const& lookAt(glm::dvec3 target);
 
-		Camera& setPos(glm::vec3 const& newPos = glm::vec3(0.0f, 0.0f, 3.0f));
-		Camera& translate(glm::vec3 const& offset);
-		Camera& setTarget(glm::vec3 const& newPos = glm::vec3(0.0f, 0.0f, 0.0f));
-		Camera& setAngle(glm::vec3 const& newAngle = glm::vec3(0, 0, 0));
+		Camera& setPos(glm::dvec3 const& newPos = glm::dvec3(0.0f, 0.0f, 3.0f));
+		Camera& translate(glm::dvec3 const& offset);
+		Camera& setTarget(glm::dvec3 const& newPos = glm::dvec3(0.0f, 0.0f, 0.0f));
+		Camera& setAngle(glm::dvec3 const& newAngle = glm::dvec3(0, 0, 0));
 
 		/* @brief Aim the camera by a pitch/yaw
 		 * @param[in] pitch	The pitch in degrees to rotate by

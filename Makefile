@@ -54,7 +54,7 @@ liba: $(GLADCOPY_PATH) $(BUILD_DIR) $(LIB_BIN)
 examples: $(GLADCOPY_PATH) $(BUILD_DIR) $(EXAMPLE_EXECS)
 
 .PHONY: glad
-glad: $(GLADCOPY_PATH) $(GLAD_LIB_BIN) 
+glad: $(GLADCOPY_PATH) $(GLAD_LIB_BIN)
 
 .PHONY: install
 install: $(LIB_BIN)
@@ -88,9 +88,9 @@ $(BUILD_DIR)%.o: $(SOURCE_DIR)%.cpp
 # Create glad resources
 $(GLAD_PATH):
 	mkdir -p $(GLAD_DIR)
-	glad --api gl:core=3.3,gles2 --out-path $(GLAD_DIR) c
+	glad --api gl:core=4.6,gles2 --out-path $(GLAD_DIR) c
 
-$(GLAD_LIB_BIN): $(GLADCOPY_PATH) 
+$(GLAD_LIB_BIN): $(GLADCOPY_PATH)
 	mkdir -p $(dir $@)
 	gcc -c $(GLAD_DIR)src/gl.c -I$(FULLINC_DIR) -o $@
 
@@ -105,3 +105,7 @@ $(BUILD_DIR):
 .PHONY: clean
 clean:
 	-rm ./$(BUILD_DIR)*.o ./$(BUILD_DIR)*.oex ./$(BUILD_DIR)*.a ./$(BUILD_DIR)*.so $(EXAMPLE_EXECS)
+
+.PHONY: cleanglad
+cleanglad:
+	-rm -r glad

@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 // Helpful defines
-#define HLGL_WORLD_UP 		glm::vec3(0.0f, 1.0f, 0.0f)
+#define HLGL_WORLD_UP 		glm::dvec3(0.0f, 1.0f, 0.0f)
 
 #define HLGL_VEC_COMPONENTS 	3
 #define HLGL_COL_COMPONENTS 	3

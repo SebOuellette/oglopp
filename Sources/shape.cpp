@@ -38,15 +38,15 @@ namespace oglopp {
 		window.getSize(&width, &height);
 
 		// ..:: Model Matrix ::..
-		glm::mat4 model(1.f); // Accumulate changes
+		glm::dmat4 model(1.f); // Accumulate changes
 		model = glm::scale(model, this->getScale());
 		model *= glm::translate(model, this->position); // This is kinda backwards but it gives the correct result
-		glm::mat4 rotation(1.f); // Used for transforming normals
-		if (this->getAngle() != glm::vec3(0)) {
+		glm::dmat4 rotation(1.f); // Used for transforming normals
+		if (this->getAngle() != glm::dvec3(0)) {
 
-			rotation = glm::rotate<float>(rotation, this->getAngle().x, glm::vec3(1.0, 0.0, 0.0f));
-			rotation = glm::rotate<float>(rotation, this->getAngle().y, glm::vec3(0.0, 1.0, 0.0f));
-			rotation = glm::rotate<float>(rotation, this->getAngle().z, glm::vec3(0.0, 0.0, 1.0f));
+			rotation = glm::rotate<double>(rotation, this->getAngle().x, glm::dvec3(1.0, 0.0, 0.0f));
+			rotation = glm::rotate<double>(rotation, this->getAngle().y, glm::dvec3(0.0, 1.0, 0.0f));
+			rotation = glm::rotate<double>(rotation, this->getAngle().z, glm::dvec3(0.0, 0.0, 1.0f));
 			model *= rotation;
 		}
 
@@ -396,14 +396,14 @@ namespace oglopp {
 	/* @brief Get the position of this shape
 	* @return The position of this shape
 	*/
-	glm::vec3 const& Shape::getPosition() {
+	glm::dvec3 const& Shape::getPosition() {
 		return this->position;
 	}
 
 	/* @brief Get the angle of this shape
 	* @return The angle of this shape
 	*/
-	glm::vec3 const& Shape::getAngle() {
+	glm::dvec3 const& Shape::getAngle() {
 		return this->angle;
 	}
 
@@ -411,7 +411,7 @@ namespace oglopp {
 	* @param[in] newPosition	The position in world space
 	* @return					A reference to this position
 	*/
-	Shape& Shape::setPosition(glm::vec3 newPosition) {
+	Shape& Shape::setPosition(glm::dvec3 newPosition) {
 		this->position = newPosition;
 		return *this;
 	}
@@ -420,7 +420,7 @@ namespace oglopp {
 	* @param[in] newAngle		The angle to set to
 	* @return 					A reference to this shape object
 	*/
-	Shape& Shape::setAngle(glm::vec3 newAngle) {
+	Shape& Shape::setAngle(glm::dvec3 newAngle) {
 		this->angle = newAngle;
 		return *this;
 	}
@@ -429,7 +429,7 @@ namespace oglopp {
 	* @param[in] offset	The offset to translate by
 	* @return				A reference to this shape object
 	*/
-	Shape& Shape::translate(glm::vec3 offset) {
+	Shape& Shape::translate(glm::dvec3 offset) {
 		this->position += offset;
 		return *this;
 	}
@@ -438,7 +438,7 @@ namespace oglopp {
 	* @param[in] offset	The offset to rotate by in radians for each axis
 	* @return				A reference to this shape object
 	*/
-	Shape& Shape::rotate(glm::vec3 offset) {
+	Shape& Shape::rotate(glm::dvec3 offset) {
 		this->angle += offset;
 		return *this;
 	}
@@ -447,7 +447,7 @@ namespace oglopp {
 	* @param[in] newScale	The new scale for this shape
 	* @return 				A reference to this shape object
 	*/
-	Shape& Shape::setScale(glm::vec3 newScale) {
+	Shape& Shape::setScale(glm::dvec3 newScale) {
 		this->scaleVec = newScale;
 
 		return *this;
@@ -457,7 +457,7 @@ namespace oglopp {
 	* @param[in] offset	The new scale for this shape
 	* @return				A reference to this shape object
 	*/
-	Shape& Shape::scale(glm::vec3 offset) {
+	Shape& Shape::scale(glm::dvec3 offset) {
 		this->scaleVec *= offset;
 
 		return *this;
@@ -466,7 +466,7 @@ namespace oglopp {
 	/* @brief Get the scale factor
 	* @return The scaling factor
 	*/
-	glm::vec3 const& Shape::getScale() {
+	glm::dvec3 const& Shape::getScale() {
 		return this->scaleVec;
 	}
 }

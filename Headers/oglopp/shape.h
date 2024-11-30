@@ -31,9 +31,9 @@ namespace oglopp {
 		unsigned int strideBytes;
 
 		// The angle and position of this shape in the world.
-		glm::vec3 scaleVec;
-		glm::vec3 angle;
-		glm::vec3 position;
+		glm::dvec3 scaleVec;
+		glm::dvec3 angle;
+		glm::dvec3 position;
 
 		// Variables pre-defined for use in each draw() iteration
 		int16_t size;
@@ -142,53 +142,53 @@ namespace oglopp {
 		/* @brief Get the position of this shape
 		 * @return The position of this shape
 		*/
-		glm::vec3 const& getPosition();
+		glm::dvec3 const& getPosition();
 
 		/* @brief Get the angle of this shape
 		 * @return The angle of this shape
 		*/
-		glm::vec3 const& getAngle();
+		glm::dvec3 const& getAngle();
 
 		/* @brief Set the position of this shape in world space
 		 * @param[in] newPosition	The position in world space
 		 * @return					A reference to this position
 		*/
-		Shape& setPosition(glm::vec3 newPosition);
+		Shape& setPosition(glm::dvec3 newPosition);
 
 		/* @brief Set the angle of this shape in radians for each axis
 		 * @param[in] newAngle		The angle to set to
 		 * @return 					A reference to this shape object
 		*/
-		Shape& setAngle(glm::vec3 newAngle);
+		Shape& setAngle(glm::dvec3 newAngle);
 
 		/* @brief Translate this shape some coordinates in world space
 		 * @param[in] offset	The offset to translate by
 		 * @return				A reference to this shape object
 		*/
-		Shape& translate(glm::vec3 offset);
+		Shape& translate(glm::dvec3 offset);
 
 		/* @brief Rotate this shape around its local origin
 		 * @param[in] offset	The offset to rotate by in radians for each axis
 		 * @return				A reference to this shape object
 		*/
-		Shape& rotate(glm::vec3 offset);
+		Shape& rotate(glm::dvec3 offset);
 
 		/* @brief Set the scale of the shape
 		 * @param[in] newScale	The new scale for this shape
 		 * @return 				A reference to this shape object
 		*/
-		Shape& setScale(glm::vec3 newScale);
+		Shape& setScale(glm::dvec3 newScale);
 
 		/* @brief Apply a scaling factor to the shape
 		 * @param[in] offset	The new scale for this shape
 		 * @return				A reference to this shape object
 		*/
-		Shape& scale(glm::vec3 offset);
+		Shape& scale(glm::dvec3 offset);
 
 		/* @brief Get the scale factor
 		 * @return The scaling factor
 		*/
-		glm::vec3 const& getScale();
+		glm::dvec3 const& getScale();
 	};
 }
 

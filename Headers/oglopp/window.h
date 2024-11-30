@@ -24,6 +24,7 @@ namespace oglopp {
 		struct Settings {
 			// Window options
 			bool resizable = true;
+			bool visible = true;
 			GLFWmonitor* monitor = nullptr;
 			GLFWwindow* share = nullptr;
 

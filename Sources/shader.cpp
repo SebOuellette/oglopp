@@ -61,7 +61,7 @@ namespace oglopp {
 		glGetShaderiv(shaderIndex, GL_COMPILE_STATUS, &success);
 		if(!success) {
 			glGetShaderInfoLog(shaderIndex, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::" << ((step == VERTEX) ? "VERTEX" : ((step == GEOMETRY) ? "GEOMETRY" : "FRAGMENT")) << "::COMPILATION_FAILED\n" << infoLog << std::endl;
+			std::cout << "[Oglopp] " << ((step == VERTEX) ? "Vertex" : ((step == GEOMETRY) ? "Geometry" : ((step == COMPUTE) ? "Compute" :"Fragment"))) << " compilation failed!\n" << infoLog << std::endl;
 			std::cout << shaderPtr << std::endl;
 		};
 
@@ -109,7 +109,7 @@ namespace oglopp {
 		glGetProgramiv(this->ID, GL_LINK_STATUS, &success);
 		if(!success) {
 			glGetProgramInfoLog(this->ID, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+			std::cout << "[Oglopp] Shader linking failed!\n" << infoLog << std::endl;
 		}
 
 		// delete the shaders as they're linked into our program now and no longer necessary
@@ -135,16 +135,14 @@ namespace oglopp {
 		return "uniform sampler2D texture" + std::to_string(textureId) + ";\n";
 	}
 
-	Shader::Shader(const char* vertex, const char* fragment, ShaderType type) {
+	Shader::Shader(const char* vertex, const char* fragment, ShaderType type) : ID(0) {
 		this->drawType = TRIANGLES;
-		this->ID = 0;
 
 		this->load(vertex, nullptr, fragment, type);
 	}
 
-	Shader::Shader(const char* vertex, const char* geometry, const char* fragment, ShaderType type) {
+	Shader::Shader(const char* vertex, const char* geometry, const char* fragment, ShaderType type) : ID(0) {
 		this->drawType = TRIANGLES;
-		this->ID = 0;
 
 		this->load(vertex, geometry, fragment, type);
 	}
