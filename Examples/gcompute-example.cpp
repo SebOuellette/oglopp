@@ -97,8 +97,11 @@ int main() {
 	glm::vec4* data = new glm::vec4[ELEMENTS];
 	std::memset(data, 0, sizeof(glm::vec4) * ELEMENTS);
 
+	SSBO ssbo;
+	ssbo.load(data, sizeof(glm::vec4) * ELEMENTS);
+
 	// Send the data to the compute shader
-	compute.prepare(data, sizeof(glm::vec4) * ELEMENTS);
+	compute.setSSBO(&ssbo);
 	delete[] data;
 
 	float time = 0;
@@ -114,20 +117,6 @@ int main() {
 
 		// Attempt to run once - this will double testVar and place the product into coolVar
 		compute.dispatch(ELEMENTS);
-	#if 0
-		// Map the SSBO and read the result (By default, map() will use READONLY mode)
-		glm::vec4* result = static_cast<glm::vec4*>(compute.map());
-		if (result == nullptr) {
-			std::cerr << "Uhh.. the map pointer was null? That can happen?" << std::endl;
-			return -1;
-		}
-
-		for (int i=0;i<ELEMENTS;i++) {
-			std::cout << "Element [" << i << "] - (" << result[i].r << ", " << result[i].g << ", " << result[i].b << ", " << result[i].a << ")" << std::endl;
-		}
-
-		compute.unmap();
-	#endif
 
 		window.clear();
 

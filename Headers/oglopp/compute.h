@@ -3,6 +3,7 @@
 
 #include "oglopp/glad/gl.h"
 #include "oglopp/shader.h"
+#include "oglopp/ssbo.h"
 
 /*
  - Work group Size is defined in c++
@@ -14,12 +15,6 @@ namespace oglopp {
 	*/
 	class Compute : public Shader {
 	public:
-		enum MapMethod : uint16_t {
-			READ	= GL_READ_ONLY,
-			WRITE	= GL_WRITE_ONLY,
-			BOTH	= GL_READ_WRITE
-		};
-
 		typedef GLint group_t;
 
 		/* @brief Compute default constructor
@@ -29,20 +24,16 @@ namespace oglopp {
 	 	*/
 		Compute(const char* computeShader, ShaderType type, GLuint newBinding = 0);
 
-		/* @brief Copy the data in a pointer into the ssbo to be sent to the GPU on dispatch
-		 * @param[in] buffer	A pointer to some buffer
-		 * @param[in] size		The number of bytes to be read from the buffer
-		 * @return				A status code. 0 for success. -1 for failure.
+		/* @brief Set the SSBO object used by the compute shader.
+		 * @param[in] newSSBO	A constant reference to the new SSBO object
+		 * @return				A reference to this compute object
 	 	*/
-		int8_t prepare(void* buffer, size_t size);
+		Compute& setSSBO(SSBO* newSSBO);
 
-		/* @brief Update a portion of the ssbo data
-		 * @param[in] offset	The offset in bytes from the start of the ssbo buffer
-		 * @param[in] buffer	A pointer to some buffer
-		 * @param[in] size		The number of bytes to be read from the buffer
-		 * @return 				A status code. 0 for success. -1 for failure
+		/* @brief Get a reference to the loaded SSBO object
+		 * @return	A reference to the ssbo object
 	 	*/
-		int8_t update(size_t offset, void* buffer, size_t size);
+		SSBO* getSSBO();
 
 		/* @brief Dispatch some groups with the loaded compute shader
 		 * @param[in] xGroups	The number of groups in the x dimension (not optional)
@@ -58,23 +49,10 @@ namespace oglopp {
 	 	*/
 		int8_t dispatch(GLintptr pBufferObject);
 
-		/* @brief Map the SSBO to a buffer
-		 * @param[in] method	The method of mapping. READ, WRITE, or BOTH
-		 * @return 				A pointer to the mapped buffer
-	 	*/
-		void* map(MapMethod method = READ);
-
-		/* @brief Unmap the mapped buffer
-	 	*/
-		Compute& unmap();
-
 		/* @brief Get a constant reference to the SSBO binding
 		 * @return The SSBO binding int
 	 	*/
 		const GLuint& getBinding();
-
-		Compute& bindSSBO();
-		static void unbindSSBO();
 
 		/* @brief Check if a count of groups is valid.
 		 * @param[in] xCount	The count of groups to check in the X
@@ -91,10 +69,11 @@ namespace oglopp {
 		static const bool groupSizeIsValid(group_t groupSize);
 
 	private:
-		GLuint ssbo;
+		//GLuint ssbo;
 		const GLuint binding;
 
-		size_t bufSize;
+		//size_t bufSize;
+		SSBO* ssbo;
 
 		/* @brief Load a list of shaders into this shader object
 		 * @param[in] computeShader		The compute shader path or file contents

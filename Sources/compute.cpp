@@ -9,65 +9,25 @@ namespace oglopp {
 	 * @param[in] type				The shader type.  File or raw.
 	 * @param[in] newBinding		The new binding point for the SSBO
  	*/
-	Compute::Compute(const char* computeShader, ShaderType type, GLuint newBinding) : binding(newBinding) {
+	Compute::Compute(const char* computeShader, ShaderType type, GLuint newBinding) : binding(newBinding), ssbo(nullptr) {
 		this->load(computeShader, type);
 	}
 
-	/* @brief Copy the data in a pointer into the ssbo to be sent to the GPU on dispatch
-	 * @param[in] buffer	A pointer to some buffer
-	 * @param[in] size		The number of bytes to be read from the buffer
-	 * @return				A status code. 0 for success. -1 for failure.
+	/* @brief Set the SSBO object used by the compute shader.
+	 * @param[in] newSSBO	A constant reference to the new SSBO object
+	 * @return				A reference to this compute object
  	*/
-	int8_t Compute::prepare(void* buffer, size_t size) {
-		if (buffer == nullptr) {
-			return -1;
-		}
+	Compute& Compute::setSSBO(SSBO* newSSBO) {
+		this->ssbo = newSSBO;
 
-		// Update the size
-		this->bufSize = size;
-
-		// Prepare ssbo
-		glGenBuffers(1, &this->ssbo);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->ssbo);
-
-		// Copy buffer into ssbo
-		glBufferData(GL_SHADER_STORAGE_BUFFER, size, buffer, GL_DYNAMIC_DRAW);
-
-		// Free up the buffer or apply or something idk
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, this->binding, ssbo);
-
-		// Unbind
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-		return 0;
+		return *this;
 	}
 
-	/* @brief Update a portion of the ssbo data
-	 * @param[in] offset	The offset in bytes from the start of the ssbo buffer
-	 * @param[in] buffer	A pointer to some buffer
-	 * @param[in] size		The number of bytes to be read from the buffer
-	 * @return 				A status code. 0 for success. -1 if the buffer was nullptr. -2 if the update would attempt to write out of range
+	/* @brief Get a reference to the loaded SSBO object
+	 * @return	A reference to the ssbo object
  	*/
-	int8_t Compute::update(size_t offset, void* buffer, size_t size) {
-		if (buffer == nullptr) {
-			return -1;
-		}
-
-		// Check if this update would write out of range
-		if (offset + size > this->bufSize) {
-			return -2;
-		}
-
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, this->binding, ssbo);
-		this->use();
-
-		// Bind the ssbo
-		glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, size, buffer);
-
-		// Unbind
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-		return 0;
+	SSBO* Compute::getSSBO() {
+		return this->ssbo;
 	}
 
 	/* @brief Dispatch some groups with the loaded compute shader
@@ -77,14 +37,13 @@ namespace oglopp {
 	 * @return				A status code. 0 for success. -1 for failure.
  	*/
 	int8_t Compute::dispatch(group_t xGroups, group_t yGroups, group_t zGroups) {
-		if (!Compute::groupCountIsValid(xGroups, yGroups, zGroups)) {
+		if (this->ssbo == nullptr || !Compute::groupCountIsValid(xGroups, yGroups, zGroups)) {
 			return -1;
 		}
 
 		// Use this shader program
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, this->binding, ssbo);
+		this->ssbo->bind(this->binding);
 		this->use();
-
 
 		// Dispatch
 		glDispatchCompute(xGroups, yGroups, zGroups);
@@ -93,7 +52,7 @@ namespace oglopp {
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 		// Unbind
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+		SSBO::unbind();
 
 		return 0;
 	}
@@ -103,7 +62,11 @@ namespace oglopp {
 	 * @return					A status code. 0 for success. -1 for failure.
  	*/
 	int8_t Compute::dispatch(GLintptr pBufferObject) {
+		if (this->ssbo == nullptr)
+			return -1;
+
 		// Use this shader program
+		this->ssbo->bind();
 		this->use();
 
 		// Dispatch
@@ -112,29 +75,10 @@ namespace oglopp {
 		// Ensure all shader writes are visible
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
+		// Unbind
+		SSBO::unbind();
+
 		return 0;
-	}
-
-	/* @brief Map the SSBO to a buffer
-	 * @param[in] method	The method of mapping. READ, WRITE, or BOTH
-	 * @return 				A pointer to the mapped buffer
- 	*/
-	void* Compute::map(MapMethod method) {
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->ssbo);
-		void* mapped = glMapBuffer(GL_SHADER_STORAGE_BUFFER, method);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-		return mapped;
-	}
-
-	/* @brief Unmap the mapped buffer
- 	*/
-	Compute& Compute::unmap() {
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->ssbo);
-		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-		return *this;
 	}
 
 	/* @brief Get a constant reference to the SSBO binding
@@ -142,15 +86,6 @@ namespace oglopp {
  	*/
 	const GLuint& Compute::getBinding() {
 		return this->binding;
-	}
-
-	Compute& Compute::bindSSBO() {
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, this->binding, ssbo);
-		return *this;
-	}
-
-	void Compute::unbindSSBO() {
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
 	/* @brief Check if a count of groups is valid.

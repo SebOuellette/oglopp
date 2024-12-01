@@ -48,21 +48,29 @@ int main() {
 		"data[index.x].coolVar = data[index.x].testVar * 2.0;\n"\
 	"}\n", ShaderType::RAW);
 
-	DataStruct data[ELEMENTS];
+	DataStruct* data = new DataStruct[ELEMENTS];
 
 	// Initialize testVar with random values
 	for (int i=0;i<ELEMENTS;i++) {
 		data[i].testVar = static_cast<float>(static_cast<double>(rand()) / RAND_MAX);
 	}
 
+	// Create a new SSBO object from the data (We could also do this first, then map the buffer, then fill it, if we wanted. That would remove the need for the 'data' array.. but this is a demonstration so it's fine.)
+	SSBO ssbo;
+	ssbo.load(data, sizeof(DataStruct) * ELEMENTS);
+	delete[] data;
+
+	// Tell the compute shader to use the new SSBO object
+	compute.setSSBO(&ssbo);
+
 	// Send the data to the compute shader
-	compute.prepare(data, sizeof(DataStruct) * ELEMENTS);
+	//compute.prepare(data, sizeof(DataStruct) * ELEMENTS);
 
 	// Attempt to run once - this will double testVar and place the product into coolVar
 	compute.dispatch(ELEMENTS);
 
 	// Map the SSBO and read the result (By default, map() will use READONLY mode)
-	DataStruct* result = static_cast<DataStruct*>(compute.map());
+	DataStruct* result = static_cast<DataStruct*>(ssbo.map());
 	if (result == nullptr) {
 		std::cerr << "Uhh.. the map pointer was null? That can happen?" << std::endl;
 		return -1;
@@ -72,7 +80,7 @@ int main() {
 		std::cout << "Element [" << i << "] - " << result[i].testVar << " * 2 = " << result[i].coolVar << std::endl;
 	}
 
-	compute.unmap();
+	ssbo.unmap();
 
 	return 0;
 }
