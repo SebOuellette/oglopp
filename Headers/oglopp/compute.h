@@ -25,8 +25,9 @@ namespace oglopp {
 		/* @brief Compute default constructor
 		 * @param[in] computeShader		The compute shader path or file contents
 		 * @param[in] type				The shader type.  File or raw.
+		 * @param[in] newBinding		The new binding int for the SSBO
 	 	*/
-		Compute(const char* computeShader, ShaderType type);
+		Compute(const char* computeShader, ShaderType type, GLuint newBinding = 0);
 
 		/* @brief Copy the data in a pointer into the ssbo to be sent to the GPU on dispatch
 		 * @param[in] buffer	A pointer to some buffer
@@ -67,6 +68,14 @@ namespace oglopp {
 	 	*/
 		Compute& unmap();
 
+		/* @brief Get a constant reference to the SSBO binding
+		 * @return The SSBO binding int
+	 	*/
+		const GLuint& getBinding();
+
+		Compute& bindSSBO();
+		static void unbindSSBO();
+
 		/* @brief Check if a count of groups is valid.
 		 * @param[in] xCount	The count of groups to check in the X
 		 * @param[in] yCount	The count of groups to check in the Y
@@ -83,6 +92,7 @@ namespace oglopp {
 
 	private:
 		GLuint ssbo;
+		const GLuint binding;
 
 		size_t bufSize;
 

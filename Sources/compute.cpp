@@ -7,8 +7,9 @@ namespace oglopp {
 	/* @brief Compute default constructor
 	 * @param[in] computeShader		The compute shader path or file contents
 	 * @param[in] type				The shader type.  File or raw.
+	 * @param[in] newBinding		The new binding point for the SSBO
  	*/
-	Compute::Compute(const char* computeShader, ShaderType type) {
+	Compute::Compute(const char* computeShader, ShaderType type, GLuint newBinding) : binding(newBinding) {
 		this->load(computeShader, type);
 	}
 
@@ -33,7 +34,7 @@ namespace oglopp {
 		glBufferData(GL_SHADER_STORAGE_BUFFER, size, buffer, GL_DYNAMIC_DRAW);
 
 		// Free up the buffer or apply or something idk
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, this->binding, ssbo);
 
 		// Unbind
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -57,10 +58,14 @@ namespace oglopp {
 			return -2;
 		}
 
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, this->binding, ssbo);
 		this->use();
 
 		// Bind the ssbo
 		glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, size, buffer);
+
+		// Unbind
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 		return 0;
 	}
@@ -77,7 +82,7 @@ namespace oglopp {
 		}
 
 		// Use this shader program
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, this->binding, ssbo);
 		this->use();
 
 
@@ -130,6 +135,22 @@ namespace oglopp {
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 		return *this;
+	}
+
+	/* @brief Get a constant reference to the SSBO binding
+	 * @return The SSBO binding int
+ 	*/
+	const GLuint& Compute::getBinding() {
+		return this->binding;
+	}
+
+	Compute& Compute::bindSSBO() {
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, this->binding, ssbo);
+		return *this;
+	}
+
+	void Compute::unbindSSBO() {
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
 	/* @brief Check if a count of groups is valid.

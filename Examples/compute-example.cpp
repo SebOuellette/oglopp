@@ -23,7 +23,7 @@ int main() {
 
 	// Setup some window options to make it invisible
 	Window::Settings options;
-	options.visible = true;
+	options.visible = false;
 
 	// Create the window
 	Window window;
@@ -50,7 +50,7 @@ int main() {
 
 	DataStruct data[ELEMENTS];
 
-	// Initialize testVar with a random value
+	// Initialize testVar with random values
 	for (int i=0;i<ELEMENTS;i++) {
 		data[i].testVar = static_cast<float>(static_cast<double>(rand()) / RAND_MAX);
 	}

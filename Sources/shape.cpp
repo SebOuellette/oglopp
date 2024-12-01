@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include <cstdint>
+#include <glm/ext/vector_float2.hpp>
 #include <iostream>
+#include <iterator>
 
 #include "oglopp/defines.h"
 #include "oglopp/glad/gl.h"
@@ -97,7 +99,7 @@ namespace oglopp {
 		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 
 		// Copy the vertex array data into the buffer
-		glBufferData(GL_ARRAY_BUFFER, this->vertCount * this->strideBytes/*this->strideElements * sizeof(float)*/, this->vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, this->vertCount * this->strideBytes, this->vertices.data(), GL_STATIC_DRAW);
 
 		return *this;
 	}
@@ -170,6 +172,204 @@ namespace oglopp {
 		return *this;
 	}
 
+	/* @brief Replacement for updateVAO. Allows dynamically specifying the type of value. Termination case
+	 * @param[in] totalIndices	The total number of indices
+	 * @return 	A reference to this shape object
+ 	*/
+	Shape& Shape::finalizePoints(const int totalIndices) {
+		glGenVertexArrays(1, &this->VAO);
+		// Initialization code (done once (unless your object frequently changes))
+
+		// 1. bind Vertex Array Object
+		glBindVertexArray(this->VAO);
+
+		// Update Vertex Buffer Object
+		this->updateVBO();
+
+		// Update Enitty Buffer Object
+		if (this->indexCount > 0) {
+			this->updateEBO();
+		}
+
+		std::cout << "FIN Stride bytes " << this->strideBytes << std::endl;
+		std::cout << "FIN Vert count " << this->vertCount << std::endl;
+
+		return *this;
+	}
+
+	/* @brief Convert a shape DataType to a stride element count
+	 * @param[in] dataType	The data type
+	 * @return				The number of associated stride elements/components
+ 	*/
+	const uint32_t Shape::getStrideElems(DataType const& dataType) {
+		uint32_t elements = 0;
+
+		switch(dataType) {
+			case FLOAT:
+			case DOUBLE:
+			case UINT8:
+			case UINT16:
+			case UINT32:
+			case INT8:
+			case INT16:
+			case INT32:
+				elements = 1;
+				break;
+
+			case VEC2:
+			case DVEC2:
+			case IVEC2:
+			case I64VEC2:
+			case UVEC2:
+			case U64VEC2:
+				elements = 2;
+				break;
+
+			case VEC3:
+			case DVEC3:
+			case IVEC3:
+			case I64VEC3:
+			case UVEC3:
+			case U64VEC3:
+				elements = 3;
+				break;
+
+			case VEC4:
+			case DVEC4:
+			case IVEC4:
+			case I64VEC4:
+			case UVEC4:
+			case U64VEC4:
+				elements = 4;
+				break;
+
+			default:
+				break;
+		}
+
+		return elements;
+	}
+
+	/* @brief Get the number of bytes for a single stride component for some datatype
+	 * @param[in] dataType	The data type
+	 * @return				The number of associated stride elements/components
+ 	*/
+	const uint32_t Shape::getStrideComponentBytes(DataType const& dataType) {
+		uint32_t size = 0;
+
+		switch(dataType) {
+			case FLOAT:
+			case VEC2:
+			case VEC3:
+			case VEC4:
+				size = sizeof(float);
+				break;
+
+			case DOUBLE:
+			case DVEC2:
+			case DVEC3:
+			case DVEC4:
+				size = sizeof(double);
+				break;
+
+			case UINT8:
+				size = sizeof(uint8_t);
+				break;
+
+			case UINT16:
+				size = sizeof(uint16_t);
+				break;
+
+			case UINT32:
+			case UVEC2:
+			case UVEC3:
+			case UVEC4:
+				size = sizeof(uint32_t);
+				break;
+
+			case INT8:
+				size = sizeof(int8_t);
+				break;
+
+			case INT16:
+				size = sizeof(int16_t);
+				break;
+
+			case INT32:
+			case IVEC2:
+			case IVEC3:
+			case IVEC4:
+				size = sizeof(int32_t);
+				break;
+
+			case I64VEC2:
+			case I64VEC3:
+			case I64VEC4:
+				size = sizeof(int64_t);
+				break;
+
+			case U64VEC2:
+			case U64VEC3:
+			case U64VEC4:
+				size = sizeof(uint64_t);
+				break;
+
+
+			default:
+				break;
+		}
+
+		return size;
+	}
+
+	/* @brief Get the component register data type for some shape dataype
+	 * @param[in] dataType	The shape datatype
+	 * @return				The gl register
+ 	*/
+  	const uint32_t Shape::getStructComponentRegister(DataType const& dataType) {
+   		uint32_t reg = 0;
+
+		switch(dataType) {
+			case FLOAT:
+			case VEC2:
+			case VEC3:
+			case VEC4:
+				reg = GL_FLOAT;
+				break;
+
+			case DOUBLE:
+			case DVEC2:
+			case DVEC3:
+			case DVEC4:
+				reg = GL_DOUBLE;
+				break;
+
+			case UINT8:
+			case UINT16:
+			case UINT32:
+			case UVEC2:
+			case UVEC3:
+			case UVEC4:
+			case INT8:
+			case INT16:
+			case INT32:
+			case IVEC2:
+			case IVEC3:
+			case IVEC4:
+			case I64VEC2:
+			case I64VEC3:
+			case I64VEC4:
+			case U64VEC2:
+			case U64VEC3:
+			case U64VEC4:
+			default:
+				reg = dataType;
+				break;
+		}
+
+		return reg;
+	}
+
 	Shape::Shape() {
 		// Initialize stuff
 		//std::memset(this->textures, 0, sizeof(Texture*) * HLGL_SHAPE_MAX_TEXTURES);
@@ -179,6 +379,8 @@ namespace oglopp {
 		this->size = 0;
 		this->myRegister = 0;
 		this->strideElements = 0;
+		this->strideBytes = 0;
+		this->vertCount = 0;
 	}
 
 	Shape::~Shape() {
@@ -196,7 +398,9 @@ namespace oglopp {
 	*/
 	Shape& Shape::pushPoint(glm::vec3 vec, glm::vec3 col, glm::vec2 texPos, float option) {
 		this->pushPoint(vec, col, texPos); // This does the vertCount++
-		this->vertices.push_back(option);
+
+		//this->vertices.push_back(option);
+		this->pushValue(&option, sizeof(float));
 
 		return *this;
 	}
@@ -209,18 +413,21 @@ namespace oglopp {
 	*/
 	Shape& Shape::pushPoint(glm::vec3 vec, glm::vec3 col, glm::vec2 texPos) {
 		// Push vertex
-		this->vertices.push_back(vec.x);
-		this->vertices.push_back(vec.y);
-		this->vertices.push_back(vec.z);
+		//this->vertices.push_back(vec.x);
+		//this->vertices.push_back(vec.y);
+		//this->vertices.push_back(vec.z);
+		this->pushValue(&vec, sizeof(glm::vec3));
 
 		// Push color
-		this->vertices.push_back(col.x);
-		this->vertices.push_back(col.y);
-		this->vertices.push_back(col.z);
+		//this->vertices.push_back(col.x);
+		//this->vertices.push_back(col.y);
+		//this->vertices.push_back(col.z);
+		this->pushValue(&col, sizeof(glm::vec3));
 
 		// Push texture coord
-		this->vertices.push_back(texPos.x);
-		this->vertices.push_back(texPos.y);
+		//this->vertices.push_back(texPos.x);
+		//this->vertices.push_back(texPos.y);
+		this->pushValue(&texPos, sizeof(glm::vec2));
 
 		this->vertCount++;
 		//this->strideElements = HLGL_VEC_COMPONENTS + HLGL_COL_COMPONENTS + HLGL_TEX_COMPONENTS;
@@ -234,13 +441,16 @@ namespace oglopp {
 	* @return 		A reference to this shape object
 	*/
 	Shape& Shape::pushPoint(glm::vec3 vec, glm::vec3 col) {
-		this->vertices.push_back(vec.x);
-		this->vertices.push_back(vec.y);
-		this->vertices.push_back(vec.z);
+		//this->vertices.push_back(vec.x);
+		//this->vertices.push_back(vec.y);
+		//this->vertices.push_back(vec.z);
+		this->pushValue(&vec, sizeof(glm::vec3));
 
-		this->vertices.push_back(col.x);
-		this->vertices.push_back(col.y);
-		this->vertices.push_back(col.z);
+		//this->vertices.push_back(col.x);
+		//this->vertices.push_back(col.y);
+		//this->vertices.push_back(col.z);
+		this->pushValue(&col, sizeof(glm::vec3));
+
 
 		this->vertCount++;
 		//this->strideElements = HLGL_VEC_COMPONENTS + HLGL_COL_COMPONENTS + HLGL_TEX_COMPONENTS;
@@ -254,12 +464,14 @@ namespace oglopp {
 	* @return 		A reference to this shape object
 	*/
 	Shape& Shape::pushPoint(glm::vec3 vec, glm::vec2 texPos) {
-		this->vertices.push_back(vec.x);
-		this->vertices.push_back(vec.y);
-		this->vertices.push_back(vec.z);
+		//this->vertices.push_back(vec.x);
+		//this->vertices.push_back(vec.y);
+		//this->vertices.push_back(vec.z);
+		this->pushValue(&vec, sizeof(glm::vec3));
 
-		this->vertices.push_back(texPos.x);
-		this->vertices.push_back(texPos.y);
+		//this->vertices.push_back(texPos.x);
+		//this->vertices.push_back(texPos.y);
+		this->pushValue(&texPos, sizeof(glm::vec2));
 
 		this->vertCount++;
 
@@ -271,11 +483,42 @@ namespace oglopp {
 	* @return 		A reference to this shape object
 	*/
 	Shape& Shape::pushPoint(glm::vec3 vec) {
-		this->vertices.push_back(vec.x);
-		this->vertices.push_back(vec.y);
-		this->vertices.push_back(vec.z);
+		//this->vertices.push_back(vec.x);
+		//this->vertices.push_back(vec.y);
+		//this->vertices.push_back(vec.z);
+		this->pushValue(&vec, sizeof(glm::vec3));
 
 		this->vertCount++;
+
+		return *this;
+	}
+
+	/* @brief Push a constant reference to some value. The size of the value must be able to be extracted from the type
+	 * @param[in] pValue	A pointer to the value to push
+	 * @param[in] bytes		The number of bytes pointer to by pValue
+	 * @return 				A reference to this shape object
+ 	*/
+	Shape& Shape::pushValue(void const* pValue, size_t bytes) {
+		this->vertices.insert(this->vertices.end(), static_cast<uint8_t const*>(pValue), static_cast<uint8_t const*>(pValue) + bytes);
+
+		return *this;
+	}
+
+	/* @brief Increment the number of vertices. Used when pushing template points to indicate the end of a vertex
+	 * @return A reference to this shape
+ 	*/
+	Shape& Shape::incrementVerts() {
+		this->vertCount++;
+
+		return *this;
+	}
+
+	/* @brief Reset the vertex count
+	 * @param[in] forceTo	Reset the vertex count to some value. Default is 0
+	 * @return	A reference to this shape object
+ 	*/
+	Shape& Shape::resetVerts(unsigned int forceTo) {
+		this->vertCount = forceTo;
 
 		return *this;
 	}
@@ -314,7 +557,7 @@ namespace oglopp {
 		return this->VBO;
 	}
 
-	std::vector<float>& Shape::getVertices() {
+	std::vector<uint8_t>& Shape::getVertices() {
 		return this->vertices;
 	}
 
