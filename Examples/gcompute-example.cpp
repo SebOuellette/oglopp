@@ -17,7 +17,7 @@
 
 using namespace oglopp;
 
-#define ELEMENTS 4
+#define ELEMENTS 20000
 
 int main() {
 
@@ -39,21 +39,24 @@ int main() {
 		"vec4 data[];\n"\
 	"};\n"\
 	\
-	"uniform double time;\n"\
+	"uniform float time;\n"\
 	\
 	"void main() {\n"\
 		"uvec3 index = gl_WorkGroupID;\n"\
 		\
-		"data[index.x] = vec4(data[index.x].x + 1.0, 1.0, float(index.x) / float(gl_NumWorkGroups.x), 0.5);\n"\
+		"data[index.x] = vec4(vec3(sin(6 * (float(index.x) / gl_NumWorkGroups.x + time)), float(index.x) / gl_NumWorkGroups.x * 2.0 - 1.0, 0.0), 1.0);\n"\
 	"}\n", ShaderType::RAW);
 
 	Shader shader(
 		// Vertex
 		"#version 460 core\n"\
 		"layout (location = 0) in uint index;\n"\
+		"layout (std430, binding = 0) buffer SSBO {\n"\
+			"vec4 data[];\n"\
+		"};\n"\
 		\
 		"void main() {\n"\
-			"gl_Position = vec4(0.1 * index, 0.1 * index, 0.0, 1.0);\n"\
+			"gl_Position = data[index];\n"\
 		"}",
 
 		//Geometry
@@ -63,7 +66,7 @@ int main() {
 		\
 		"void main() {\n"\
 			"gl_Position = gl_in[0].gl_Position;\n"\
-			"gl_PointSize = 10.0;\n"\
+			"gl_PointSize = 1.0;\n"\
 			"EmitVertex();\n"\
 			"EndPrimitive();\n"\
 		"}",
@@ -98,12 +101,20 @@ int main() {
 	compute.prepare(data, sizeof(glm::vec4) * ELEMENTS);
 	delete[] data;
 
-	while (!window.shouldClose()) {
+	float time = 0;
 
-	#if 0
+	std::cout << "Moving " << ELEMENTS << " verticies per frame in compute shader" << std::endl;
+
+	while (!window.shouldClose()) {
+		time += 0.002;
+
+		compute.use();
+		compute.setFloat("time", time);
+
+
 		// Attempt to run once - this will double testVar and place the product into coolVar
 		compute.dispatch(ELEMENTS);
-
+	#if 0
 		// Map the SSBO and read the result (By default, map() will use READONLY mode)
 		glm::vec4* result = static_cast<glm::vec4*>(compute.map());
 		if (result == nullptr) {
