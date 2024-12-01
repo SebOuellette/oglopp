@@ -5,6 +5,7 @@
 #include <glm/ext/vector_float3_precision.hpp>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include "defines.h"
 
 namespace oglopp {
 	/* @brief Camera object
@@ -74,7 +75,7 @@ namespace oglopp {
 		 * @brief height	The height of the window
 		 * @return	A reference to this Camera object
 		*/
-		Camera& updateProjectionView(int const& width, int const& height);
+		Camera& updateProjectionView(int const& width, int const& height, double farPlane = HLGL_RENDER_FAR);
 	};
 }
 

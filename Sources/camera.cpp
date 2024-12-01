@@ -168,12 +168,12 @@ namespace oglopp {
 	 * @brief height	The height of the window
 	 * @return	A reference to this Camera object
  	*/
-	Camera& Camera::updateProjectionView(int const& width, int const& height) {
+	Camera& Camera::updateProjectionView(int const& width, int const& height, double farPlane) {
 		// Update the view matrix
 		this->face(-this->getBack());
 
 		// Update the projection matrix
-		this->_projection = glm::perspective<double>(glm::radians(this->getFov()), static_cast<double>(width) / static_cast<double>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
+		this->_projection = glm::perspective<double>(glm::radians(this->getFov()), static_cast<double>(width) / static_cast<double>(height), HLGL_RENDER_NEAR, farPlane);
 
 		return *this;
 	}

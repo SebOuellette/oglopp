@@ -5,6 +5,8 @@
 #include "camera.h"
 //#include "oglopp/glad/gl.h"
 
+#define NOCLIP_SPEED (0.05)
+
 namespace oglopp {
 	/* @brief Window object
 	 * @param HLGL_DRAW_WIREFRAMES 	Macro defined at compiler time to draw just wireframes. Not defined by default to draw normally
@@ -131,6 +133,10 @@ namespace oglopp {
 		 * @return A reference to this window
 	 	*/
 		Window& clear();
+
+		/* @brief Handle noclip movement
+	 	*/
+		Window& handleNoclip();
 
 	private:
 		uint32_t clearMask;

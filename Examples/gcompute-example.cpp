@@ -36,7 +36,7 @@ int main() {
 	"#version 460 core\n"\
 	"layout (local_size_x = 1) in;\n"\
 	"layout (std430, binding = 0) buffer SSBO {\n"\
-		"vec4 data[];\n"\
+		"vec3 data[];\n"\
 	"};\n"\
 	\
 	"uniform float time;\n"\
@@ -44,7 +44,7 @@ int main() {
 	"void main() {\n"\
 		"uvec3 index = gl_WorkGroupID;\n"\
 		\
-		"data[index.x] = vec4(vec3(sin(6 * (float(index.x) / gl_NumWorkGroups.x + time)), float(index.x) / gl_NumWorkGroups.x * 2.0 - 1.0, 0.0), 1.0);\n"\
+		"data[index.x] = vec3(sin(6 * (float(index.x) / gl_NumWorkGroups.x + time)), float(index.x) / gl_NumWorkGroups.x * 2.0 - 1.0, 0.0);\n"\
 	"}\n", ShaderType::RAW);
 
 	Shader shader(
@@ -52,11 +52,11 @@ int main() {
 		"#version 460 core\n"\
 		"layout (location = 0) in uint index;\n"\
 		"layout (std430, binding = 0) buffer SSBO {\n"\
-			"vec4 data[];\n"\
+			"vec3 data[];\n"\
 		"};\n"\
 		\
 		"void main() {\n"\
-			"gl_Position = data[index];\n"\
+			"gl_Position = vec4(data[index], 1.0);\n"\
 		"}",
 
 		//Geometry

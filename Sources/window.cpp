@@ -247,4 +247,78 @@ namespace oglopp {
 		glClear(this->clearMask);
 		return *this;
 	}
+
+	/* @brief Handle noclip movement
+ 	*/
+	Window& Window::handleNoclip() {
+		// When escape is pressed...
+		if (this->keyPressed(GLFW_KEY_ESCAPE)) {
+			// Release the cursor
+			this->cursorCapture();
+
+			// If control is also pressed.. Destroy the window
+			if (this->keyPressed(GLFW_KEY_LEFT_CONTROL)) {
+				this->destroy();
+			}
+		}
+
+		bool eventRecevied = false;
+		{ // Keyboard
+			double speed = 1.0;
+
+
+			if (this->keyPressed(GLFW_KEY_LEFT_SHIFT)) {
+				speed = 16.0;
+				eventRecevied = true;
+			} else {
+				speed = 1.0;
+			}
+
+			if (this->keyPressed(GLFW_KEY_LEFT_CONTROL)) {
+				this->getCam().translate(this->getCam().getUp() * -NOCLIP_SPEED);
+				eventRecevied = true;
+			}
+
+			if (this->keyPressed(GLFW_KEY_W)) {
+				this->getCam().translate(this->getCam().getBack() * -NOCLIP_SPEED * speed);
+				eventRecevied = true;
+			}
+			if (this->keyPressed(GLFW_KEY_A)) {
+				this->getCam().translate(this->getCam().getRight() * -NOCLIP_SPEED * speed);
+				eventRecevied = true;
+			}
+			if (this->keyPressed(GLFW_KEY_S)) {
+				this->getCam().translate(this->getCam().getBack() * NOCLIP_SPEED * speed);
+				eventRecevied = true;
+			}
+			if (this->keyPressed(GLFW_KEY_D)) {
+				this->getCam().translate(this->getCam().getRight() * NOCLIP_SPEED * speed);
+				eventRecevied = true;
+			}
+			if(this->keyPressed(GLFW_KEY_SPACE)) {
+				this->getCam().translate(this->getCam().getUp() * NOCLIP_SPEED);
+				eventRecevied = true;
+			}
+		}
+
+		// The cursor is trapped. So we can do window stuff now
+		if (this->isCursorCaptured()) {
+			// Get the cursor position then set it to the middle of the this->.. or bottom left idk but it works
+			glm::dvec2 cursor = this->getCursorPos();
+			this->setCursorPos({0.0, 0.0});
+
+			this->getCam().aimBy(cursor.y, cursor.x);
+		}
+
+		if (eventRecevied) {
+			this->cursorCapture();
+			this->setCursorPos({0.0, 0.0});
+		}
+
+		if (this->keyPressed(GLFW_KEY_R)) {
+			this->cursorRelease();
+		}
+
+		return *this;
+	}
 }
