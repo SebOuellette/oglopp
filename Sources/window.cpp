@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "oglopp/window.h"
-#include "oglopp/glad/gl.h"
 #include "oglopp/init.h"
 
 namespace oglopp {
@@ -214,11 +213,19 @@ namespace oglopp {
 
 
 	/* @brief Check if a glfw key is pressed down
-	 * @param[in] key	The GLFW key code to check
+	 * @param[in] key	The GLFW key code to check. Starts with GLFW_KEY_
 	 * @return			True if the key is pressed, false otherwise
  	*/
 	bool Window::keyPressed(uint16_t const& key) {
 		return glfwGetKey(this->getWindow(), key) == GLFW_PRESS;
+	}
+
+	/* @brief Check if a glfw mouse button is pressed down
+	 * @param[in] btn	The GLFW mouse button code to check. Starts with GLFW_MOUSE_
+	 * @return			True if the button is pressed. False otherwise
+	*/
+	bool Window::mousePressed(uint16_t const& key) {
+		return glfwGetMouseButton(this->getWindow(), key) == GLFW_PRESS;
 	}
 
 	/* @brief Get the cursor position

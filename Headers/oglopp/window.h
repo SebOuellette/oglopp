@@ -118,6 +118,12 @@ namespace oglopp {
 	 	*/
 		bool keyPressed(uint16_t const& key);
 
+		/* @brief Check if a glfw mouse button is pressed down
+		 * @param[in] btn	The GLFW mouse button code to check. Starts with GLFW_MOUSE_
+		 * @return			True if the button is pressed. False otherwise
+		*/
+		bool mousePressed(uint16_t const& key);
+
 		/* @brief Get the cursor position
 		 * @return The cursor X and Y position
 	 	*/
