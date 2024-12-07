@@ -11,6 +11,7 @@
 #include "oglopp/more_shapes.h"
 
 #include "oglopp/texture.h"
+#include "oglopp/ssbo.h"
 #include "oglopp/shader.h"
 #include "oglopp/compute.h"
 

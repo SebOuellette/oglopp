@@ -72,6 +72,13 @@ namespace oglopp {
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
+	/* @brief Get the number of bytes stored in the SSBO buffer
+	 * @return	The number of bytes in the SSBO buffer
+ 	*/
+	size_t SSBO::getSize() const {
+		return this->bufferSize;
+	}
+
 	/* @brief Map the SSBO to a buffer
 	 * @param[in] method	The method of mapping. READ, WRITE, or BOTH
 	 * @return 				A pointer to the mapped buffer
