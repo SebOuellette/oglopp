@@ -41,7 +41,6 @@ namespace oglopp {
 
 		// ..:: Model Matrix ::..
 		glm::dmat4 model(1.f); // Accumulate changes
-		model = glm::scale(model, this->getScale());
 		model *= glm::translate(model, this->position); // This is kinda backwards but it gives the correct result
 		glm::dmat4 rotation(1.f); // Used for transforming normals
 		if (this->getAngle() != glm::dvec3(0)) {
@@ -51,6 +50,7 @@ namespace oglopp {
 			rotation = glm::rotate<double>(rotation, this->getAngle().z, glm::dvec3(0.0, 0.0, 1.0f));
 			model *= rotation;
 		}
+		model = glm::scale(model, this->getScale());
 
 		// ..:: View Matrix ::..
 		glm::mat4 view(window.getCam().getView()); //window.getCam().face(-window.getCam().getBack());

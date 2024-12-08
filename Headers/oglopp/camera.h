@@ -30,7 +30,12 @@ namespace oglopp {
 		Camera& _updateRight();
 
 	public:
-		Camera(glm::dvec3 pos = glm::vec3(0, 0.0, 0.0));
+		enum Projection {
+			ORTHO,
+			PERSPECTIVE,
+		};
+
+		Camera(glm::dvec3 pos = glm::vec3(0, 0.0, 0.0), glm::dvec3 target = glm::vec3(0.0, 0.0, 1.0));
 
 		// Positions
 		glm::dvec3 getPos();
@@ -71,11 +76,13 @@ namespace oglopp {
 		Camera& aimBy(float pitch, float yaw);
 
 		/* @brief Update the projection and view matrices to be referenced by each object
-		 * @brief width		The width of the window
-		 * @brief height	The height of the window
+		 * @param[in] width				The width of the window
+		 * @param[in] height			The height of the window
+		 * @param[in] farPlane			The far render plane
+		 * @param[in] projectionType	The projection type, PERSPECTIVE or ORTHO
 		 * @return	A reference to this Camera object
 		*/
-		Camera& updateProjectionView(int const& width, int const& height, double farPlane = HLGL_RENDER_FAR);
+		Camera& updateProjectionView(int const& width, int const& height, double farPlane = HLGL_RENDER_FAR, Projection projectionType = PERSPECTIVE);
 	};
 }
 

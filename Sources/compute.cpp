@@ -37,12 +37,14 @@ namespace oglopp {
 	 * @return				A status code. 0 for success. -1 for failure.
  	*/
 	int8_t Compute::dispatch(group_t xGroups, group_t yGroups, group_t zGroups) {
-		if (this->ssbo == nullptr || !Compute::groupCountIsValid(xGroups, yGroups, zGroups)) {
+		if (!Compute::groupCountIsValid(xGroups, yGroups, zGroups)) {
 			return -1;
 		}
 
 		// Use this shader program
-		this->ssbo->bind(this->binding);
+		if (this->ssbo != nullptr) {
+			this->ssbo->bind(this->binding);
+		}
 		this->use();
 
 		// Dispatch
@@ -62,11 +64,13 @@ namespace oglopp {
 	 * @return					A status code. 0 for success. -1 for failure.
  	*/
 	int8_t Compute::dispatch(GLintptr pBufferObject) {
-		if (this->ssbo == nullptr)
-			return -1;
+		if (this->ssbo != nullptr) {
+			//return -1;
+			// Use this shader program
+			this->ssbo->bind();
+		}
 
-		// Use this shader program
-		this->ssbo->bind();
+
 		this->use();
 
 		// Dispatch

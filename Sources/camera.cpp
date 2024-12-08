@@ -6,12 +6,13 @@
 #include "oglopp/camera.h"
 
 namespace oglopp {
-	Camera::Camera(glm::dvec3 pos) {
+	Camera::Camera(glm::dvec3 pos, glm::dvec3 target) {
 		this->_view = glm::dmat4(1.f);
 		this->_projection = glm::dmat4(1.f);
 
 		this->fov = HLGL_DEFAULT_FOV;
-		this->setAngle(glm::dvec3(0.0));
+		this->setAngle(target);
+		this->setTarget(target);
 		this->setPos(pos);
 		this->lookAt(pos);
 
@@ -164,16 +165,27 @@ namespace oglopp {
 	}
 
 	/* @brief Update the projection and view matrices to be referenced by each object
-	 * @brief width		The width of the window
-	 * @brief height	The height of the window
+	 * @param[in] width				The width of the window
+	 * @param[in] height			The height of the window
+	 * @param[in] farPlane			The far render plane
+	 * @param[in] projectionType	The projection type, PERSPECTIVE or ORTHO
 	 * @return	A reference to this Camera object
- 	*/
-	Camera& Camera::updateProjectionView(int const& width, int const& height, double farPlane) {
+	*/
+	Camera& Camera::updateProjectionView(int const& width, int const& height, double farPlane, Projection projectionType) {
 		// Update the view matrix
 		this->face(-this->getBack());
 
 		// Update the projection matrix
-		this->_projection = glm::perspective<double>(glm::radians(this->getFov()), static_cast<double>(width) / static_cast<double>(height), HLGL_RENDER_NEAR, farPlane);
+		if (projectionType == Projection::PERSPECTIVE) {
+			this->_projection = glm::perspective<double>(glm::radians(this->getFov()), static_cast<double>(width) / static_cast<double>(height), HLGL_RENDER_NEAR, farPlane);
+		} else {
+			//double orthoWidth = static_cast<double>(width) / height;
+			//double orthoHeight = static_cast<double>(height) / width;
+
+			double orthoWidth = static_cast<double>(width) / 500.0;
+			double orthoHeight = static_cast<double>(height) / 500.0;
+			this->_projection = glm::ortho<double>(-orthoWidth / 2.0, orthoWidth / 2.0, -orthoHeight / 2.0, orthoHeight / 2.0, static_cast<double>(HLGL_RENDER_NEAR), static_cast<double>(farPlane));
+		}
 
 		return *this;
 	}
