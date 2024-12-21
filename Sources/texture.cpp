@@ -23,6 +23,23 @@ namespace oglopp {
 		return GL_RGB;
 	}
 
+	/* @brief Setup a texture before we load from a file or memory
+ 	*/
+	void Texture::setupTex(bool nearest, FileType type, uint8_t* data) {
+		glGenTextures(1, &this->TID);
+		glBindTexture(GL_TEXTURE_2D, this->TID);
+
+		// Set texture filtering and wrapping options
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nearest ? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_LINEAR); //GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nearest ? GL_NEAREST : GL_LINEAR); //GL_LINEAR);
+
+		// Set the opengl texture
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, Texture::getTypeRegister(type), GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+
 	/* @brief Texture default constructor
 	*/
 	Texture::Texture() {
@@ -48,15 +65,6 @@ namespace oglopp {
 	*  @return				A reference to this texture object
 	*/
 	Texture& Texture::load(const char* path, FileType type, bool nearest) {
-		glGenTextures(1, &this->TID);
-		glBindTexture(GL_TEXTURE_2D, this->TID);
-
-		// Set texture filtering and wrapping options
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nearest ? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_LINEAR); //GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nearest ? GL_NEAREST : GL_LINEAR); //GL_LINEAR);
-
 		// Vertical flip first
 		stbi_set_flip_vertically_on_load(true);
 
@@ -65,8 +73,30 @@ namespace oglopp {
 		if (data == nullptr) {
 			std::cout << "Failed to load texture" << std::endl;
 		} else {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, Texture::getTypeRegister(type), GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
+			setupTex(nearest, type, data);
+
+			stbi_image_free(data);
+		}
+
+		return *this;
+	}
+
+	/* @brief Load a buffer from memory into a texture
+	*  @param[in]	path	The filepath to load
+	*  @param[in]	type	The type of the texture file
+	*  @param[in]	nearest	Use nearest-neighbour texture filtering
+	*  @return				A reference to this texture object
+	*/
+	Texture& Texture::loadMem(const uint8_t* buffer, size_t bufferSize, FileType type, bool nearest) {
+		// Vertical flip first
+		stbi_set_flip_vertically_on_load(true);
+
+		// Load and generate texture
+		uint8_t* data = stbi_load_from_memory(buffer, bufferSize, &this->width, &this->height, &this->channels, 4);
+		if (data == nullptr) {
+			std::cout << "Failed to load texture" << std::endl;
+		} else {
+			setupTex(nearest, type, data);
 
 			stbi_image_free(data);
 		}

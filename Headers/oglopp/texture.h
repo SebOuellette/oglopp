@@ -28,6 +28,10 @@ namespace oglopp {
 		*/
 		uint16_t getTypeRegister(FileType type);
 
+		/* @brief Setup a texture before we load from a file or memory
+	 	*/
+		void setupTex(bool nearest, FileType type, uint8_t* data);
+
 	public:
 		template <typename T>
 		static uint16_t glTypeRegFromType() {
@@ -74,6 +78,14 @@ namespace oglopp {
 		*  @return				A reference to this texture object
 		*/
 		Texture& load(const char* path, FileType type = FileType::JPG, bool nearest = false);
+
+		/* @brief Load a buffer from memory into a texture
+		*  @param[in]	path	The filepath to load
+		*  @param[in]	type	The type of the texture file
+		*  @param[in]	nearest	Use nearest-neighbour texture filtering
+		*  @return				A reference to this texture object
+		*/
+		Texture& loadMem(const uint8_t* buffer, size_t bufferSize, FileType type = FileType::JPG, bool nearest = false);
 
 		/* @brief Load a data buffer into a Texture Buffer Object
 		*  @param[in]	path	The filepath to load
