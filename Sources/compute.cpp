@@ -59,6 +59,10 @@ namespace oglopp {
 		return 0;
 	}
 
+	int8_t Compute::dispatch(glm::ivec3 groups) {
+		return this->dispatch(groups.x, groups.y, groups.z);
+	}
+
 	/* @brief Dispatch a buffer object specifying number of groups with the loaded compute shader
 	 * @param[in] pBufferObject	A GLintptr pointing to some buffer object
 	 * @return					A status code. 0 for success. -1 for failure.

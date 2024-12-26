@@ -42,6 +42,7 @@ namespace oglopp {
 		 * @return				A status code. 0 for success. -1 for failure.
 	 	*/
 		int8_t dispatch(group_t xGroups, group_t yGroups = 1, group_t zGroups = 1);
+		int8_t dispatch(glm::ivec3 groups);
 
 		/* @brief Dispatch a buffer object specifying number of groups with the loaded compute shader
 		 * @param[in] pBufferObject	A GLintptr pointing to some buffer object
