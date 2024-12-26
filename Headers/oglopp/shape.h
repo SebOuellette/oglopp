@@ -176,7 +176,7 @@ namespace oglopp {
 		 * @param[in] newTexture	The texture object to set to
 		 * @return					A reference to this shape object
 		*/
-		Shape& pushTexture(Texture const& newTexture);
+		Shape& pushTexture(Texture& newTexture);
 
 		/* @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified.
 		 * @param[in] color		Include the color/normal vec3

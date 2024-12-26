@@ -110,12 +110,20 @@ namespace oglopp {
 		void use();
 		// Utility uniform functions
 		void setBool(const std::string &name, bool value) const;
-		void setInt(const std::string &name, int vlaue) const;
+		void setInt(const std::string &name, int value) const;
 		void setFloat(const std::string &name, float value) const;
 		void setVec2(const std::string &name, glm::vec2 const& value) const;
 		void setVec3(const std::string &name, glm::vec3 const& value) const;
 		void setVec4(const std::string &name, glm::vec4 const& vector) const;
 		void setMat4(const std::string &name, glm::mat4 const& matrix) const;
+		void setIVec2(const std::string &name, glm::ivec2 const& vector) const&;
+		void setIVec3(const std::string &name, glm::ivec3 const& vector) const&;
+		void setIVec4(const std::string &name, glm::ivec4 const& vector) const&;
+		void setUIVec2(const std::string &name, glm::uvec2 const& vector) const&;
+		void setUIVec3(const std::string &name, glm::uvec3 const& vector) const&;
+		void setUIVec4(const std::string &name, glm::uvec4 const& vector) const&;
+		void setUInt(const std::string &name, uint const& value) const&;
+
 
 
 

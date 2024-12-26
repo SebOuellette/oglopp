@@ -8,6 +8,8 @@
 #include "oglopp/defines.h"
 #include "oglopp/glad/gl.h"
 
+#define UNIFORM_LOC glGetUniformLocation(this->ID, name.c_str())
+
 namespace oglopp {
 	/* @brief Load the shader file
 	 * @param[in] shader		The path to the shader, or the contents of the shader itself
@@ -152,31 +154,59 @@ namespace oglopp {
 	}
 
 	void Shader::setBool(const std::string &name, bool value) const {
-	    glUniform1i(glGetUniformLocation(this->ID, name.c_str()), (int)value);
+	    glUniform1i(UNIFORM_LOC, (int)value);
 	}
 
 	void Shader::setInt(const std::string &name, int value) const {
-	    glUniform1i(glGetUniformLocation(this->ID, name.c_str()), value);
+	    glUniform1i(UNIFORM_LOC, value);
 	}
 
 	void Shader::setFloat(const std::string &name, float value) const {
-	    glUniform1f(glGetUniformLocation(this->ID, name.c_str()), value);
+	    glUniform1f(UNIFORM_LOC, value);
 	}
 
 	void Shader::setVec2(const std::string &name, glm::vec2 const& value) const {
-		glUniform2f(glGetUniformLocation(this->ID, name.c_str()), value[0], value[1]);
+		glUniform2f(UNIFORM_LOC, value.x, value.y);
 	}
 
 	void Shader::setVec3(const std::string &name, glm::vec3 const& value) const {
-		glUniform3f(glGetUniformLocation(this->ID, name.c_str()), value[0], value[1], value[2]);
+		glUniform3f(UNIFORM_LOC, value.x, value.y, value.z);
 	}
 
 	void Shader::setVec4(const std::string &name, glm::vec4 const& value) const {
-		glUniform4f(glGetUniformLocation(this->ID, name.c_str()), value[0], value[1], value[2], value[3]);
+		glUniform4f(UNIFORM_LOC, value.x, value.y, value.z, value.w);
 	}
 
 	void Shader::setMat4(const std::string &name, glm::mat4 const& matrix) const {
-		glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(*const_cast<glm::mat4*>(&matrix)));
+		glUniformMatrix4fv(UNIFORM_LOC, 1, GL_FALSE, glm::value_ptr(*const_cast<glm::mat4*>(&matrix)));
+	}
+
+	void Shader::setIVec2(const std::string &name, glm::ivec2 const& vector) const& {
+		glUniform2i(UNIFORM_LOC, vector.x, vector.y);
+	}
+
+	void Shader::setIVec3(const std::string &name, glm::ivec3 const& vector) const& {
+		glUniform3i(UNIFORM_LOC, vector.x, vector.y, vector.z);
+	}
+
+	void Shader::setIVec4(const std::string &name, glm::ivec4 const& vector) const& {
+		glUniform4i(UNIFORM_LOC, vector.x, vector.y, vector.z, vector.w);
+	}
+
+	void Shader::setUIVec2(const std::string &name, glm::uvec2 const& vector) const& {
+		glUniform2ui(UNIFORM_LOC, vector.x, vector.y);
+	}
+
+	void Shader::setUIVec3(const std::string &name, glm::uvec3 const& vector) const& {
+		glUniform3ui(UNIFORM_LOC, vector.x, vector.y, vector.z);
+	}
+
+	void Shader::setUIVec4(const std::string &name, glm::uvec4 const& vector) const& {
+		glUniform4ui(UNIFORM_LOC, vector.x, vector.y, vector.z, vector.w);
+	}
+
+	void Shader::setUInt(const std::string &name, uint const& value) const& {
+		glUniform1ui(UNIFORM_LOC, value);
 	}
 
 	/* @brief Get a constant reference to the current draw type

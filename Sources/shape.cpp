@@ -543,8 +543,8 @@ namespace oglopp {
 	* @param[in] texture	The texture object to set to
 	* @return				A reference to this shape object
 	*/
-	Shape& Shape::pushTexture(Texture const& newTexture) {
-		this->textures.push_back(newTexture);
+	Shape& Shape::pushTexture(Texture& newTexture) {
+		this->textures.push_back(std::ref(newTexture));
 
 		return *this;
 	}

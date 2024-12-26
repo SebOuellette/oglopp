@@ -92,7 +92,7 @@ namespace oglopp {
 		stbi_set_flip_vertically_on_load(true);
 
 		// Load and generate texture
-		uint8_t* data = stbi_load_from_memory(buffer, bufferSize, &this->width, &this->height, &this->channels, 4);
+		uint8_t* data = stbi_load_from_memory(buffer, bufferSize, &this->width, &this->height, &this->channels, (type == FileType::JPG) ? 3 : 4); // Jpg has no alpha channel
 		if (data == nullptr) {
 			std::cout << "Failed to load texture" << std::endl;
 		} else {
