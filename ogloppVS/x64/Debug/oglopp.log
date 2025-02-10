@@ -1,0 +1,23 @@
+﻿  camera.cpp
+Z:\Programming\opengl\Sources\camera.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  compute.cpp
+Z:\Programming\opengl\Sources\compute.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  init.cpp
+Z:\Programming\opengl\Sources\init.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  interrupts.cpp
+Z:\Programming\opengl\Sources\interrupts.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  matrix.cpp
+Z:\Programming\opengl\Sources\matrix.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  more_shapes.cpp
+Z:\Programming\opengl\Sources\more_shapes.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  shader.cpp
+Z:\Programming\opengl\Sources\shader.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  shape.cpp
+Z:\Programming\opengl\Sources\shape.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  ssbo.cpp
+Z:\Programming\opengl\Sources\ssbo.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  texture.cpp
+Z:\Programming\opengl\Sources\texture.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  window.cpp
+Z:\Programming\opengl\Sources\window.cpp : error C1033: cannot open program database 'Z:\Programming\opengl\ogloppVS\x64\Debug\oglopp.idb'
+  Generating Code...

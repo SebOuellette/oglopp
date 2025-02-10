@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{d0891658-d6da-4ac7-8a3b-219fa908600d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sources">
+      <UniqueIdentifier>{2582081f-7e15-4d26-ac3a-be4fc76f658f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\oglopp">
+      <UniqueIdentifier>{8c2d3b01-372f-4778-807e-c3e17ecb7a95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\oglopp\glad">
+      <UniqueIdentifier>{cdb8b998-1a4a-4f36-acc1-5efe509c76cc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Sources\camera.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\compute.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\init.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\interrupts.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\matrix.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\more_shapes.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\shader.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\shape.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\ssbo.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\texture.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\window.cpp">
+      <Filter>Source Files\Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shaders\multiColour.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\multiColour.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Headers\oglopp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\camera.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\compute.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\defines.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\init.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\interrupts.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\matrix.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\more_shapes.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\shader.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\shape.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\ssbo.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\texture.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\window.h">
+      <Filter>Header Files\oglopp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Headers\oglopp\glad\gl.h">
+      <Filter>Header Files\oglopp\glad</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
