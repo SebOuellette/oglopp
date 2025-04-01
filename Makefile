@@ -11,7 +11,8 @@ FULLINC_DIR := $(INCLUDE_DIR)$(LIB_NAME)
 
 GLAD_DIR := glad/
 GLAD_LIBDIR := $(GLAD_DIR)lib/
-GLAD_PATH := $(GLAD_DIR)include/glad/$(GLAD_HEADER)
+GLAD_INCDIR := $(GLAD_DIR)include/glad/
+GLAD_PATH := $(GLAD_INCDIR)$(GLAD_HEADER)
 GLADCOPY_DIR := $(FULLINC_DIR)/$(GLAD_DIR)
 GLADCOPY_PATH := $(GLADCOPY_DIR)$(GLAD_HEADER)
 
@@ -88,15 +89,17 @@ $(BUILD_DIR)%.o: $(SOURCE_DIR)%.cpp
 # Create glad resources
 $(GLAD_PATH):
 	mkdir -p $(GLAD_DIR)
-	glad --api gl:core=4.6,gles2 --out-path $(GLAD_DIR) c
+	glad --api gl:core=4.6 --out-path $(GLAD_DIR) c
+#	glad --api gl=4.6 --out-path $(GLAD_DIR) --generator c		
 
+# Compile only a single source file from glad to use
 $(GLAD_LIB_BIN): $(GLADCOPY_PATH)
 	mkdir -p $(dir $@)
 	gcc -c $(GLAD_DIR)src/gl.c -I$(FULLINC_DIR) -o $@
 
 $(GLADCOPY_PATH): $(GLAD_PATH)
 	mkdir -p $(GLADCOPY_DIR)
-	cp $(GLAD_PATH) $(GLADCOPY_PATH)
+	cp $(GLAD_PATH) $@
 
 .PRECIOUS: $(BUILD_DIR)
 $(BUILD_DIR):

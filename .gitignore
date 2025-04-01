@@ -6,6 +6,7 @@ build/**
 glad
 glad/**
 Headers/oglopp/glad/**
+Headers/oglopp/glad/*.*
 
 
 vgcore*
