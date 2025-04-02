@@ -43,7 +43,7 @@ all: liba examples
 .PHONY:
 
 .PHONY: liba
-liba: $(GLADCOPY_PATH) $(BUILD_DIR) $(LIB_BIN)
+liba: $(BUILD_DIR) $(LIB_BIN)
 
 #.PHONY: libso
 #libso: setupPIC $(SOURCE_OBJECTS)
@@ -52,10 +52,10 @@ liba: $(GLADCOPY_PATH) $(BUILD_DIR) $(LIB_BIN)
 #	$(eval IOPTS += $(SO_COPTS))
 
 .PHONY: examples
-examples: $(GLADCOPY_PATH) $(BUILD_DIR) $(EXAMPLE_EXECS)
+examples: $(BUILD_DIR) $(EXAMPLE_EXECS)
 
 .PHONY: glad
-glad: $(GLADCOPY_PATH) $(GLAD_LIB_BIN)
+glad: $(GLAD_LIB_BIN)
 
 .PHONY: install
 install: $(LIB_BIN)
@@ -83,8 +83,8 @@ $(BUILD_DIR)%.oex: $(EXAMPLE_DIR)%.cpp
 	$(CXX) $(IOPTS) -c $^ -o $@
 
 # Build general source code
-$(BUILD_DIR)%.o: $(SOURCE_DIR)%.cpp
-	$(CXX) $(IOPTS) -c $^ -o $@
+$(BUILD_DIR)%.o: $(SOURCE_DIR)%.cpp $(GLAD_LIB_BIN)
+	$(CXX) $(IOPTS) -c $(firstword $^) -o $@
 
 # Create glad resources
 $(GLAD_PATH):
@@ -104,6 +104,9 @@ $(GLADCOPY_PATH): $(GLAD_PATH)
 .PRECIOUS: $(BUILD_DIR)
 $(BUILD_DIR):
 	mkdir $(BUILD_DIR)
+
+.PHONE: cleanall
+cleanall: clean cleanglad
 
 .PHONY: clean
 clean:
