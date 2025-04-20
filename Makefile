@@ -141,9 +141,9 @@ $(BUILD_DIR)%.o: $(SOURCE_DIR)%.cpp
 
 #========= GLAD =========================#
 # Create glad resources
-$(GLAD_PATH):
-	mkdir -p $(GLAD_DIR)
-	glad --api gl:core=4.6 --out-path $(GLAD_DIR) c
+#$(GLAD_PATH):
+#	mkdir -p $(GLAD_DIR)
+#	glad --api gl:core=4.6 --out-path $(GLAD_DIR) c
 #	glad --api gl=4.6 --out-path $(GLAD_DIR) --generator c		
 
 $(GLAD_LIBO_BIN): $(GLADCOPY_PATH)
@@ -165,6 +165,6 @@ cleanall: clean cleanglad
 clean:
 	-rm ./$(BUILD_DIR)*.o ./$(BUILD_DIR)*.oex ./$(BUILD_DIR)*.a ./$(BUILD_DIR)*.so $(EXAMPLE_EXECS)
 
-.PHONY: cleanglad
-cleanglad:
-	-rm -r glad
+#.PHONY: cleanglad
+#cleanglad:
+#	-rm -r glad/*/
