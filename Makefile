@@ -44,7 +44,8 @@ CXX = g++
 SO_COPTS := -fPIC
 SO_LOPTS := -ldl -shared
 IOPTS := -g3 -O0 -Wall -I$(INCLUDE_DIR) -I../usr/include/
-LOPTS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi 
+LOPTS := -Wl,--no-as-needed -lglfw -lpthread
+#-lglfw -lGL -lX11 -lpthread -lXrandr -lXi 
 #-lglad
 #-lassimp ; pacman -S assimp
 
@@ -110,7 +111,7 @@ uninstall:
 
 # Strip executables to minimize filesize. Used before installation. 
 .PHONY: strip
-strip: $(LIBA_BIN) $(LIBSO_BIN)
+strip: $(LIBSO_BIN)
 	-strip $(LIBA_BIN) $(LIBSO_BIN)
 
 #========= LIBRARIES ====================#
