@@ -39,8 +39,12 @@ namespace oglopp {
 		// When linking liboglopp.a, the singleton often does not run, which means windows fail.
 		// By just accessing a pointer to the singleton instance and storing it in a volatile pointer,
 		// 	we can force the compiler to ensure the singleton instance exists before creating a window, without creating more initgl instances.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+		// This throws a compiler warning cause "inst" is 'unused'. Idk man what do you want me to do with it? It's being used as intended just here.
+		// It's initialized in init.cpp:27, where it behaves as singleton, as intended. This warning can be ignored.
 		volatile _HoneyLib_InitGL* inst = &_instance;
-		// This throws a compiler warning cause "inst" is unused. Idk man what do you want me to do with it? It's being used as intended just here.
+#pragma GCC diagnostic pop
 
 		// Set the resizable bit based on the settings input
 		glfwWindowHint(GLFW_RESIZABLE, settings.resizable ? GLFW_TRUE : GLFW_FALSE);
