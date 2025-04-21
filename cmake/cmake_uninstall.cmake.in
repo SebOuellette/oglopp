@@ -1,0 +1,21 @@
+# /usr/local/include/oglopp/*
+file(GLOB_RECURSE _INSTALLED_HDRS
+	"@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/@PROJECT_NAME@/*"
+)
+
+# /usr/local/include/oglopp.h
+list(APPEND _INSTALLED_HDRS "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/@PROJECT_NAME@.h")
+
+# /usr/local/include/oglopp/
+list(APPEND _INSTALLED_HDRS "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/@PROJECT_NAME@")
+
+# /usr/local/lib/liboglopp.*
+file(GLOB_RECURSE _INSTALLED_LIBS
+	"@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@/lib@PROJECT_NAME@.*"
+)
+
+# Remove them all now
+foreach(f IN LISTS _INSTALLED_HDRS _INSTALLED_LIBS)
+	message(STATUS "Removing: ${f}")
+	file(REMOVE_RECURSE "${f}")
+endforeach()

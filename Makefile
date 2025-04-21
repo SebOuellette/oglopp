@@ -1,3 +1,5 @@
+# DEPRECATED!! USE CMAKE INSTEAD!!
+
 LIB_NAME := oglopp
 
 GLAD_HEADER := gl.h
@@ -35,7 +37,6 @@ SOURCE_OBJECTS := $(patsubst $(SOURCE_DIR)%.cpp,$(BUILD_DIR)%.o, $(SOURCE_FILES)
 EXAMPLE_EXECS := $(patsubst $(EXAMPLE_DIR)%.cpp,$(BUILD_DIR)%, $(EXAMPLE_FILES))
 
 GLAD_LIBO_BIN := $(BUILD_DIR)$(GLAD_OBJ)
-GLAD_LIB_ACTIVE := $(GLAD_LIBA_BIN)
 LIBA_BIN := $(BUILD_DIR)$(LIBA)
 LIBSO_BIN := $(BUILD_DIR)$(LIBSO).$(SONAME_VER)
 
@@ -56,6 +57,7 @@ all: libso
 .PHONY: help
 help:
 	@echo -e \
+	"=== THIS MAKEFILE IS DEPRECATED - USE CMAKE INSTEAD ===\n"\
 	"=== Building ===\n"\
 	"make\t\tBuild 'libso' when no arguments are specified.\n"\
 	"make liba\tBuild Oglopp as a static library -> '$(LIBA)'.\n"\
@@ -68,9 +70,10 @@ help:
 	"make strip\tStrip the library binaries to minimize file size before installation.\n"\
 	"\n=== Maintenance ===\n"\
 	"make help\tDisplay this help menu.\n"\
-	"make docs\tBuild Doxygen documentation for OGLoPP into docs/doxygen\n"\
-	"make cleanall\tRemove glad and compiled project executables.\n"\
-	"make clean\tRemove compiled project executables, such as libraries (.a & .so), .o files, and examples.\n"
+	"make docs\tBuild Doxygen documentation for OGLoPP into ./docs/doxygen\n"\
+	"make cleanall\tRemove docs and compiled project executables.\n"\
+	"make clean\tRemove compiled project executables, such as libraries (.a & .so), .o files, and examples.\n"\
+	"make cleandocs\tRemove compiled Doxygen HTML.\n"
 	
 
 .PHONY: liba
@@ -83,7 +86,6 @@ libso: setupPIC $(BUILD_DIR) $(LIBSO_BIN)
 setupPIC:
 	$(eval IOPTS += $(SO_COPTS))
 	$(eval LOPTS += $(SO_LOPTS))
-	$(eval GLAD_LIB_ACTIVE = $(GLAD_LIBSO_BIN))
 
 .PHONY: examples
 examples: $(BUILD_DIR) $(EXAMPLE_EXECS)
@@ -141,12 +143,6 @@ $(BUILD_DIR)%.o: $(SOURCE_DIR)%.cpp
 
 
 #========= GLAD =========================#
-# Create glad resources
-#$(GLAD_PATH):
-#	mkdir -p $(GLAD_DIR)
-#	glad --api gl:core=4.6 --out-path $(GLAD_DIR) c
-#	glad --api gl=4.6 --out-path $(GLAD_DIR) --generator c		
-
 $(GLAD_LIBO_BIN): $(GLADCOPY_PATH)
 	gcc -c $(GLAD_DIR)src/gl.c -I$(FULLINC_DIR) $(IOPTS) -o $@
 
@@ -160,12 +156,12 @@ $(BUILD_DIR):
 
 #========= CLEAN ========================#
 .PHONY: cleanall
-cleanall: clean cleanglad
+cleanall: clean cleandocs
 
 .PHONY: clean
 clean:
 	-rm ./$(BUILD_DIR)*.o ./$(BUILD_DIR)*.oex ./$(BUILD_DIR)*.a ./$(BUILD_DIR)*.so $(EXAMPLE_EXECS)
 
-#.PHONY: cleanglad
-#cleanglad:
-#	-rm -r glad/*/
+.PHONY: cleandocs
+cleandocs:
+	-rm -r ./docs/doxygen

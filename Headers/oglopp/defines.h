@@ -4,6 +4,17 @@
 #include "oglopp/glad/gl.h"
 #include <GLFW/glfw3.h>
 
+// Cross-Platform Linking for Windows
+#if defined(_WIN32) || defined(_WIN64)
+	#ifdef OGL_BUILD_DLL
+		#define OGL_API __declspec(dllexport)
+	#else
+		#define OGL_API __declspec(dllimport)
+	#endif
+#else
+	#define OGL_API
+#endif
+
 // Helpful defines
 #define HLGL_WORLD_UP 		glm::dvec3(0.0f, 1.0f, 0.0f)
 
@@ -26,5 +37,7 @@
 
 #define HLGL_SCROLL_CB_TYPE ()
 #define HLGL_SCROLL_CALLBACK ()
+
+
 
 #endif
