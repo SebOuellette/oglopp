@@ -6,6 +6,12 @@ project(oglopp
 
 # PIC everywhere
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(BUILD_SHARED_LIBS ON)
+# Safe linking
+set(CMAKE_INSTALL_RPATH "/usr/local/lib")
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+
+#set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 # Output dirs
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -15,7 +21,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 include_directories(
 	${CMAKE_SOURCE_DIR}/Headers
 	${CMAKE_SOURCE_DIR}/glad/include
-	${CMAKE_SOURCE_DIR}/../usr/include
 )
 
 # Collect sources
@@ -34,8 +39,8 @@ add_library(${PROJECT_NAME} SHARED
 target_compile_definitions(${PROJECT_NAME} PRIVATE OGL_BUILD_DLL)
 
 # Link dependencies
-find_package(glfw3 REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
+find_library(GLFW_LIB NAMES glfw glfw3 PATHS /usr/lib/ NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${GLFW_LIB})
 if (UNIX)
 	target_link_libraries(${PROJECT_NAME} PRIVATE dl pthread)
 endif()
@@ -64,6 +69,8 @@ file(GLOB EXAMPLE_SRCS ${CMAKE_SOURCE_DIR}/Examples/*.cpp)
 foreach(src IN LISTS EXAMPLE_SRCS)
 	get_filename_component(name ${src} NAME_WE)
 	add_executable(${name} EXCLUDE_FROM_ALL ${src})
+	target_link_options(${name} PRIVATE -Wl,-rpath,${CMAKE_INSTALL_RPATH})
+	target_link_libraries(${name} PRIVATE "${GLFW_LIB}")
 	target_link_libraries(${name} PRIVATE ${PROJECT_NAME})
 	#target_include_directories(${name} PRIVATE ${CMAKE_SOURCE_DIR}/Headers)
 	unset(${PROJECT_NAME} CACHE)

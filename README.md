@@ -11,6 +11,7 @@ OGLoPP uses `make` as its build system. A `make help` rule is available to view 
 ```
 libglfw
 libglm
+stb-image.h
 ```
 
 ### Installation Procedure
@@ -21,32 +22,35 @@ git clone https://github.com/SebOuellette/oglopp.git
 # Step 2: Change directory into oglopp
 cd oglopp
 
-# Step 3: Build liboglopp.so
-make
+# Step 3: Compile project
+cmake -S . -B build
 
-# Step 4: Install OGloPP
-sudo make install
+# Step 4: Build liboglopp.so
+make -C build
+
+# Step 5: Install OGloPP
+sudo make -C build install
 
 # OGLoPP can now be linked into your programs using '-loglopp' (and '-lglfw' if you use glfw directly)
 ```
 
 ### Uninstalling OGLoPP
 ```bash
-# Reverse step 4, remove all traces of OGLoPP
-sudo make uninstall
+# Reverse step 5, remove all traces of OGLoPP
+sudo make -C build uninstall
 ```
 
 ### Building Example Programs
 ```bash
-# You can now build the examples, AFTER installing in step 4.
-make examples
-# Examples are placed in ./build
+# You can also build examples
+make -C build examples
+# Examples are placed in ./build/bin
 ```
 
 ### Building Doxygen Documentation
 ```bash
 # Compile HTML from source code
-make docs
+make -C build docs
 
 # You can now open the output in your favourite browser
 firefox ./docs/doxygen/html/index.html
