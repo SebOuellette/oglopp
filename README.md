@@ -78,7 +78,7 @@ OpenGL/GLFW/GLM are cross-platform, so ideally OGLoPP will eventually be availab
   <tr>
     <td><a href="https://github.com/SebOuellette/sketch-ml">Sketch-ML GitHub</a></td>
     <td>2D machine learning application capable of using OGLoPP compute shaders to reconstruct hand-drawn digits at upwards of 120 frames per second. (RX6900XT)</td>
-    <td><img width=1000 src="https://private-user-images.githubusercontent.com/16142343/395831696-1f0250f6-49b9-48ea-be58-d5b3867a0c15.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDUxODk4NjksIm5iZiI6MTc0NTE4OTU2OSwicGF0aCI6Ii8xNjE0MjM0My8zOTU4MzE2OTYtMWYwMjUwZjYtNDliOS00OGVhLWJlNTgtZDViMzg2N2EwYzE1LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA0MjAlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNDIwVDIyNTI0OVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTQ5Mjk0OGYyNWU2MDQwNWJlODc5NDJkOTk4YTNjNDQ1OWY5MjJjNjliMzVjYTIxOGRhNmM1ZmRiYjUzNGU3MzcmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.lnhfvgAY4Q5qrqAd8Ew6CpUtbbCRfBDIqyEqB9Wg1uQ"></td>
+    <td><img width=1000 src="https://github.com/user-attachments/assets/1f0250f6-49b9-48ea-be58-d5b3867a0c15"></td>
   </tr>
   <tr>
     <td>ParticleBox (Unreleased)</td>
