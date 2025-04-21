@@ -12,19 +12,19 @@ namespace oglopp {
 				BOTH	= GL_READ_WRITE
 			};
 
-			/* @brief Create a new SSBO object. Default constructor
+			/** @brief Create a new SSBO object. Default constructor
 	 		*/
 			SSBO() = default;
 			~SSBO() = default;
 
-			/* @brief Copy the data in a pointer into the ssbo to be sent to the GPU on dispatch
+			/** @brief Copy the data in a pointer into the ssbo to be sent to the GPU on dispatch
 			 * @param[in] buffer	A pointer to some buffer
 			 * @param[in] size		The number of bytes to be read from the buffer
 			 * @return				A status code. 0 for success. -1 for failure.
 		 	*/
 			int8_t load(void* buffer, size_t size);
 
-			/* @brief Update a portion of the ssbo data
+			/** @brief Update a portion of the ssbo data
 			 * @param[in] offset	The offset in bytes from the start of the ssbo buffer
 			 * @param[in] buffer	A pointer to some buffer
 			 * @param[in] size		The number of bytes to be read from the buffer
@@ -32,28 +32,28 @@ namespace oglopp {
 			*/
 			int8_t update(size_t offset, void* buffer, size_t size);
 
-			/* @brief Bind the SSBO to some binding number. Default is 0 if not specified
+			/** @brief Bind the SSBO to some binding number. Default is 0 if not specified
 			 * @param[in] binding	The binding number for the SSBO
 			 * @return				A reference to the SSBO 0
 		 	*/
 			SSBO& bind(int binding = 0);
 
-			/* @brief Unbind the bound SSBO
+			/** @brief Unbind the bound SSBO
 		 	*/
 			static void unbind();
 
-			/* @brief Get the number of bytes stored in the SSBO buffer
+			/** @brief Get the number of bytes stored in the SSBO buffer
 			 * @return	The number of bytes in the SSBO buffer
 		 	*/
 			size_t getSize() const;
 
-			/* @brief Map the SSBO to a buffer
+			/** @brief Map the SSBO to a buffer
 			 * @param[in] method	The method of mapping. READ, WRITE, or BOTH
 			 * @return 				A pointer to the mapped buffer
 		 	*/
 			void* map(MapMethod method = READ);
 
-			/* @brief Unmap the mapped buffer
+			/** @brief Unmap the mapped buffer
 			 * @return A reference to this SSBO object
 		 	*/
 			SSBO& unmap();

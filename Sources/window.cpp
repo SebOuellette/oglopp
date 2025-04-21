@@ -27,7 +27,7 @@ namespace oglopp {
 		}
 	}
 
-	/* @brief Create a window with some width and height
+	/** @brief Create a window with some width and height
 	 * @param[in]	width	The width (in pixels) of the window upon creation
 	 * @param[in]	height	The height (in pixels) of the window upon creation
 	 * @param[in]	title	The title of the window
@@ -167,21 +167,21 @@ namespace oglopp {
 	    return *this;
 	}
 
-	/* @brief Get a reference to this object's camera
+	/** @brief Get a reference to this object's camera
 	* @return A constant reference to this object's camera
 	*/
 	Camera& Window::getCam() {
 		return this->renderCamera;
 	}
 
-	/* @brief Get a pointer to the saved glfw window object
+	/** @brief Get a pointer to the saved glfw window object
 	 * @return	A pointer to the glfw window object
 	*/
 	GLFWwindow* Window::getWindow() {
 		return this->_window;
 	}
 
-	/* @brief Get the size of the window in pixels
+	/** @brief Get the size of the window in pixels
 	* @param[out] width	The width of the window in pixels
 	* @param[out] height	The height of the window in pixels
 	* @return				A reference to this window object
@@ -192,7 +192,7 @@ namespace oglopp {
 	}
 
 
-	/* @brief Lock and hide cursor in the window
+	/** @brief Lock and hide cursor in the window
 	 * @return A reference to this window object
  	*/
 	Window& Window::cursorCapture() {
@@ -200,7 +200,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Release the cursor back to the user
+	/** @brief Release the cursor back to the user
 	 * @return A reference to this window object
  	*/
 	Window& Window::cursorRelease() {
@@ -208,7 +208,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Check if the cursor is captured
+	/** @brief Check if the cursor is captured
 	 * @return True if the cursor is captured by this window, false otherwise.
  	*/
 	bool Window::isCursorCaptured() {
@@ -216,7 +216,7 @@ namespace oglopp {
 	}
 
 
-	/* @brief Check if a glfw key is pressed down
+	/** @brief Check if a glfw key is pressed down
 	 * @param[in] key	The GLFW key code to check. Starts with GLFW_KEY_
 	 * @return			True if the key is pressed, false otherwise
  	*/
@@ -224,7 +224,7 @@ namespace oglopp {
 		return glfwGetKey(this->getWindow(), key) == GLFW_PRESS;
 	}
 
-	/* @brief Check if a glfw mouse button is pressed down
+	/** @brief Check if a glfw mouse button is pressed down
 	 * @param[in] btn	The GLFW mouse button code to check. Starts with GLFW_MOUSE_
 	 * @return			True if the button is pressed. False otherwise
 	*/
@@ -232,7 +232,7 @@ namespace oglopp {
 		return glfwGetMouseButton(this->getWindow(), key) == GLFW_PRESS;
 	}
 
-	/* @brief Get the cursor position
+	/** @brief Get the cursor position
 	 * @return The cursor X and Y position
  	*/
 	glm::dvec2 Window::getCursorPos() {
@@ -242,7 +242,7 @@ namespace oglopp {
 		return ret;
 	}
 
-	/* @brief Set the cursor position
+	/** @brief Set the cursor position
 	 * @param[in] pos	The new position to set the cursor to
 	 * @return 			A reference to this window object
  	*/
@@ -251,7 +251,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Clear the window
+	/** @brief Clear the window
 	 * @return A reference to this window
  	*/
 	Window& Window::clear() {
@@ -259,7 +259,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Handle noclip movement
+	/** @brief Handle noclip movement
  	*/
 	Window& Window::handleNoclip() {
 		// When escape is pressed...

@@ -2,7 +2,7 @@
 
 namespace oglopp {
 
-	/* @brief Copy the data in a pointer into the ssbo to be sent to the GPU on dispatch
+	/** @brief Copy the data in a pointer into the ssbo to be sent to the GPU on dispatch
 	 * @param[in] buffer	A pointer to some buffer
 	 * @param[in] size		The number of bytes to be read from the buffer
 	 * @return				A status code. 0 for success. -1 for failure.
@@ -28,7 +28,7 @@ namespace oglopp {
 		return 0;
 	}
 
-	/* @brief Update a portion of the ssbo data
+	/** @brief Update a portion of the ssbo data
 	 * @param[in] offset	The offset in bytes from the start of the ssbo buffer
 	 * @param[in] buffer	A pointer to some buffer
 	 * @param[in] size		The number of bytes to be read from the buffer
@@ -57,7 +57,7 @@ namespace oglopp {
 		return 0;
 	}
 
-	/* @brief Bind the SSBO to some binding number. Default is 0 if not specified
+	/** @brief Bind the SSBO to some binding number. Default is 0 if not specified
 	 * @param[in] binding	The binding number for the SSBO
 	 * @return				A reference to the SSBO 0
  	*/
@@ -66,20 +66,20 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Unbind the bound SSBO
+	/** @brief Unbind the bound SSBO
  	*/
 	void SSBO::unbind() {
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
-	/* @brief Get the number of bytes stored in the SSBO buffer
+	/** @brief Get the number of bytes stored in the SSBO buffer
 	 * @return	The number of bytes in the SSBO buffer
  	*/
 	size_t SSBO::getSize() const {
 		return this->bufferSize;
 	}
 
-	/* @brief Map the SSBO to a buffer
+	/** @brief Map the SSBO to a buffer
 	 * @param[in] method	The method of mapping. READ, WRITE, or BOTH
 	 * @return 				A pointer to the mapped buffer
  	*/
@@ -91,7 +91,7 @@ namespace oglopp {
 		return mapped;
 	}
 
-	/* @brief Unmap the mapped buffer
+	/** @brief Unmap the mapped buffer
  	*/
 	SSBO& SSBO::unmap() {
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->ssbo);

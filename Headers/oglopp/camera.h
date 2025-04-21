@@ -8,7 +8,7 @@
 #include "defines.h"
 
 namespace oglopp {
-	/* @brief Camera object
+	/** @brief Camera object
 	*/
 	class Camera {
 	private:
@@ -54,7 +54,7 @@ namespace oglopp {
 		glm::dmat4 const& getProjection();
 
 
-		/* @brief Face a target vector
+		/** @brief Face a target vector
 		 * @param[in] vector	The normalized vector to face.
 		 * @return				A constant reference to the updated view
 		*/
@@ -68,14 +68,14 @@ namespace oglopp {
 		Camera& setTarget(glm::dvec3 const& newPos = glm::dvec3(0.0f, 0.0f, 0.0f));
 		Camera& setAngle(glm::dvec3 const& newAngle = glm::dvec3(0, 0, 0));
 
-		/* @brief Aim the camera by a pitch/yaw
+		/** @brief Aim the camera by a pitch/yaw
 		 * @param[in] pitch	The pitch in degrees to rotate by
 		 * @param[in] yaw	The yaw in degrees to rotate by
 		 * @return 			A reference to this Camera object
 	 	*/
 		Camera& aimBy(float pitch, float yaw);
 
-		/* @brief Update the projection and view matrices to be referenced by each object
+		/** @brief Update the projection and view matrices to be referenced by each object
 		 * @param[in] width				The width of the window
 		 * @param[in] height			The height of the window
 		 * @param[in] farPlane			The far render plane

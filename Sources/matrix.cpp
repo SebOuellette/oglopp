@@ -19,7 +19,7 @@ namespace oglopp {
 	}
 
 
-	/* @brief Print an N by M matrix
+	/** @brief Print an N by M matrix
 	* @param[in]	matrix	The matrix object, where elements are expected to be indexed using [column][row]
 	* @param[in]	cols	The number of columns in the matrix
 	* @param[in]	rows	The number of rows in the matrix
@@ -57,7 +57,7 @@ namespace oglopp {
 		return os;
 	}
 
-	/* @brief Print an N dimension vector
+	/** @brief Print an N dimension vector
 	* @param[in]	vector	The matrix object, where elements are expected to be indexed using [row]
 	* @param[in]	rows	The number of rows in the matrix
 	* @return				A reference to a stringstream object
@@ -92,7 +92,7 @@ namespace oglopp {
 		return os;
 	}
 
-	/* @brief Translate some coordinate by an offset
+	/** @brief Translate some coordinate by an offset
 	* @param[in]	coordinate	The original input coordinate
 	* @param[in]	offset		The offset to adjust coordinate by
 	* @return					The translated vector. For optimization purposes, this simply adds coordinate and offset instead of a matrix multiplication
@@ -107,7 +107,7 @@ namespace oglopp {
 		return quaternion * operationMat;
 	}
 
-	/* @brief Rotate some coordinate around a provided origin
+	/** @brief Rotate some coordinate around a provided origin
 	* @param[in]	coordinate	The original input coordinate
 	* @param[in]	theta		The angle to rotate by, in radians
 	* @param[in]	axis		The axis of rotation
@@ -126,7 +126,7 @@ namespace oglopp {
 		return quaternion * operationMat;
 	}
 
-	/* @brief Rotate some coordinate around a provided origin
+	/** @brief Rotate some coordinate around a provided origin
 	* @param[in]	coordinate	The original input coordinate
 	* @param[in]	scale		The scale to scale the coordinates by
 	* @param[in]	origin		The origin to scale around. This is optional, vec3(0, 0, 0) by default

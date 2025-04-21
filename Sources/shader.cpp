@@ -11,7 +11,7 @@
 #define UNIFORM_LOC glGetUniformLocation(this->ID, name.c_str())
 
 namespace oglopp {
-	/* @brief Load the shader file
+	/** @brief Load the shader file
 	 * @param[in] shader		The path to the shader, or the contents of the shader itself
 	 * @param[in] type			The type of the shader variable, either path or raw.
 	 * @param[in] step			The shader step: vertex, geometry, or fragment
@@ -70,7 +70,7 @@ namespace oglopp {
 		return shaderIndex;
 	}
 
-	/* @brief Load a list of shaders into this shader object
+	/** @brief Load a list of shaders into this shader object
 	 * @param[in] vertexShader		The vertex shader path or file contents
 	 * @param[in] geoShader			The geometry shader path or file contents. Nullptr for no geometry shader
 	 * @param[in] fragmentShader	The fragment shader path or file contents
@@ -126,7 +126,7 @@ namespace oglopp {
 		}
 	}
 
-	/* @brief Get the texture uniform string for use in fragment shaders
+	/** @brief Get the texture uniform string for use in fragment shaders
 	 * @param[in] textureId	The texture number from 0 to 32
 	*/
 	std::string Shader::getTextureUniform(uint8_t textureId) {
@@ -209,14 +209,14 @@ namespace oglopp {
 		glUniform1ui(UNIFORM_LOC, value);
 	}
 
-	/* @brief Get a constant reference to the current draw type
+	/** @brief Get a constant reference to the current draw type
 	 * @return A constant reference
  	*/
 	DrawType const& Shader::getDrawType() {
 		return this->drawType;
 	}
 
-	/* @brief Set the draw type
+	/** @brief Set the draw type
 	 * @param[in] type	The new type to set the draw type to
 	 * @return			A reference to this shape object
  	*/

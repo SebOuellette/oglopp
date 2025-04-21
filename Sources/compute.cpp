@@ -4,7 +4,7 @@
 #include <iostream>
 
 namespace oglopp {
-	/* @brief Compute default constructor
+	/** @brief Compute default constructor
 	 * @param[in] computeShader		The compute shader path or file contents
 	 * @param[in] type				The shader type.  File or raw.
 	 * @param[in] newBinding		The new binding point for the SSBO
@@ -13,7 +13,7 @@ namespace oglopp {
 		this->load(computeShader, type);
 	}
 
-	/* @brief Set the SSBO object used by the compute shader.
+	/** @brief Set the SSBO object used by the compute shader.
 	 * @param[in] newSSBO	A constant reference to the new SSBO object
 	 * @return				A reference to this compute object
  	*/
@@ -23,14 +23,14 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Get a reference to the loaded SSBO object
+	/** @brief Get a reference to the loaded SSBO object
 	 * @return	A reference to the ssbo object
  	*/
 	SSBO* Compute::getSSBO() {
 		return this->ssbo;
 	}
 
-	/* @brief Dispatch some groups with the loaded compute shader
+	/** @brief Dispatch some groups with the loaded compute shader
 	 * @param[in] xGroups	The number of groups in the x dimension (not optional)
 	 * @param[in] yGroups	The number of groups in the y dimension (optional - default is 1)
 	 * @param[in] zGroups	The number of groups in the z dimension (optional - default is 1)
@@ -63,7 +63,7 @@ namespace oglopp {
 		return this->dispatch(groups.x, groups.y, groups.z);
 	}
 
-	/* @brief Dispatch a buffer object specifying number of groups with the loaded compute shader
+	/** @brief Dispatch a buffer object specifying number of groups with the loaded compute shader
 	 * @param[in] pBufferObject	A GLintptr pointing to some buffer object
 	 * @return					A status code. 0 for success. -1 for failure.
  	*/
@@ -89,14 +89,14 @@ namespace oglopp {
 		return 0;
 	}
 
-	/* @brief Get a constant reference to the SSBO binding
+	/** @brief Get a constant reference to the SSBO binding
 	 * @return The SSBO binding int
  	*/
 	const GLuint& Compute::getBinding() {
 		return this->binding;
 	}
 
-	/* @brief Check if a count of groups is valid.
+	/** @brief Check if a count of groups is valid.
 	 * @param[in] xCount	The count of groups to check in the X
 	 * @param[in] yCount	The count of groups to check in the Y
 	 * @param[in] zCount	The count of groups to check in the Z
@@ -116,7 +116,7 @@ namespace oglopp {
 		return !(xCount > maxGroupsX || yCount > maxGroupsY || zCount > maxGroupsZ);
 	}
 
-	/* @brief Check if a group's size is valid.
+	/** @brief Check if a group's size is valid.
 	 * @param[in] groupSize		The size of a group to check
 	 * @return					True if valid, false otherwise
  	*/
@@ -124,7 +124,7 @@ namespace oglopp {
 		return true;
 	}
 
-	/* @brief Load a list of shaders into this shader object
+	/** @brief Load a list of shaders into this shader object
 	 * @param[in] computeShader		The compute shader path or file contents
 	 * @param[in] type				The shader type.  File or raw.
  	*/

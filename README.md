@@ -3,10 +3,10 @@
 ## What is OGLoPP?
 [O]pen[GL] for [o]object-oriented C-[P]lus-[P]lus, is a library for C++ designed to abstract many of the functional programming annoyances of opengl into a neat, object-oriented interface. Programs built using OGLoPP can have a wide range of functionally, from CLI GPU-accelerated applications, to 2D desktop applications, up to 3D high-framerate simulations and games. OGLoPP was originally designed for science visualizations, but it can be used to build games as well.
 <br>
-OGLoPP is currently only capable of rendering and computing, however in the future it's intended to implement clean solutions for physics, networking, audio, and more. 
+OGLoPP is currently only capable of rendering and computing, however in the future it's intended to implement clean solutions for physics, networking, audio, and more.
 
 ## Building and Installing
-OGLoPP uses `make` as its build system. A `make help` rule is available to view all available targets for building. Before building, you must ensure that the dependencies are installed. 
+OGLoPP uses `make` as its build system. A `make help` rule is available to view all available targets for building. Before building, you must ensure that the dependencies are installed.
 ### Required Dependencies
 ```
 libglfw
@@ -29,11 +29,13 @@ sudo make install
 
 # OGLoPP can now be linked into your programs using '-loglopp' (and '-lglfw' if you use glfw directly)
 ```
+
 ### Uninstalling OGLoPP
 ```bash
 # Reverse step 4, remove all traces of OGLoPP
 sudo make uninstall
 ```
+
 ### Building Example Programs
 ```bash
 # You can now build the examples, AFTER installing in step 4.
@@ -41,10 +43,18 @@ make examples
 # Examples are placed in ./build
 ```
 
+### Building Doxygen Documentation
+```bash
+# Compile HTML from source code
+make docs
+
+# You can now open the output in your favourite browser
+firefox ./docs/doxygen/html/index.html
+```
 
 
 ### Supported Platforms
-OpenGL/GLFW/GLM are cross-platform, so ideally OGLoPP will eventually be available on all operating systems supported by OpenGL. OGLoPP was designed for Linux first, specifically Arch Linux, and may not work on other distributions, cpu architectures, or operating systems. Below is a list of systems and their known status. 
+OpenGL/GLFW/GLM are cross-platform, so ideally OGLoPP will eventually be available on all operating systems supported by OpenGL. OGLoPP was designed for Linux first, specifically Arch Linux, and may not work on other distributions, cpu architectures, or operating systems. Below is a list of systems and their known status.
 <table>
   <tr>
     <th>Platform</th>

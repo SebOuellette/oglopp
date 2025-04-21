@@ -14,14 +14,14 @@
 
 namespace oglopp {
 
-	/* @brief Get the opengl texture register for the n'th texture, where index = n
+	/** @brief Get the opengl texture register for the n'th texture, where index = n
 	* @param[in]	index	The index/layer of the texture
 	*/
 	uint16_t Shape::getTextureCode(uint8_t index) {
 		return static_cast<uint16_t>(GL_TEXTURE0) + index;
 	}
 
-	/* @brief Get the opengl texture string for the n'th texture, where index = n
+	/** @brief Get the opengl texture string for the n'th texture, where index = n
 	* @param[in]	index	The index/layer of the texture
 	*/
 	std::string Shape::getTextureString(uint8_t index) {
@@ -30,7 +30,7 @@ namespace oglopp {
 		return str;
 	}
 
-	/* @brief Update uniform MVP
+	/** @brief Update uniform MVP
 	* @param[in] window	A reference to the window object
 	* @param[in] pShader	A pointer to the shader object
 	* @return				A reference to this shape object
@@ -75,7 +75,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Updated extra uniforms. obverloaded in each inherited class
+	/** @brief Updated extra uniforms. obverloaded in each inherited class
 	 * @return A reference to this shape object
  	*/
 	Shape& Shape::updateExtraUniforms() {
@@ -104,7 +104,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified.
+	/** @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified.
 	 * @param[in] color		Include the color/normal vec3
 	 * @param[in] texture	Include the texture coord vec2
 	 * @param[in] option	Include the option uint16_t
@@ -172,7 +172,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Replacement for updateVAO. Allows dynamically specifying the type of value. Termination case
+	/** @brief Replacement for updateVAO. Allows dynamically specifying the type of value. Termination case
 	 * @param[in] totalIndices	The total number of indices
 	 * @return 	A reference to this shape object
  	*/
@@ -197,7 +197,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Convert a shape DataType to a stride element count
+	/** @brief Convert a shape DataType to a stride element count
 	 * @param[in] dataType	The data type
 	 * @return				The number of associated stride elements/components
  	*/
@@ -250,7 +250,7 @@ namespace oglopp {
 		return elements;
 	}
 
-	/* @brief Get the number of bytes for a single stride component for some datatype
+	/** @brief Get the number of bytes for a single stride component for some datatype
 	 * @param[in] dataType	The data type
 	 * @return				The number of associated stride elements/components
  	*/
@@ -322,7 +322,7 @@ namespace oglopp {
 		return size;
 	}
 
-	/* @brief Get the component register data type for some shape dataype
+	/** @brief Get the component register data type for some shape dataype
 	 * @param[in] dataType	The shape datatype
 	 * @return				The gl register
  	*/
@@ -389,7 +389,7 @@ namespace oglopp {
 		glDeleteVertexArrays(1, &this->VAO);
 	}
 
-	/* @brief Push a single point to the shape.
+	/** @brief Push a single point to the shape.
 	* @param[in]	vec		The vector of the point
 	* @param[in]	col		The color of the vertex
 	* @param[in]	texPos	The texture position
@@ -405,7 +405,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Push a single point to the shape.
+	/** @brief Push a single point to the shape.
 	* @param[in]	vec		The vector of the point
 	* @param[in]	col		The color of the vertex
 	* @param[in]	texPos	The texture position
@@ -435,7 +435,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Push a single point to the shape.
+	/** @brief Push a single point to the shape.
 	* @param[in]	vec		The vector of the point
 	* @param[in]	col		The color of the vertex
 	* @return 		A reference to this shape object
@@ -458,7 +458,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Push a single point to the shape.
+	/** @brief Push a single point to the shape.
 	* @param[in]	vec		The vector of the point
 	* @param[in]	texPos	The texture position
 	* @return 		A reference to this shape object
@@ -478,7 +478,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Push a single point to the shape.
+	/** @brief Push a single point to the shape.
 	* @param[in]	vec		The vector of the point
 	* @return 		A reference to this shape object
 	*/
@@ -493,7 +493,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Push a constant reference to some value. The size of the value must be able to be extracted from the type
+	/** @brief Push a constant reference to some value. The size of the value must be able to be extracted from the type
 	 * @param[in] pValue	A pointer to the value to push
 	 * @param[in] bytes		The number of bytes pointer to by pValue
 	 * @return 				A reference to this shape object
@@ -504,7 +504,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Increment the number of vertices. Used when pushing template points to indicate the end of a vertex
+	/** @brief Increment the number of vertices. Used when pushing template points to indicate the end of a vertex
 	 * @return A reference to this shape
  	*/
 	Shape& Shape::incrementVerts() {
@@ -513,7 +513,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Reset the vertex count
+	/** @brief Reset the vertex count
 	 * @param[in] forceTo	Reset the vertex count to some value. Default is 0
 	 * @return	A reference to this shape object
  	*/
@@ -523,7 +523,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Push a triangle to the indicies list. A triangle is constructed of the following verticies which were defined with pushPoint
+	/** @brief Push a triangle to the indicies list. A triangle is constructed of the following verticies which were defined with pushPoint
 	 * @param[in] vertA	The A vertex index out of the point list, where the first point is 0
 	 * @param[in] vertB	The B vertex index
 	 * @param[in] vertC	The C vertex index
@@ -539,7 +539,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Set the texture
+	/** @brief Set the texture
 	* @param[in] texture	The texture object to set to
 	* @return				A reference to this shape object
 	*/
@@ -565,7 +565,7 @@ namespace oglopp {
 		return this->textures;
 	}
 
-	/* @brief Draw this shape to the specified window using an optional shader
+	/** @brief Draw this shape to the specified window using an optional shader
 	* @param[in] window		A reference to the window object
 	* @param[in] pShader	An optional pointer to the shader object
 	* @return 				A reference to this shape
@@ -636,21 +636,21 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Get the position of this shape
+	/** @brief Get the position of this shape
 	* @return The position of this shape
 	*/
 	glm::dvec3 const& Shape::getPosition() {
 		return this->position;
 	}
 
-	/* @brief Get the angle of this shape
+	/** @brief Get the angle of this shape
 	* @return The angle of this shape
 	*/
 	glm::dvec3 const& Shape::getAngle() {
 		return this->angle;
 	}
 
-	/* @brief Set the position of this shape in world space
+	/** @brief Set the position of this shape in world space
 	* @param[in] newPosition	The position in world space
 	* @return					A reference to this position
 	*/
@@ -659,7 +659,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Set the angle of this shape in radians for each axis
+	/** @brief Set the angle of this shape in radians for each axis
 	* @param[in] newAngle		The angle to set to
 	* @return 					A reference to this shape object
 	*/
@@ -668,7 +668,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Translate this shape some coordinates in world space
+	/** @brief Translate this shape some coordinates in world space
 	* @param[in] offset	The offset to translate by
 	* @return				A reference to this shape object
 	*/
@@ -677,7 +677,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Rotate this shape around its local origin
+	/** @brief Rotate this shape around its local origin
 	* @param[in] offset	The offset to rotate by in radians for each axis
 	* @return				A reference to this shape object
 	*/
@@ -686,7 +686,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Set the scale of the shape
+	/** @brief Set the scale of the shape
 	* @param[in] newScale	The new scale for this shape
 	* @return 				A reference to this shape object
 	*/
@@ -696,7 +696,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Apply a scaling factor to the shape
+	/** @brief Apply a scaling factor to the shape
 	* @param[in] offset	The new scale for this shape
 	* @return				A reference to this shape object
 	*/
@@ -706,7 +706,7 @@ namespace oglopp {
 		return *this;
 	}
 
-	/* @brief Get the scale factor
+	/** @brief Get the scale factor
 	* @return The scaling factor
 	*/
 	glm::dvec3 const& Shape::getScale() {

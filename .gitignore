@@ -2,6 +2,7 @@
 .vscode
 build
 build/**
+**.*~
 
 # Glad is commented out cause it's not used. We save the glad installation so that glad can't update without us, and for compatibility.
 #glad
@@ -9,7 +10,8 @@ build/**
 Headers/oglopp/glad/**
 Headers/oglopp/glad/*.*
 
-
+docs/doxygen
+docs/doxygen/**
 vgcore*
 
 

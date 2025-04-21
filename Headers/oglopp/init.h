@@ -7,7 +7,7 @@
 #include <fstream>
 
 namespace oglopp {
-	/* @brief Hold a single instance of an object to safely initialize and destroy opengl resources
+	/** @brief Hold a single instance of an object to safely initialize and destroy opengl resources
 	*/
 	class _HoneyLib_InitGL {
 	public:

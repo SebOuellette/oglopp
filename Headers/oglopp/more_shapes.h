@@ -4,21 +4,21 @@
 #include "shape.h"
 
 namespace oglopp {
-	/* @brief Rectangle object
+	/** @brief Rectangle object
 	*/
 	class Rectangle : public Shape {
 	public:
 		Rectangle();
 	};
 
-	/* @brief Rectangle object
+	/** @brief Rectangle object
 	*/
 	class Triangle : public Shape {
 	public:
 		Triangle();
 	};
 
-	/* @brief Rectangle object
+	/** @brief Rectangle object
 	*/
 	class Cube : public Shape {
 	public:

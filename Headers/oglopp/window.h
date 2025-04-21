@@ -8,7 +8,7 @@
 #define NOCLIP_SPEED (0.05)
 
 namespace oglopp {
-	/* @brief Window object
+	/** @brief Window object
 	 * @param HLGL_DRAW_WIREFRAMES 	Macro defined at compiler time to draw just wireframes. Not defined by default to draw normally
 	*/
 	class Window {
@@ -52,7 +52,7 @@ namespace oglopp {
 	    Window();
 	    ~Window();
 
-	    /* @brief Create a window with some width and height
+	    /** @brief Create a window with some width and height
 		 * @param[in]	width	The width (in pixels) of the window upon creation
 		 * @param[in]	height	The height (in pixels) of the window upon creation
 		 * @param[in]	title	The title of the window
@@ -77,17 +77,17 @@ namespace oglopp {
 	    // Poll GLFW events
 	    Window& pollEvents();
 
-		/* @brief Get a reference to this object's camera
+		/** @brief Get a reference to this object's camera
 		 * @return A constant reference to this object's camera
 		*/
 		Camera& getCam();
 
-		/* @brief Get a pointer to the saved glfw window object
+		/** @brief Get a pointer to the saved glfw window object
 		* @return	A pointer to the glfw window object
 		*/
 		GLFWwindow* getWindow();
 
-		/* @brief Get the size of the window in pixels
+		/** @brief Get the size of the window in pixels
 		 * @param[out] width	The width of the window in pixels
 		 * @param[out] height	The height of the window in pixels
 		 * @return				A reference to this window object
@@ -95,52 +95,52 @@ namespace oglopp {
 		Window& getSize(int* width, int* height);
 
 
-		/* @brief Lock and hide cursor in the window
+		/** @brief Lock and hide cursor in the window
 		 * @return A reference to this window object
 	 	*/
 		Window& cursorCapture();
 
-		/* @brief Release the cursor back to the user
+		/** @brief Release the cursor back to the user
 		 * @return A reference to this window object
 	 	*/
 		Window& cursorRelease();
 
-		/* @brief Check if the cursor is captured
+		/** @brief Check if the cursor is captured
 		 * @return True if the cursor is captured by this window, false otherwise.
 	 	*/
 		bool isCursorCaptured();
 
 
 
-		/* @brief Check if a glfw key is pressed down
+		/** @brief Check if a glfw key is pressed down
 		 * @param[in] key	The GLFW key code to check
 		 * @return			True if the key is pressed, false otherwise
 	 	*/
 		bool keyPressed(uint16_t const& key);
 
-		/* @brief Check if a glfw mouse button is pressed down
+		/** @brief Check if a glfw mouse button is pressed down
 		 * @param[in] btn	The GLFW mouse button code to check. Starts with GLFW_MOUSE_
 		 * @return			True if the button is pressed. False otherwise
 		*/
 		bool mousePressed(uint16_t const& key);
 
-		/* @brief Get the cursor position
+		/** @brief Get the cursor position
 		 * @return The cursor X and Y position
 	 	*/
 		glm::dvec2 getCursorPos();
 
-		/* @brief Set the cursor position
+		/** @brief Set the cursor position
 		 * @param[in] pos	The new position to set the cursor to
 		 * @return 			A reference to this window object
 	 	*/
 		Window& setCursorPos(glm::dvec2 const& pos);
 
-		/* @brief Clear the window
+		/** @brief Clear the window
 		 * @return A reference to this window
 	 	*/
 		Window& clear();
 
-		/* @brief Handle noclip movement
+		/** @brief Handle noclip movement
 	 	*/
 		Window& handleNoclip();
 

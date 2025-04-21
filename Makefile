@@ -62,16 +62,16 @@ help:
 	"make libso\tBuild Oglopp as a shared object library -> '$(LIBSO)'.\n"\
 	"make examples\tBuild the set of example applications into the '$(BUILD_DIR)' directory.\n"\
 	"\t\t \\-Requires first running 'make install'.\n"\
-	"make glad\tSetup, download, and compile glad to create '$(GLAD_OBJ)'.\n"\
 	"\n=== Installation ===\n"\
 	"make install\tInstall Oglopp headers and library (.a & .so) to '$(INSTALL_IPATH)' and '$(INSTALL_LPATH)'.\n"\
 	"make uninstall\tUninstall Oglopp headers and library from '$(INSTALL_IPATH)' and '$(INSTALL_LPATH)'.\n"\
 	"make strip\tStrip the library binaries to minimize file size before installation.\n"\
 	"\n=== Maintenance ===\n"\
 	"make help\tDisplay this help menu.\n"\
+	"make docs\tBuild Doxygen documentation for OGLoPP into docs/doxygen\n"\
 	"make cleanall\tRemove glad and compiled project executables.\n"\
-	"make clean\tRemove compiled project executables, such as libraries (.a & .so), .o files, and examples.\n"\
-	"make cleanglad\tRemove glad to be redownloaded."
+	"make clean\tRemove compiled project executables, such as libraries (.a & .so), .o files, and examples.\n"
+	
 
 .PHONY: liba
 liba: $(BUILD_DIR) $(LIBA_BIN)
@@ -88,8 +88,9 @@ setupPIC:
 .PHONY: examples
 examples: $(BUILD_DIR) $(EXAMPLE_EXECS)
 
-.PHONY: glad
-glad: $(GLAD_LIBO_BIN)
+.PHONY: docs
+docs:
+	doxygen docs/Doxyfile
 
 #========= INSTALLATION =================#
 .PHONY: install

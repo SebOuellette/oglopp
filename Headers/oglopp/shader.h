@@ -29,13 +29,13 @@ namespace oglopp {
 		POINTS,
 	};
 
-	/* @brief Shader object
+	/** @brief Shader object
 	*/
 	class Shader {
 	protected:
 		GLuint ID; // Program ID
 
-		/* @brief Load the shader file
+		/** @brief Load the shader file
 		 * @param[in] shader		The path to the shader, or the contents of the shader itself
 		 * @param[in] type			The type of the shader variable, either path or raw.
 		 * @param[in] step			The shader step: vertex, geometry, or fragment
@@ -48,7 +48,7 @@ namespace oglopp {
 	private:
 		DrawType drawType;
 
-		/* @brief Load a list of shaders into this shader object
+		/** @brief Load a list of shaders into this shader object
 		 * @param[in] vertexShader		The vertex shader path or file contents. Nullptr for no vertex shader
 		 * @param[in] geoShader			The geometry shader path or file contents. Nullptr for no geometry shader
 		 * @param[in] fragmentShader	The fragment shader path or file contents. Nullptr for no fragment shader
@@ -101,7 +101,7 @@ namespace oglopp {
 
 		static std::string getTextureUniform(uint8_t textureId);
 
-		/* @brief Create a new shader
+		/** @brief Create a new shader
 		*/
 		Shader() = default;
 		Shader(const char* vertex, const char* fragment, ShaderType type);
@@ -127,12 +127,12 @@ namespace oglopp {
 
 
 
-		/* @brief Get a constant reference to the current draw type
+		/** @brief Get a constant reference to the current draw type
 		 * @return A constant reference
 	 	*/
 		DrawType const& getDrawType();
 
-		/* @brief Set the draw type
+		/** @brief Set the draw type
 		 * @param[in] type	The new type to set the draw type to
 		 * @return			A reference to this shape object
 	 	*/
