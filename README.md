@@ -95,12 +95,12 @@ OpenGL/GLFW/GLM are cross-platform, so ideally OGLoPP will eventually be availab
     <td><img width=1000 src="https://github.com/user-attachments/assets/1f0250f6-49b9-48ea-be58-d5b3867a0c15"></td>
   </tr>
   <tr>
-    <td>ParticleBox (Unreleased)</td>
+    <td><a href="https://gitbee.honeybeeks.net/page/SebOuellette/particlebox.git">ParticleBox</a></td>
     <td>Particle simulator capable of simulating upwards of 1 billion particles. (Although not all particles interact with each other)</td>
     <td><img width=1000 src="https://github.com/user-attachments/assets/70dc4e96-8208-44b0-a3fc-99d1c2da86a3"></td>
   </tr>
   <tr>
-    <td>Cubegame (Unreleased)</td>
+    <td><a href="https://gitbee.honeybeeks.net/page/SebOuellette/cubegame.git">Cubegame</a></td>
     <td>3D Infinite voxel world (vertically and horizonally) with textures and chunk generation.</td>
     <td><img width=1000 src="https://github.com/user-attachments/assets/891c9ae5-871e-4e6b-bea9-e2b43a6102cc"></td>
   </tr>

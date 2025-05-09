@@ -6,9 +6,8 @@
 
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/ext/vector_float3.hpp>
-#include <iostream>
 #include <cmath>
-#include "../Headers/oglopp.h"
+#include <oglopp.h>
 
 using namespace oglopp;
 
@@ -29,12 +28,17 @@ int main() {
 		"layout (location = 0) in vec3 aPos;\n"\
 		"layout (location = 1) in vec3 aColor;\n"\
 		"layout (location = 2) in vec2 aTexCoord;\n"\
+		\
 		"uniform mat4 transform;\n"\
+		"uniform mat4 model;\n"\
+		"uniform mat4 view;\n"\
+		"uniform mat4 projection;"\
+		\
 		"out vec4 vertexColor;\n"\
 		"out vec2 texCoord;\n"\
 		\
 		"void main() {\n"\
-			"gl_Position = vec4(aPos, 1.0) * transform;\n"\
+			"gl_Position = projection * view * model * transform * vec4(aPos, 1.0);\n"\
 			"vertexColor = vec4(aColor, 1.0);\n"\
 			"texCoord = aTexCoord;\n"\
 		"}\n",
@@ -48,7 +52,7 @@ int main() {
 		"uniform sampler2D texture2;\n"\
 		\
 		"void main() {\n"\
-			"FragColor = (vertexColor + texture(texture1, texCoord) + texture(texture2, texCoord)) / 3.0;\n"\
+			"FragColor =  (vertexColor + texture(texture1, texCoord) + texture(texture2, texCoord)) / 3.0;\n"\
 		"}\n",
 
 		ShaderType::RAW);
@@ -66,8 +70,7 @@ int main() {
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
 		// Process events
-		window.processInput();
-		glClear(GL_COLOR_BUFFER_BIT);
+		window.handleNoclip();
 
 		// Update the projection and view matrices for all the shapes to be drawn
 		int width, height;
@@ -77,7 +80,7 @@ int main() {
 		// Uniforms
 		float alphaValue = (sin(glfwGetTime()) / 2.0f) + 0.5f;
 
-		transform = glm::rotate<float>(transform, 0.01, glm::vec3(1.0, 1.0, 1.0f));
+	    transform = glm::rotate<float>(transform, 0.01, glm::vec3(1.0, 1.0, 1.0f));
 
 		ourShader.use();
 		ourShader.setMat4("transform", transform);
@@ -85,6 +88,7 @@ int main() {
 
 
 		//Rendering
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		rect.draw(window, &ourShader);
 		tri.draw(window, &ourShader);
 
