@@ -30,7 +30,7 @@ namespace oglopp {
 
 		std::vector<uint8_t> vertices;
 		std::vector<unsigned int> indices;
-		std::vector<Texture> textures;
+		std::vector<Texture*> textures;
 
 		unsigned int strideElements;
 		unsigned int strideBytes;
@@ -176,7 +176,7 @@ namespace oglopp {
 		 * @param[in] newTexture	The texture object to set to
 		 * @return					A reference to this shape object
 		*/
-		Shape& pushTexture(Texture& newTexture);
+		Shape& pushTexture(Texture* newTexture);
 
 		/** @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified.
 		 * @param[in] color		Include the color/normal vec3
@@ -302,7 +302,7 @@ namespace oglopp {
 		unsigned int getVAO();
 		unsigned int getVBO();
 		std::vector<uint8_t>& getVertices();
-		std::vector<Texture>& getTextureList();
+		std::vector<Texture*>& getTextureList();
 
 		/** @brief Draw this shape to the specified window using an optional shader
 		 * @param[in] window	A reference to the window object

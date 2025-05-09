@@ -36,7 +36,7 @@ namespace oglopp {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nearest ? GL_NEAREST : GL_LINEAR); //GL_LINEAR);
 
 		// Set the opengl texture
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, Texture::getTypeRegister(type), GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, Texture::getTypeRegister(type), this->width, this->height, 0, Texture::getTypeRegister(type), GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
@@ -110,6 +110,7 @@ namespace oglopp {
 	Texture& Texture::destroy() {
 		glDeleteTextures(1, &this->TID);
 		glDeleteBuffers(1, &this->TBO);
+		std::cout << "Destroying texture" << std::endl;
 
 		return *this;
 	}

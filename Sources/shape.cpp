@@ -543,9 +543,10 @@ namespace oglopp {
 	* @param[in] texture	The texture object to set to
 	* @return				A reference to this shape object
 	*/
-	Shape& Shape::pushTexture(Texture& newTexture) {
-		this->textures.push_back(std::ref(newTexture));
-
+	Shape& Shape::pushTexture(Texture* newTexture) {
+		if (nullptr != newTexture) {
+			this->textures.push_back(newTexture);
+		}
 		return *this;
 	}
 
@@ -561,7 +562,7 @@ namespace oglopp {
 		return this->vertices;
 	}
 
-	std::vector<Texture>& Shape::getTextureList() {
+	std::vector<Texture*>& Shape::getTextureList() {
 		return this->textures;
 	}
 
@@ -573,27 +574,27 @@ namespace oglopp {
 	Shape& Shape::draw(Window& window, Shader* pShader) {
 		DrawType drawType = TRIANGLES;
 
+		this->size = this->textures.size();
+
+		// Do this stuff if the shader was specified
 		if (pShader != nullptr) {
 			drawType = pShader->getDrawType();
 
+			// Use the shader for the following actions in this block...
 			pShader->use();
 
 			// Perform the model - view - projection calculation and pass through to the shader
 			this->updateUniformMVP(window, pShader);
-		}
 
-		this->size = this->textures.size();
-
-		//while (size > HLGL_SHAPE_MAX_TEXTURES) { // What the hell? Somebody is messing with me...
-		//	std::cerr << "Popping extra texture. Did you try to stuff the texture buffer? Do you really need more than " << HLGL_SHAPE_MAX_TEXTURES << "?" << std::endl;
-		//	this->textures.pop_back(); // Cant fool me...
-		//}
-
-		if (pShader != nullptr) {
+			// Apply textures to this object using the shader
 			for (int16_t i=0;i<this->size;i++) {
 				myRegister = Shape::getTextureCode(i);
 
-				this->textures[i].bind(myRegister);
+				// Bind the texture. This is required to be performed for each frame, for each texture, for each object.
+				this->textures[i]->bind(myRegister);
+
+				// We want to re-set the texture string every frame in case the shader changes
+				// There are much better ways to do this but it's just one line soo like...
 				pShader->setInt(Shape::getTextureString(i), i);
 			}
 		}
@@ -620,18 +621,6 @@ namespace oglopp {
 
 		// Unbind vertex array
 		glBindVertexArray(0);
-
-		/*
-		for (uint i=0;i<this->size;i++) {
-			myRegister = Shape::getTextureCode(i);
-
-			glActiveTexture(myRegister);
-			glBindTexture(GL_TEXTURE_2D, 0);
-
-			if (pShader != nullptr) {
-				pShader->setInt(Shape::getTextureString(i), 0);
-			}
-		}*/
 
 		return *this;
 	}

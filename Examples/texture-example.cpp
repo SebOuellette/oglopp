@@ -48,11 +48,11 @@ int main() {
 		"in vec4 vertexColor;\n"\
 		"in vec2 texCoord;\n"\
 		\
+		"uniform sampler2D texture0;\n"\
 		"uniform sampler2D texture1;\n"\
-		"uniform sampler2D texture2;\n"\
 		\
 		"void main() {\n"\
-			"FragColor =  (vertexColor + texture(texture1, texCoord) + texture(texture2, texCoord)) / 3.0;\n"\
+			"FragColor =  (vertexColor + texture(texture0, texCoord) + texture(texture1, texCoord)) / 3.0;\n"\
 		"}\n",
 
 		ShaderType::RAW);
@@ -63,9 +63,9 @@ int main() {
 	Texture container("/network/Programming/opengl/Examples/assets/container.jpg");
 	Texture face("/network/Programming/opengl/Examples/assets/awesomeface.png", oglopp::Texture::PNG);
 
-	tri.pushTexture(face);
-	rect.pushTexture(container);
-	rect.pushTexture(face);
+	tri.pushTexture(&face);
+	rect.pushTexture(&container);
+	rect.pushTexture(&face);
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {

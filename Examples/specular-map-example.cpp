@@ -164,8 +164,8 @@ int main() {
 	Texture diffuse("/network/Programming/opengl/Examples/assets/container2.png", Texture::FileType::PNG);
 	Texture specular("/network/Programming/opengl/Examples/assets/container2_specular.png", Texture::FileType::PNG);
 
-	coob.pushTexture(diffuse);
-	coob.pushTexture(specular);
+	coob.pushTexture(&diffuse);
+	coob.pushTexture(&specular);
 
 	// Camera cam;
 	float angle = 0;

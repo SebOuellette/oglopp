@@ -63,11 +63,11 @@ int main() {
 		"in vec4 vertexColor;\n"\
 		"in vec2 texCoord;\n"\
 		\
+		"uniform sampler2D texture0;\n"\
 		"uniform sampler2D texture1;\n"\
-		"uniform sampler2D texture2;\n"\
 		\
 		"void main() {\n"\
-			"FragColor =  (vertexColor + texture(texture1, texCoord) + texture(texture2, texCoord)) / 3.0;\n"\
+			"FragColor =  (vertexColor + texture(texture0, texCoord) + texture(texture1, texCoord)) / 3.0;\n"\
 		"}\n",
 
 		ShaderType::RAW);
@@ -78,16 +78,22 @@ int main() {
 	Texture container("/network/Programming/opengl/Examples/assets/container.jpg");
 	Texture face("/network/Programming/opengl/Examples/assets/awesomeface.png", oglopp::Texture::PNG);
 
-	tri.pushTexture(face);
-	rect.pushTexture(container);
-	rect.pushTexture(face);
-	coob.pushTexture(container);
-	coob.pushTexture(face);
-	coob2.pushTexture(face);
+	//tri.pushTexture(face);
+	//rect.pushTexture(container);
+	//rect.pushTexture(face);
+	coob.pushTexture(&container);
+	coob.pushTexture(&face);
+
+	//coob2.pushTexture(face);
+
+
+
+	ourShader.use();
+	ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, 0.0});
 
 	window.getCam().setPos(glm::vec3(0.0, 0.0, -4.0)).setAngle(glm::vec3(00, -90, 0));
 
-	ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, 0.0});
+
 
 	//std::chrono::high_resolution_clock::time_point lastFrameTime = std::chrono::high_resolution_clock::now();
 	//std::chrono::high_resolution_clock::time_point thisFrameTime;
@@ -114,15 +120,16 @@ int main() {
 		window.getCam().updateProjectionView(width, height);
 
 		// Transform objects
-		//coob.rotate(glm::vec3(0.01));
+		coob.setAngle(glm::dvec3(angle));
 		coob2.setPosition(glm::vec3(sin(angle), cos(angle), 0.0));
 
 		//Rendering
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		rect.draw(window, &ourShader);
-		tri.draw(window, &ourShader);
+		window.clear();
+		//rect.draw(window, &ourShader);
+		//tri.draw(window, &ourShader);
+
 		coob.draw(window, &ourShader);
-		coob2.draw(window, &ourShader);
+		//coob2.draw(window, &ourShader);
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer
 		// When drawing on the front buffer, aka the actual pixels on the screen, you can get screen tearing and watch the pixels draw
