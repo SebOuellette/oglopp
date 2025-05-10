@@ -14,65 +14,6 @@ using namespace oglopp;
 
 #define CAMSPEED (0.05)
 
-void handleInput(Window& window) {
-	// When escape is pressed...
-	if (window.keyPressed(GLFW_KEY_ESCAPE)) {
-		// Release the cursor
-		window.cursorCapture();
-
-		// If control is also pressed.. Destroy the window
-		if (window.keyPressed(GLFW_KEY_LEFT_CONTROL)) {
-			window.destroy();
-		}
-	}
-
-	bool eventRecevied = false;
-	{ // Keyboard
-		if (window.keyPressed(GLFW_KEY_W)) {
-			window.getCam().translate(window.getCam().getBack() * -CAMSPEED);
-			eventRecevied = true;
-		}
-		if (window.keyPressed(GLFW_KEY_A)) {
-			window.getCam().translate(window.getCam().getRight() * -CAMSPEED);
-			eventRecevied = true;
-		}
-		if (window.keyPressed(GLFW_KEY_S)) {
-			window.getCam().translate(window.getCam().getBack() * CAMSPEED);
-			eventRecevied = true;
-		}
-		if (window.keyPressed(GLFW_KEY_D)) {
-			window.getCam().translate(window.getCam().getRight() * CAMSPEED);
-			eventRecevied = true;
-		}
-		if (window.keyPressed(GLFW_KEY_LEFT_CONTROL)) {
-			window.getCam().translate(window.getCam().getUp() * -CAMSPEED);
-			eventRecevied = true;
-		}
-		if (window.keyPressed(GLFW_KEY_SPACE)) {
-			window.getCam().translate(window.getCam().getUp() * CAMSPEED);
-			eventRecevied = true;
-		}
-	}
-
-	// The cursor is trapped. So we can do window stuff now
-	if (window.isCursorCaptured()) {
-		// Get the cursor position then set it to the middle of the window... or bottom left idk but it works
-		glm::dvec2 cursor = window.getCursorPos();
-		window.setCursorPos({0.0, 0.0});
-
-		window.getCam().aimBy(cursor.y, cursor.x);
-	}
-
-	if (eventRecevied) {
-		window.cursorCapture();
-		window.setCursorPos({0.0, 0.0});
-	}
-
-	if (window.keyPressed(GLFW_KEY_R)) {
-		window.cursorRelease();
-	}
-}
-
 class InputBuffer {
 public:
 	static Window* windowPtr;
@@ -102,12 +43,15 @@ int main() {
 	Cube coob2;
 	Cube coob3;
 	Cube floor;
+	Sphere sphere;
 
 	coob.scale(glm::vec3(0.5));
 	coob2.scale(glm::vec3(0.5, 0.5, 0.6));
 	coob3.scale(glm::vec3(3.0));
 	floor.scale(glm::vec3(100.f, 0.5, 100.f));
 	floor.setPosition(glm::vec3(0.f, -2.f, 0.f));
+	sphere.setPosition(glm::vec3(3.f, 3.f, 6.f));
+	sphere.scale(glm::vec3(3.0));
 
 	// // Initialize our shader object
 	Shader shader(
@@ -185,7 +129,7 @@ int main() {
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
 		// Process events
-		handleInput(window);
+		window.handleNoclip();
 
 
 		angle += 0.02;
@@ -222,6 +166,9 @@ int main() {
 
 		shader.setVec3("albedo", glm::vec3(0.2, 0.2, 1.0));
 		floor.draw(window, &shader);
+
+		shader.setVec3("albedo", glm::vec3(1.0, 0.2, 0.1));
+		sphere.draw(window, &shader);
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer
 		// When drawing on the front buffer, aka the actual pixels on the screen, you can get screen tearing and watch the pixels draw

@@ -4,21 +4,17 @@
 // For 3d
 // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
-#include "../Headers/oglopp.h"
+#include <oglopp.h>
 #include <GLFW/glfw3.h>
-#include <chrono>
 #include <ctime>
-#include <iomanip>
 #include <iostream>
 #include <cmath>
-
 
 using namespace oglopp;
 
 #define CAMSPEED (0.05)
 
 int main() {
-
 	// Create the window
 	Window window;
 	window.create(800, 800, "HoneyLib OpenGL - Perspective Example");
@@ -67,7 +63,8 @@ int main() {
 		"uniform sampler2D texture1;\n"\
 		\
 		"void main() {\n"\
-			"FragColor =  (vertexColor + texture(texture0, texCoord) + texture(texture1, texCoord)) / 3.0;\n"\
+			"FragColor = (vertexColor + texture(texture0, texCoord) + texture(texture1, texCoord)) / 3.0;\n"\
+			"FragColor.a = 1.0;\n"\
 		"}\n",
 
 		ShaderType::RAW);
@@ -78,40 +75,27 @@ int main() {
 	Texture container("/network/Programming/opengl/Examples/assets/container.jpg");
 	Texture face("/network/Programming/opengl/Examples/assets/awesomeface.png", oglopp::Texture::PNG);
 
-	//tri.pushTexture(face);
-	//rect.pushTexture(container);
-	//rect.pushTexture(face);
+	tri.pushTexture(&face);
+	rect.pushTexture(&container);
+	rect.pushTexture(&face);
 	coob.pushTexture(&container);
 	coob.pushTexture(&face);
-
-	//coob2.pushTexture(face);
-
-
+	coob2.pushTexture(&face);
 
 	ourShader.use();
 	ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, 0.0});
 
 	window.getCam().setPos(glm::vec3(0.0, 0.0, -4.0)).setAngle(glm::vec3(00, -90, 0));
-
-
-
-	//std::chrono::high_resolution_clock::time_point lastFrameTime = std::chrono::high_resolution_clock::now();
-	//std::chrono::high_resolution_clock::time_point thisFrameTime;
-	//std::chrono::high_resolution_clock::duration frameTimeDiff;
 	timespec time;
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
-		//thisFrameTime = std::chrono::high_resolution_clock::now();
-		//frameTimeDiff = std::chrono::duration_cast<std::chrono::milliseconds>(thisFrameTime - lastFrameTime);
-		//lastFrameTime = thisFrameTime;
 		clock_gettime(CLOCK_MONOTONIC_RAW, &time);
 		unsigned long long int fullTime = time.tv_sec * 1000000 + time.tv_nsec / 1000;
 
 		// Process events
 		window.handleNoclip();
 
-		//angle += static_cast<double>(frameTimeDiff.count()) * 0.000000002; //0.02;
 		angle = static_cast<double>(fullTime) / 5000000 * M_PI * 2;
 
 		// Update the projection and view matrices for all the shapes to be drawn
@@ -125,11 +109,10 @@ int main() {
 
 		//Rendering
 		window.clear();
-		//rect.draw(window, &ourShader);
-		//tri.draw(window, &ourShader);
-
+		rect.draw(window, &ourShader);
+		tri.draw(window, &ourShader);
 		coob.draw(window, &ourShader);
-		//coob2.draw(window, &ourShader);
+		coob2.draw(window, &ourShader);
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer
 		// When drawing on the front buffer, aka the actual pixels on the screen, you can get screen tearing and watch the pixels draw
