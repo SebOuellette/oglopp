@@ -86,7 +86,7 @@ namespace oglopp {
 		// Create the element buffer object
 		glGenBuffers(1, &this->EBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * this->strideElements * sizeof(int), this->indices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * /*this->strideElements*/ HLGL_EBO_COMPONENTS * sizeof(unsigned int), this->indices.data(), GL_STATIC_DRAW);
 
 		return *this;
 	}
@@ -534,7 +534,7 @@ namespace oglopp {
 		this->indices.push_back(vertB);
 		this->indices.push_back(vertC);
 
-		this->indexCount++;
+		this->indexCount++; // One index represents 3 points
 
 		return *this;
 	}
