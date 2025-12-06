@@ -68,13 +68,14 @@ set(example_targets)
 file(GLOB EXAMPLE_SRCS ${CMAKE_SOURCE_DIR}/Examples/*.cpp)
 foreach(src IN LISTS EXAMPLE_SRCS)
 	get_filename_component(name ${src} NAME_WE)
-	add_executable(${name} EXCLUDE_FROM_ALL ${src})
-	target_link_options(${name} PRIVATE -Wl,-rpath,${CMAKE_INSTALL_RPATH})
-	target_link_libraries(${name} PRIVATE "${GLFW_LIB}")
-	target_link_libraries(${name} PRIVATE ${PROJECT_NAME})
+	set(exname ogl-${name})
+	add_executable(${exname} EXCLUDE_FROM_ALL ${src})
+	target_link_options(${exname} PRIVATE -Wl,-rpath,${CMAKE_INSTALL_RPATH})
+	target_link_libraries(${exname} PRIVATE "${GLFW_LIB}")
+	target_link_libraries(${exname} PRIVATE ${PROJECT_NAME})
 	#target_include_directories(${name} PRIVATE ${CMAKE_SOURCE_DIR}/Headers)
 	unset(${PROJECT_NAME} CACHE)
-	list(APPEND example_targets ${name})
+	list(APPEND example_targets ${exname})
 endforeach()
 
 # All examples
@@ -82,6 +83,10 @@ add_custom_target(examples
 	DEPENDS ${example_targets}
 	COMMENT "Building all example executables"
 )
+
+#if (TARGET examples)
+#	install(TARGETS ${example_targets} DESTINATION ${CMAKE_INSTALL_BINDIR})
+#endif()
 
 # Strip target
 add_custom_target(strip

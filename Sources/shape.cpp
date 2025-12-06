@@ -614,6 +614,16 @@ namespace oglopp {
 				break;
 			}
 
+			case LINE_LOOP:
+			case LINE: {
+				if (this->indexCount > 0) {
+					glDrawElements(GL_LINES, this->strideElements, GL_UNSIGNED_INT, 0);
+				} else {
+					glDrawArrays((drawType == LINE) ? GL_LINE_STRIP : GL_LINE_LOOP, 0, this->vertCount);
+				}
+				break;
+			}
+
 			case POINTS: {
 				glDrawArrays(GL_POINTS, 0, this->vertCount);
 			}

@@ -8,6 +8,7 @@
 #define NOCLIP_SPEED (0.05)
 
 namespace oglopp {
+
 	/** @brief Window object
 	 * @param HLGL_DRAW_WIREFRAMES 	Macro defined at compiler time to draw just wireframes. Not defined by default to draw normally
 	*/

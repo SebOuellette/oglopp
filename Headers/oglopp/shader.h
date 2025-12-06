@@ -25,8 +25,10 @@ namespace oglopp {
 	};
 
 	enum DrawType : uint8_t {
-		TRIANGLES 	= 0x00,
-		POINTS,
+		TRIANGLES 	= 0x00,		// 2d/3d. Draws a triangular surface
+		POINTS,					// Set of unconnected points
+		LINE,					// Draw a line between the points
+		LINE_LOOP,				// Similar to LINE, but include a line between the last point and the first point
 	};
 
 	/** @brief Shader object

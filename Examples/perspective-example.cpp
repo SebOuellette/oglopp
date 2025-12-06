@@ -36,6 +36,7 @@ int main() {
 
 	// // Initialize our shader object
 	Shader ourShader(
+		// Vertex shader
 		"#version 330 core\n"\
 		"layout (location = 0) in vec3 aPos;\n"\
 		"layout (location = 1) in vec3 aColor;\n"\
@@ -54,6 +55,7 @@ int main() {
 			"texCoord = aTexCoord;\n"\
 		"}\n",
 
+		// Fragment shader
 		"#version 330 core\n"\
 		"out vec4 FragColor;\n"\
 		"in vec4 vertexColor;\n"\

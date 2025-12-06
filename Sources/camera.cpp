@@ -6,9 +6,10 @@
 #include "oglopp/camera.h"
 
 namespace oglopp {
-	Camera::Camera(glm::dvec3 pos, glm::dvec3 target) {
-		this->_view = glm::dmat4(1.f);
-		this->_projection = glm::dmat4(1.f);
+	Camera::Camera(glm::dvec3 pos, glm::dvec3 target) :
+		_pos(0), _target(0), _angle(0), _backward(0), _right(0), _view(1.f), _projection(1.f) {
+		// this->_view = glm::dmat4(1.f);
+		// this->_projection = glm::dmat4(1.f);
 
 		this->fov = HLGL_DEFAULT_FOV;
 		this->setAngle(target);
