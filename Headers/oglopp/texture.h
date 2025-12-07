@@ -12,8 +12,11 @@ namespace oglopp {
 	class Texture {
 	public:
 		enum FileType {
+			RGB,
 			JPG,
-			PNG
+
+			RGBA,
+			PNG,
 		};
 
 	private:
@@ -78,6 +81,14 @@ namespace oglopp {
 		*/
 		~Texture();
 
+		/**
+		 * @brief Call rbo.resize() as well. Resize this texture and the fbo/rbo corresponding with it. Only valid if the texture was created with the FBO constructor
+		 * @param[in] fbo		A reference to the rbo to resize
+		 * @param[in] rboWidth	The new width to set the rbo and texture to
+		 * @param[in] rboHeight	The new height to set the rbo and texture to
+		 */
+		Texture& resizeWithFbo(FBO& fbo, int rboWidth, int rboHeight);
+
 		/** @brief Load an image path into the texture
 		*  @param[in]	path	The filepath to load
 		*  @param[in]	type	The type of the texture file
@@ -139,6 +150,11 @@ namespace oglopp {
 		 * @param[in] id	The texture ID to bind to.
 	 	*/
 		Texture& bind(uint16_t id);
+
+		/**
+		 * @brief Bind this texture without setting the texture ID. Not used for setting texture of objects.
+		 */
+		Texture& bind();
 	};
 }
 

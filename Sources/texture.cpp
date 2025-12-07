@@ -14,8 +14,11 @@ namespace oglopp {
 	*/
 	uint16_t Texture::getTypeRegister(FileType type) {
 		switch (type) {
+			case FileType::RGB:
 			case FileType::JPG:
 				return GL_RGB;
+
+			case FileType::RGBA:
 			case FileType::PNG:
 				return GL_RGBA;
 		}
@@ -33,7 +36,7 @@ namespace oglopp {
 		// Set texture filtering and wrapping options
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nearest ? GL_NEAREST : GL_LINEAR); //GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nearest ? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_LINEAR); //GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nearest ? GL_NEAREST : GL_LINEAR); //GL_LINEAR);
 
 		// Set the opengl texture
@@ -51,14 +54,14 @@ namespace oglopp {
 	 * @brief Texture from FBO
 	 * @param[in] fbo	The FBO object to map. Automatically bound and unbound
 	 */
-	Texture::Texture(FBO& fbo, int width, int height, bool nearest) {
+	Texture::Texture(FBO& fbo, int newWidth, int newHeight, bool nearest) : width(newWidth), height(newHeight), channels(4) {
 		fbo.bind();
 
 		glGenTextures(1, &this->TID);
 		glBindTexture(GL_TEXTURE_2D, this->TID);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nearest ? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nearest ? GL_NEAREST : GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nearest ? GL_NEAREST : GL_LINEAR);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->TID, 0);
@@ -73,6 +76,25 @@ namespace oglopp {
 	*/
 	Texture::~Texture() {
 		this->destroy();
+	}
+
+	/**
+	 * @brief Call rbo.resize() as well. Resize this texture and the fbo/rbo corresponding with it. Only valid if the texture was created with the FBO constructor
+	 * @param[in] fbo		A reference to the rbo to resize
+	 * @param[in] rboWidth	The new width to set the rbo and texture to
+	 * @param[in] rboHeight	The new height to set the rbo and texture to
+	 */
+	Texture& Texture::resizeWithFbo(FBO& fbo, int rboWidth, int rboHeight) {
+		fbo.resize(rboWidth, rboHeight);
+
+		// Now resize this texture
+		this->bind();
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, rboWidth, rboHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		this->width = rboWidth;
+		this->height = rboHeight;
+		this->channels = 4; // RGBA
+
+		return *this;
 	}
 
 	/** @brief Load an image path into the texture
@@ -163,9 +185,18 @@ namespace oglopp {
 	 * @param[in] id	The texture ID to bind to.
  	*/
 	Texture& Texture::bind(uint16_t id) {
+		// Set the id (used within the shader) to bind the texture to
 		glActiveTexture(id);
-		glBindTexture(GL_TEXTURE_2D, this->getTexture());
 
+		// Now bind the texture
+		return this->bind();
+	}
+
+	/**
+	 * @brief Bind this texture without setting the texture ID. Not used for setting texture of objects.
+	 */
+	Texture& Texture::bind() {
+		glBindTexture(GL_TEXTURE_2D, this->getTexture());
 		return *this;
 	}
 }

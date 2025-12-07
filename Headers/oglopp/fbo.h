@@ -40,10 +40,16 @@ namespace oglopp {
 
 			unsigned int getFbo() const;
 		 	unsigned int getRbo() const;
+			unsigned int getWidth() const;
+		 	unsigned int getHeight() const;
+
 
 		private:
 			GLuint fbo;
 			GLuint rbo;
+
+			int width;
+			int height;
 	};
 }
 

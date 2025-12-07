@@ -4,7 +4,7 @@
 namespace oglopp {
 	/** @brief Create a new SSBO object. Default constructor
 	*/
-	FBO::FBO(unsigned int rboWidth, unsigned int rboHeight) {
+	FBO::FBO(unsigned int rboWidth, unsigned int rboHeight): width(rboWidth), height(rboHeight) {
 		glGenFramebuffers(1, &this->fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
 
@@ -12,6 +12,7 @@ namespace oglopp {
 		glBindRenderbuffer(GL_RENDERBUFFER, this->rbo);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, rboWidth, rboHeight); // use a single renderbuffer object for both a depth AND stencil buffer.
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, this->rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	}
 
 	FBO::~FBO() {
@@ -26,6 +27,7 @@ namespace oglopp {
 		glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
 		// Enable depth test
 		glEnable(GL_DEPTH_TEST);
+		glViewport(0, 0, this->width, this->height);
 		return *this;
 	}
 
@@ -54,6 +56,9 @@ namespace oglopp {
 		glBindRenderbuffer(GL_RENDERBUFFER, this->rbo);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, rboWidth, rboHeight);
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		this->width = rboWidth;
+		this->height = rboHeight;
 	}
 
 
@@ -63,5 +68,13 @@ namespace oglopp {
 
 	unsigned int FBO::getRbo() const {
 		return this->rbo;
+	}
+
+	unsigned int FBO::getWidth() const {
+		return this->width;
+	}
+
+	unsigned int FBO::getHeight() const {
+		return this->height;
 	}
 }

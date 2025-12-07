@@ -12,24 +12,27 @@
 
 using namespace oglopp;
 
-#define CAMSPEED (0.05)
+struct ResizeData {
+	FBO* fbo;
+	Texture* tex;
+};
 
 void resizeCallback(int width, int height, void* data) {
 	if (data == nullptr) return; // Data may be null since we set it later on
 
 	// Get the FBO pointer and resize it
-	FBO* fbo = static_cast<FBO*>(data);
-	fbo->resize(width, height);
+	ResizeData* obj = static_cast<ResizeData*>(data);
+	obj->tex->resizeWithFbo(*obj->fbo, width, height);
 }
 
 int main() {
 	Window::Settings settings;
+	// For post-processing, you will need to use the resizeCallback to update the FBO and texture sizes if you plan on resizing your window. If not, then no need.
 	settings.resizeCallback = resizeCallback;
-	settings.doFaceCulling = false;
 
 	// Create the window
 	Window window;
-	window.create(800, 800, "HoneyLib OpenGL - Post-Processing Example");
+	window.create(800, 800, "HoneyLib OpenGL - Post-Processing Example", settings);
 
 	int width = 0;
 	int height = 0;
@@ -37,7 +40,6 @@ int main() {
 	std::cout << "Window size: [" << width << ", " << height << "]" << std::endl;
 
 	// Initialize the shape we want to draw
-	//Shape triangle;
 	Rectangle rect;
 	Triangle tri;
 	Cube coob;
@@ -85,6 +87,7 @@ int main() {
 		ShaderType::RAW);
 
 
+	// Post processing shader example (invert RGB in fragment shader)
 	Shader canvasShader(
 		"#version 330 core\n"\
 		"layout (location = 0) in vec3 aPos;\n"\
@@ -109,7 +112,8 @@ int main() {
 		"uniform sampler2D texture0;\n"\
 		\
 		"void main() {\n"\
-			"FragColor = texture(texture0, texCoord);\n"\
+			"vec4 texCol = texture(texture0, vec2(-texCoord.x, texCoord.y));\n"\
+			"FragColor = vec4(vec3(1.0 - texCol.r, 1.0 - texCol.g, 1.0 - texCol.b) * texCol.a, texCol.a);\n"\
 			"//FragColor.a = 1.0;\n"\
 		"}\n",
 
@@ -118,17 +122,27 @@ int main() {
 	// Camera cam;
 	float angle = 0;
 
+
+	/// POST-PROCESSING - CREATE FRAME/RENDERBUFFER, MAP TO TEXTURE
+
 	// Create the fbo, pass it to the window to update its size on a callback
 	FBO fbo(width, height);
-	window.setCallbackDataPtr(&fbo);
-
 	// Create the FBO texture
 	Texture fboTex(fbo, width, height);
+
+	// Copy some pointers into a structure that we can give to window, who will give it to our resizeCallback when the window is resized.
+	ResizeData resizeData;
+	resizeData.fbo = &fbo;
+	resizeData.tex = &fboTex;
+	window.setCallbackDataPtr(&resizeData);
 
 	// Create the canvas we will draw the FBO texture to
 	Rectangle canvas;
 	canvas.pushTexture(&fboTex);
 	// Done FBO
+
+
+
 
 	Texture container("/network/Programming/opengl/Examples/assets/container.jpg");
 	Texture face("/network/Programming/opengl/Examples/assets/awesomeface.png", oglopp::Texture::PNG);
@@ -139,8 +153,6 @@ int main() {
 	coob.pushTexture(&container);
 	coob.pushTexture(&face);
 	coob2.pushTexture(&face);
-
-
 
 	ourShader.use();
 	ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, 0.0});
@@ -159,7 +171,6 @@ int main() {
 		angle = static_cast<double>(fullTime) / 5000000 * M_PI * 2;
 
 		// Update the projection and view matrices for all the shapes to be drawn
-		int width, height;
 		window.getSize(&width, &height);
 		window.getCam().updateProjectionView(width, height);
 
@@ -168,18 +179,20 @@ int main() {
 		coob2.setPosition(glm::vec3(sin(angle), cos(angle), 0.0));
 
 		//Rendering
-		fbo.bind();
-		window.clear();
+		fbo.bind(); // Enables depthTest, sets glViewport size (MAKE SURE THE FBO AND TEXTURE ARE ADDED TO THE RESIZE CALLBACK)
+		window.clear(); // Clear the (now bound) renderbuffer
+		// Draw our points as normal, but now they will draw onto the render buffer (since we did fbo.bind())
 		rect.draw(window, &ourShader);
 		tri.draw(window, &ourShader);
 		coob.draw(window, &ourShader);
 		coob2.draw(window, &ourShader);
 
+		// Unbind the renderbuffer, then clear the real display buffer so we can re-draw our canvas.
 		FBO::unbind();
 		window.clear(GL_DEPTH_BUFFER_BIT); // Don't clear the depth
 
-		// TODO: Does not work. Draws a black screen as t he texture. No idea why.
-
+		// Draw a canvas painted with the renderbuffer, so we can apply a post-processing shader (vertex, geometry, fragment, or compute!).
+		// This also does not need to be a simple rectangle.
 		canvas.draw(window, &canvasShader);
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer
