@@ -1,10 +1,11 @@
 #include "oglopp/glad/gl.h"
+#include <stdexcept>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 #include <iostream>
 
 #include "oglopp/texture.h"
-#include "oglopp/defines.h"
+
 
 namespace oglopp {
 
@@ -32,7 +33,7 @@ namespace oglopp {
 		// Set texture filtering and wrapping options
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nearest ? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_LINEAR); //GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nearest ? GL_NEAREST : GL_LINEAR); //GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nearest ? GL_NEAREST : GL_LINEAR); //GL_LINEAR);
 
 		// Set the opengl texture
@@ -40,16 +41,32 @@ namespace oglopp {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
-	/** @brief Texture default constructor
-	*/
-	Texture::Texture() {
-
-	}
-
 	/** @brief Texture constructor. Load texture
 	*/
 	Texture::Texture(const char* path, FileType type, bool nearest) {
 		this->load(path, type, nearest);
+	}
+
+	/**
+	 * @brief Texture from FBO
+	 * @param[in] fbo	The FBO object to map. Automatically bound and unbound
+	 */
+	Texture::Texture(FBO& fbo, int width, int height, bool nearest) {
+		fbo.bind();
+
+		glGenTextures(1, &this->TID);
+		glBindTexture(GL_TEXTURE_2D, this->TID);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, nearest ? GL_NEAREST_MIPMAP_NEAREST : GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, nearest ? GL_NEAREST : GL_LINEAR);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->TID, 0);
+
+		if (fbo.isComplete())
+			fbo.unbind();
+		else
+			throw new std::runtime_error("Failed to complete fbo prep before unbinding in texture.");
 	}
 
 	/** @brief Texture destructor

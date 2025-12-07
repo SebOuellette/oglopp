@@ -6,11 +6,8 @@
 namespace oglopp {
 	// Callback function to automatically change viewport when window is resized
 	void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-		//std::cout << "Window resized [" << width << ", " << height << "]" << std::endl;
-		glViewport(0, 0, width, height);
-
-		// If the window is resized and moved around while the cursor is locked, free the cursor since it could be locked outside the window.
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+		pWindow->resize(width, height);
 	}
 
 	Window::Window() {
@@ -34,7 +31,10 @@ namespace oglopp {
 	 * @param[in]	settings	A pointer to an optional list of settings for the window
 	 * @return				A reference to this window object
 	 */
-	Window& Window::create(unsigned int width, unsigned int height, const char* title, Settings const& settings) {
+	Window& Window::create(unsigned int width, unsigned int height, const char* title, Window::Settings const& settings) {
+		// Copy the startup settings
+		this->startSettings = settings;
+
 		// FORCE the singleton to be initialized.
 		// When linking liboglopp.a, the singleton often does not run, which means windows fail.
 		// By just accessing a pointer to the singleton instance and storing it in a volatile pointer,
@@ -80,6 +80,7 @@ namespace oglopp {
 //#endif
 
 		// Callback function to automatically change viewport when window is resized
+		glfwSetWindowUserPointer(this->_window, this);
 		glfwSetFramebufferSizeCallback(this->_window, this->framebuffer_size_callback);
 
 		// Set the "background" colour of the window
@@ -254,8 +255,8 @@ namespace oglopp {
 	/** @brief Clear the window
 	 * @return A reference to this window
  	*/
-	Window& Window::clear() {
-		glClear(this->clearMask);
+	Window& Window::clear(uint32_t maskXor) {
+		glClear(this->clearMask ^ maskXor);
 		return *this;
 	}
 
@@ -286,28 +287,28 @@ namespace oglopp {
 			}
 
 			if (this->keyPressed(GLFW_KEY_LEFT_CONTROL)) {
-				this->getCam().translate(this->getCam().getUp() * -NOCLIP_SPEED);
+				this->getCam().translate(this->getCam().getUp() * -HLGL_NOCLIP_SPEED);
 				eventRecevied = true;
 			}
 
 			if (this->keyPressed(GLFW_KEY_W)) {
-				this->getCam().translate(this->getCam().getBack() * -NOCLIP_SPEED * speed);
+				this->getCam().translate(this->getCam().getBack() * -HLGL_NOCLIP_SPEED * speed);
 				eventRecevied = true;
 			}
 			if (this->keyPressed(GLFW_KEY_A)) {
-				this->getCam().translate(this->getCam().getRight() * -NOCLIP_SPEED * speed);
+				this->getCam().translate(this->getCam().getRight() * -HLGL_NOCLIP_SPEED * speed);
 				eventRecevied = true;
 			}
 			if (this->keyPressed(GLFW_KEY_S)) {
-				this->getCam().translate(this->getCam().getBack() * NOCLIP_SPEED * speed);
+				this->getCam().translate(this->getCam().getBack() * HLGL_NOCLIP_SPEED * speed);
 				eventRecevied = true;
 			}
 			if (this->keyPressed(GLFW_KEY_D)) {
-				this->getCam().translate(this->getCam().getRight() * NOCLIP_SPEED * speed);
+				this->getCam().translate(this->getCam().getRight() * HLGL_NOCLIP_SPEED * speed);
 				eventRecevied = true;
 			}
 			if(this->keyPressed(GLFW_KEY_SPACE)) {
-				this->getCam().translate(this->getCam().getUp() * NOCLIP_SPEED);
+				this->getCam().translate(this->getCam().getUp() * HLGL_NOCLIP_SPEED);
 				eventRecevied = true;
 			}
 		}
@@ -329,6 +330,34 @@ namespace oglopp {
 		if (this->keyPressed(GLFW_KEY_R)) {
 			this->cursorRelease();
 		}
+
+		return *this;
+	}
+
+	/**
+	 * @brief Resize the window
+	 * @param[in]	width	The width (in pixels) of the window
+	 * @param[in]	height	The height (in pixels) of the window
+	 */
+	Window& Window::resize(int width, int height) {
+		//std::cout << "Window resized [" << width << ", " << height << "]" << std::endl;
+		glViewport(0, 0, width, height);
+
+		// If the window is resized and moved around while the cursor is locked, free the cursor since it could be locked outside the window.
+		glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+		// Call the user-defined resize callback to do some stuff
+		this->startSettings.resizeCallback(width, height, this->startSettings.resizeCallbackPtr);
+
+		return *this;
+	}
+
+	/**
+	 * @brief Set the callback data pointer
+	 * @param[in] newPtr	The new pointer
+	 */
+	Window& Window::setCallbackDataPtr(void* newPtr) {
+		this->startSettings.resizeCallbackPtr = newPtr;
 
 		return *this;
 	}

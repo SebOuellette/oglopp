@@ -39,6 +39,8 @@
 #define HLGL_SCROLL_CB_TYPE ()
 #define HLGL_SCROLL_CALLBACK ()
 
+#define HLGL_NOCLIP_SPEED (0.05)
+
 
 
 #endif

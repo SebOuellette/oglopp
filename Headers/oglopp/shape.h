@@ -207,7 +207,7 @@ namespace oglopp {
 			uint32_t thisStrideElems = Shape::getStrideElems(static_cast<DataType>(firstParam));
 			uint32_t thisStrideBytes = thisStrideElems * Shape::getStrideComponentBytes(static_cast<DataType>(firstParam));
 
-			std::cout << "this bytes is " << thisStrideBytes << std::endl;
+			//std::cout << "this bytes is " << thisStrideBytes << std::endl;
 
 			// Accumulate this datatype's stride into the total
 			this->strideElements += thisStrideElems;

@@ -86,7 +86,7 @@ namespace oglopp {
 		// Create the element buffer object
 		glGenBuffers(1, &this->EBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * /*this->strideElements*/ HLGL_EBO_COMPONENTS * sizeof(unsigned int), this->indices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indexCount * HLGL_EBO_COMPONENTS * sizeof(unsigned int), this->indices.data(), GL_STATIC_DRAW);
 
 		return *this;
 	}
@@ -191,6 +191,7 @@ namespace oglopp {
 			this->updateEBO();
 		}
 
+		std::cout << "FIN Index count " << this->indexCount << std::endl;
 		std::cout << "FIN Stride bytes " << this->strideBytes << std::endl;
 		std::cout << "FIN Vert count " << this->vertCount << std::endl;
 
@@ -618,14 +619,15 @@ namespace oglopp {
 			case LINE: {
 				if (this->indexCount > 0) {
 					glDrawElements(GL_LINES, this->strideElements, GL_UNSIGNED_INT, 0);
-				} else {
-					glDrawArrays((drawType == LINE) ? GL_LINE_STRIP : GL_LINE_LOOP, 0, this->vertCount);
-				}
-				break;
-			}
+			 	} else {
+			 		glDrawArrays((drawType == LINE) ? GL_LINE_STRIP : GL_LINE_LOOP, 0, this->vertCount);
+			 	}
+			 	break;
+			 }
 
 			case POINTS: {
 				glDrawArrays(GL_POINTS, 0, this->vertCount);
+				break;
 			}
 		}
 

@@ -5,9 +5,14 @@
 #include "camera.h"
 //#include "oglopp/glad/gl.h"
 
-#define NOCLIP_SPEED (0.05)
-
 namespace oglopp {
+	/*
+	 * @brief The resize callback type. A function that takes the new width and height respectively as parameters
+	 * @param [in] width	The new width
+	 * @param [in] height	The new height
+	 */
+	typedef std::function<void(int, int, void*)> ResizeCallback;
+
 
 	/** @brief Window object
 	 * @param HLGL_DRAW_WIREFRAMES 	Macro defined at compiler time to draw just wireframes. Not defined by default to draw normally
@@ -46,6 +51,9 @@ namespace oglopp {
 			// Allow defining point size
 			bool modifyPointSize = false;
 
+			// The resize callback to be run when the window is resized
+			ResizeCallback resizeCallback = [](int, int, void*){};
+			void* resizeCallbackPtr = nullptr; // Can be updated later on with setCallbackDataPtr()
 		};
 
 
@@ -111,8 +119,6 @@ namespace oglopp {
 	 	*/
 		bool isCursorCaptured();
 
-
-
 		/** @brief Check if a glfw key is pressed down
 		 * @param[in] key	The GLFW key code to check
 		 * @return			True if the key is pressed, false otherwise
@@ -139,11 +145,24 @@ namespace oglopp {
 		/** @brief Clear the window
 		 * @return A reference to this window
 	 	*/
-		Window& clear();
+		Window& clear(uint32_t maskXor = 0);
 
 		/** @brief Handle noclip movement
 	 	*/
 		Window& handleNoclip();
+
+		/**
+		 * @brief Resize the window
+		 * @param[in]	width	The width (in pixels) of the window
+		 * @param[in]	height	The height (in pixels) of the window
+		 */
+		Window& resize(int width, int height);
+
+		/**
+		 * @brief Set the callback data pointer
+		 * @param[in] newPtr	The new pointer
+		 */
+		Window& setCallbackDataPtr(void* newPtr);
 
 	private:
 		uint32_t clearMask;
@@ -151,6 +170,8 @@ namespace oglopp {
 	    GLFWwindow* _window;
 
 		Camera renderCamera;
+
+		Window::Settings startSettings; // Copy of the settings used to start the window
 
 	    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	};

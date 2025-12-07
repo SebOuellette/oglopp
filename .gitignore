@@ -9,6 +9,7 @@ build/**
 #glad/**
 Headers/oglopp/glad/**
 Headers/oglopp/glad/*.*
+oglopp-app
 
 docs/doxygen
 docs/doxygen/**

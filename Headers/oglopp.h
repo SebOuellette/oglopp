@@ -14,6 +14,7 @@
 #include "oglopp/ssbo.h"
 #include "oglopp/shader.h"
 #include "oglopp/compute.h"
+#include "oglopp/fbo.h"
 
 #include "oglopp/matrix.h"
 

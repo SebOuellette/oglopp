@@ -4,6 +4,7 @@
 #include "oglopp/glad/gl.h"
 #include <stdint.h>
 #include <vector>
+#include "oglopp/fbo.h"
 
 namespace oglopp {
 	/** @brief Texture
@@ -54,7 +55,7 @@ namespace oglopp {
 
 		/** @brief Texture default constructor
 		*/
-		Texture();
+		Texture() = default;
 
 		/** @brief Create a texture buffer object
 	 	*/
@@ -66,6 +67,12 @@ namespace oglopp {
 		/** @brief Texture constructor. Load texture
 		*/
 		Texture(const char* path, FileType type = FileType::JPG, bool nearest = false);
+
+		/**
+		 * @brief Texture from FBO
+		 * @param[in] fbo	The FBO object to map. Automatically bound and unbound
+		 */
+		Texture(FBO& fbo, int width, int height, bool nearest = false);
 
 		/** @brief Texture destructor
 		*/
