@@ -134,7 +134,7 @@ int main() {
 	ResizeData resizeData;
 	resizeData.fbo = &fbo;
 	resizeData.tex = &fboTex;
-	window.setCallbackDataPtr(&resizeData);
+	window.setResizeCallbackDataPtr(&resizeData);
 
 	// Create the canvas we will draw the FBO texture to
 	Rectangle canvas;

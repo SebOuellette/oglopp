@@ -10,8 +10,19 @@ namespace oglopp {
 	 * @brief The resize callback type. A function that takes the new width and height respectively as parameters
 	 * @param [in] width	The new width
 	 * @param [in] height	The new height
+	 * @param [in] data		An optional pointer to settings.resizeCallbackPtr
 	 */
 	typedef std::function<void(int, int, void*)> ResizeCallback;
+
+	/*
+	 * @brief The resize callback type. A function that takes the new width and height respectively as parameters
+	 * @param [in] key		The GLFW key pressed
+	 * @param [in] scancode	A hardware/os code
+	 * @param [in] action	Pressed or released
+	 * @param [in] mods		Shift, ctrl?
+	 * @param [in] data		An optional pointer to settings.keypressCallbackPtr
+	 */
+	typedef std::function<void(int, int, int, int, void*)> KeypressCallback;
 
 
 	/** @brief Window object
@@ -53,7 +64,10 @@ namespace oglopp {
 
 			// The resize callback to be run when the window is resized
 			ResizeCallback resizeCallback = [](int, int, void*){};
-			void* resizeCallbackPtr = nullptr; // Can be updated later on with setCallbackDataPtr()
+			void* resizeCallbackPtr = nullptr; // Can be updated later on with setResizeCallbackDataPtr()
+
+			KeypressCallback keypressCallback = [](int, int, int, int, void*){};
+			void* keypressCallbackPtr = nullptr; // Can be updated later on with setKeypressCallbackDataPtr()
 		};
 
 
@@ -159,12 +173,20 @@ namespace oglopp {
 		Window& resize(int width, int height);
 
 		/**
-		 * @brief Set the callback data pointer
+		 * @brief Set the resize callback data pointer
 		 * @param[in] newPtr	The new pointer
 		 */
-		Window& setCallbackDataPtr(void* newPtr);
+		Window& setResizeCallbackDataPtr(void* newPtr);
+
+		/**
+		 * @brief Set the resize callback data pointer
+		 * @param[in] newPtr	The new pointer
+		 */
+		Window& setKeypressCallbackDataPtr(void* newPtr);
 
 	private:
+		Window& keypress(int key, int scancode, int action, int mods);
+
 		uint32_t clearMask;
 
 	    GLFWwindow* _window;
@@ -174,6 +196,8 @@ namespace oglopp {
 		Window::Settings startSettings; // Copy of the settings used to start the window
 
 	    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
+		static void keypress_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	};
 }
 

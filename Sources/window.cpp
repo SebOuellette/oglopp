@@ -10,6 +10,11 @@ namespace oglopp {
 		pWindow->resize(width, height);
 	}
 
+	void Window::keypress_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+		Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+		pWindow->keypress(key, scancode, action, mods);
+	}
+
 	Window::Window() {
 		this->_window = nullptr;
 		this->clearMask = GL_COLOR_BUFFER_BIT; // Initialize with the color buffer bit
@@ -82,6 +87,7 @@ namespace oglopp {
 		// Callback function to automatically change viewport when window is resized
 		glfwSetWindowUserPointer(this->_window, this);
 		glfwSetFramebufferSizeCallback(this->_window, this->framebuffer_size_callback);
+		glfwSetKeyCallback(this->_window, this->keypress_callback);
 
 		// Set the "background" colour of the window
 		glClearColor(settings.clearColor.r, settings.clearColor.g, settings.clearColor.b, settings.clearColor.a);
@@ -356,8 +362,30 @@ namespace oglopp {
 	 * @brief Set the callback data pointer
 	 * @param[in] newPtr	The new pointer
 	 */
-	Window& Window::setCallbackDataPtr(void* newPtr) {
+	Window& Window::setResizeCallbackDataPtr(void* newPtr) {
 		this->startSettings.resizeCallbackPtr = newPtr;
+
+		return *this;
+	}
+
+	/**
+	 * @brief Resize the window
+	 * @param[in]	width	The width (in pixels) of the window
+	 * @param[in]	height	The height (in pixels) of the window
+	 */
+	Window& Window::keypress(int key, int scancode, int action, int mods) {
+		// Call the user-defined resize callback to do some stuff
+		this->startSettings.keypressCallback(key, scancode, action, mods, this->startSettings.keypressCallbackPtr);
+
+		return *this;
+	}
+
+	/**
+	 * @brief Set the resize callback data pointer
+	 * @param[in] newPtr	The new pointer
+	 */
+	Window& Window::setKeypressCallbackDataPtr(void* newPtr) {
+		this->startSettings.keypressCallbackPtr = newPtr;
 
 		return *this;
 	}
