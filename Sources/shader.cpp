@@ -31,7 +31,7 @@ namespace oglopp {
 			shaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
 
 			try {
-				std::cout << "Opening file path: " << shader << std::endl;
+				//std::cout << "Opening file path: " << shader << std::endl;
 				shaderFile.open(shader, std::ios::in);
 
 			} catch(const std::ios_base::failure& fail) {

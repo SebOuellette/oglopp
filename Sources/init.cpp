@@ -8,7 +8,7 @@ namespace oglopp {
 		// Instantiate the window
 		//  Load up OpenGL version 3.3
 		glfwInit();
-		std::cout << "Init glfw" << std::endl;
+		//std::cout << "Init glfw" << std::endl;
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		// This tells the compiler we want to use the core-profile; meaning a smaller subset of OpenGL features without backwards compatability features we don't need

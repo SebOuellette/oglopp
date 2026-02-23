@@ -191,9 +191,9 @@ namespace oglopp {
 			this->updateEBO();
 		}
 
-		std::cout << "FIN Index count " << this->indexCount << std::endl;
-		std::cout << "FIN Stride bytes " << this->strideBytes << std::endl;
-		std::cout << "FIN Vert count " << this->vertCount << std::endl;
+		//std::cout << "FIN Index count " << this->indexCount << std::endl;
+		//std::cout << "FIN Stride bytes " << this->strideBytes << std::endl;
+		//std::cout << "FIN Vert count " << this->vertCount << std::endl;
 
 		return *this;
 	}
