@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1
+Type=Application
+Terminal=false
+Icon=/home/sharkfin/.local/share/oglopp-app/icon.png
+Exec=/home/sharkfin/bin/oglopp-app
+Name=OGLoPP Skeleton Application
+Comment=The barebones OGLoPP starting point application

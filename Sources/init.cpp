@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 
 #include "oglopp/defines.h"
 #include "oglopp/init.h"
@@ -7,7 +8,9 @@ namespace oglopp {
 	_HoneyLib_InitGL::_HoneyLib_InitGL() {
 		// Instantiate the window
 		//  Load up OpenGL version 3.3
-		glfwInit();
+		if (GLFW_FALSE == glfwInit()) {
+			throw std::runtime_error("glfw failed to initialize!\n");
+		}
 		//std::cout << "Init glfw" << std::endl;
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

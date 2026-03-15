@@ -69,7 +69,7 @@ namespace oglopp {
 		if (fbo.isComplete())
 			fbo.unbind();
 		else
-			throw new std::runtime_error("Failed to complete fbo prep before unbinding in texture.");
+			throw std::runtime_error("Failed to complete fbo prep before unbinding in texture.");
 	}
 
 	/** @brief Texture destructor

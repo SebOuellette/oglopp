@@ -1,89 +1,165 @@
-// For basic texture stuff
-// https://learnopengl.com/Getting-started/Hello-Triangle
-
-// For 3d
-// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
-
+#include <chrono>
+#include <cstddef>
 #include <oglopp.h>
-#include <GLFW/glfw3.h>
-#include <ctime>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
-#include <cmath>
+#include <filesystem>
+
+#include "defines.h"
+#include "oglopp/shader.h"
+#include "shaders.h"
 
 using namespace oglopp;
 
-#define CAMSPEED (0.05)
+struct ResizeData {
+	FBO* fbo;
+	Texture* tex;
+};
+
+void resizeCallback(int width, int height, void* data) {
+	if (data == nullptr) return; // Data may be null since we set it later on
+
+	// Get the FBO pointer and resize it
+	ResizeData* obj = static_cast<ResizeData*>(data);
+	obj->tex->resizeWithFbo(*obj->fbo, width, height);
+}
+
+struct KeypressVars {
+	bool keyPressed = false;
+};
+
+void keypressCallback(int key, int scancode, int action, int mods, void* data) {
+	if (data == nullptr) return;
+	if (action != GLFW_PRESS) return;
+
+	KeypressVars* obj = static_cast<KeypressVars*>(data);
+
+	switch (key) {
+		case GLFW_KEY_SPACE:
+			obj->keyPressed = !obj->keyPressed;
+			break;
+
+		default:
+			break;
+	}
+}
 
 int main() {
+	// Setup some window options to make it invisible
+	Window::Settings options;
+	options.visible = true;
+	options.modifyPointSize = true;
+	options.clearColor = glm::vec4(glm::vec3(0), 0.0);
+	options.resizeCallback = resizeCallback;
+	options.keypressCallback = keypressCallback;
+
 	// Create the window
 	Window window;
-	window.create(800, 800, "HoneyLib OpenGL - Perspective Example");
+	window.create(800, 800, "oglopp-example", options);
+	//InputBuffer::windowPtr = &window;
+	//glfwSetScrollCallback(window.getWindow(), InputBuffer::scrollCallback);
 
-	int width = 0;
-	int height = 0;
-	window.getSize(&width, &height);
-	std::cout << "Window size: [" << width << ", " << height << "]" << std::endl;
+	int height = 0, width = 0;
+	window.getSize(&width, &height); // Get the initial size for setting the size of the fbo
 
-	// Initialize the shape we want to draw
-	//Shape triangle;
-	Rectangle rect;
-	Triangle tri;
-	Cube coob;
-	Cube coob2;
+	Shaders shdrs;
+	shdrs.view.setDrawType(DrawType::TRIANGLES);
+	//glLineWidth(1.0f);
+	shdrs.post.setDrawType(DrawType::TRIANGLES); // Canvas
 
-	coob.scale(glm::vec3(0.5));
-	coob2.scale(glm::vec3(0.5, 0.5, 1.0));
+	// -------------- FRAME BUFFER -----------
+	// Create the FBO and texture objects
+	FBO fbo(width, height);
+	Texture fboTex(fbo, width, height);
 
-	// // Initialize our shader object
-	Shader ourShader("./shaders/vertex.glsl", "./shaders/fragment.glsl", ShaderType::FILE);
+	// Setup the resize callback data pointer
+	ResizeData resizeData;
+	resizeData.fbo = &fbo;
+	resizeData.tex = &fboTex;
+	window.setResizeCallbackDataPtr(&resizeData);
 
-	// Camera cam;
-	float angle = 0;
+	// -------------- KEYPRESS CALLBACK ----------
+	KeypressVars keypressVars;
+	window.setKeypressCallbackDataPtr(&keypressVars);
 
-	Texture container("./assets/textures/container.jpg", oglopp::Texture::JPG);
-	Texture face("./assets/textures/awesomeface.png", oglopp::Texture::PNG);
 
-	tri.pushTexture(&face);
-	rect.pushTexture(&container);
-	rect.pushTexture(&face);
-	coob.pushTexture(&container);
-	coob.pushTexture(&face);
-	coob2.pushTexture(&face);
+	// -------------- OBJECTS ----------------
+	//
+	// Create a list of vertices with just an ID. the position will be provided in an SSBO calculated by a compute shader
+	Cube cube;
+	cube.setScale(glm::dvec3(1));
 
-	ourShader.use();
-	ourShader.setVec4("ourColor", {0.0, 0.0, 0.0, 0.0});
+	// Create the canvas for drawing the framebuffer
+	Rectangle canvas;
+	canvas.pushTexture(&fboTex);
 
-	window.getCam().setPos(glm::vec3(0.0, 0.0, -4.0)).setAngle(glm::vec3(00, -90, 0));
-	timespec time;
 
-	// ----- Render Loop -----
+	// -------------------- SSBO EX --------------------
+	//
+	// Create a data buffer and initialize the values to provide some initial input to the ssbo
+	int gpuData[10];
+	const size_t GPU_DATASIZE = sizeof(gpuData) / sizeof(gpuData[0]);
+	for (size_t i=0;i<GPU_DATASIZE;i++) {
+		gpuData[i] = i;
+	}
+
+	// Load the buffer into an SSBO
+//	SSBO ssbo;
+	//ssbo.load(gpuData, sizeof(gpuData));
+
+	// ----------------- VARIABLE SETUP -----------------
+	//
+	auto lastTime = std::chrono::high_resolution_clock::now();
+	auto tmpTime = lastTime;
+	float frametime = 0;
+
+	// Camera start position
+	//window.getCam().setPos(glm::vec3(0, 0, -20));
+	//window.getCam().setAngle(glm::vec3(0, -90, 0));
+
+	// Shader uniforms
+	shdrs.view.use();
+	shdrs.view.setInt("GPU_DATASIZE", GPU_DATASIZE);
+
 	while (!window.shouldClose()) {
-		clock_gettime(CLOCK_MONOTONIC_RAW, &time);
-		unsigned long long int fullTime = time.tv_sec * 1000000 + time.tv_nsec / 1000;
-		angle = static_cast<double>(fullTime) / 5000000 * M_PI * 2;
-
-		// Process events
 		window.handleNoclip();
 
-		// Update the projection and view matrices for all the shapes to be drawn
-		int width, height;
 		window.getSize(&width, &height);
-		window.getCam().updateProjectionView(width, height);
+		window.getCam().updateProjectionView(width, height, 2000.0);
 
-		// Transform objects
-		coob.setAngle(glm::dvec3(angle));
-		coob2.setPosition(glm::vec3(sin(angle), cos(angle), 0.0));
+		//std::cout << window.getCam().getPos().x << " - " << window.getCam().getPos().y << " - " << window.getCam().getPos().z << std::endl;
 
-		//Rendering
+		// Determine frame time for shader
+		tmpTime = std::chrono::high_resolution_clock::now();
+		frametime = std::chrono::duration<float>(tmpTime - lastTime).count();
+		lastTime = tmpTime;
+
+		shdrs.view.setFloat("frame_time", frametime);
+		shdrs.post.setVec2("canvas_size", glm::vec2(width, height));
+		// done frame time
+
+		//ssbo.bind(0);
+
+		// STANDARD PROCESSING
+		// Setup drawing to the framebuffer
+		fbo.bind();
 		window.clear();
-		rect.draw(window, &ourShader);
-		tri.draw(window, &ourShader);
-		coob.draw(window, &ourShader);
-		coob2.draw(window, &ourShader);
+		{
+			cube.draw(window, &shdrs.view);
+		}
 
-		// Swap buffers since we always draw on the back buffer instead of the front buffer
-		// When drawing on the front buffer, aka the actual pixels on the screen, you can get screen tearing and watch the pixels draw
-		// We draw on the back buffer then swap it to the front to update the screen (v-sync?)
+		// POST PROCESSING
+		// Now draw the canvas to the main render buffer
+	 	FBO::unbind();
+		window.clear(GL_DEPTH_BUFFER_BIT);
+		{
+			canvas.draw(window, &shdrs.post);
+		}
+
+		//SSBO::unbind();
+
+		// Now display to the screen
 		window.bufferSwap();
 		window.pollEvents();
 	}
