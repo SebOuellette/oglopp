@@ -78,6 +78,36 @@ namespace oglopp {
 		this->updateVAO();
 	}
 
+
+	Cube2::Cube2() {  //   l/r    u/d     f/b\
+		// Push the data
+		this->pushVertex({ 0.5f,  0.5f,  0.5f});	// right up back
+		this->pushVertex({ 0.5f,  0.5f, -0.5f}); 	// right up front
+		this->pushVertex({ 0.5f, -0.5f,  0.5f}); 	// right down back
+		this->pushVertex({ 0.5f, -0.5f, -0.5f});	// right down front
+		this->pushVertex({-0.5f,  0.5f,  0.5f});	// left up back
+		this->pushVertex({-0.5f,  0.5f, -0.5f});	// left up front
+		this->pushVertex({-0.5f, -0.5f,  0.5f});	// left down back
+		this->pushVertex({-0.5f, -0.5f, -0.5f});	// left down front
+
+		this->pushNormal({ 0.0f, 0.0f, 1.0f});		// back
+		this->pushNormal({ 0.0f, 1.0f, 0.0f});		// up
+		this->pushNormal({ 1.0f, 0.0f, 0.0f});		// right
+		this->pushNormal({ 0.0f, 0.0f,-1.0f});		// front
+		this->pushNormal({ 0.0f,-1.0f, 0.0f});		// down
+		this->pushNormal({-1.0f, 0.0f, 0.0f});		// left
+
+		this->pushTexCoord({0.0, 0.0});	// bottom left
+		this->pushTexCoord({0.0, 1.0});	// top left
+		this->pushTexCoord({1.0, 0.0});	// bottom right
+		this->pushTexCoord({1.0, 1.0});	// top right
+
+		// Push the indices
+		this->pushTriangle();
+
+		this->updateVAO();
+	}
+
 	/** @brief Create a 3D Sphere object.
 	 *  @param[in] X_VERTS	The X resolution of the sphere.
 	 *  @param[in] Y_VERTS 	The Y resolution of the sphere.

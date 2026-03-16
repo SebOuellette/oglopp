@@ -19,10 +19,12 @@
 #define HLGL_WORLD_UP 		glm::dvec3(0.0f, 1.0f, 0.0f)
 
 #define HLGL_VEC_COMPONENTS 	3
-#define HLGL_EBO_COMPONENTS		HLGL_VEC_COMPONENTS // One EBO index is composed of this many integers
-#define HLGL_COL_COMPONENTS 	3
 #define HLGL_TEX_COMPONENTS		2
+#define HLGL_COL_COMPONENTS 	3
+#define HLGL_NOR_COMPONENTS		HLGL_COL_COMPONENTS
 #define HLGL_OPT_COMPONENTS		1
+
+#define HLGL_EBO_COMPONENTS		HLGL_VEC_COMPONENTS // One EBO index is composed of this many integers
 
 #define HLGL_RENDER_FAR			(800.f)
 #define HLGL_RENDER_NEAR		(0.01f)

@@ -1,0 +1,597 @@
+#include <cstdlib>
+#include <cstdint>
+#include <glm/ext/vector_float2.hpp>
+#include <iostream>
+#include <iterator>
+
+#include "oglopp/defines.h"
+#include "oglopp/glad/gl.h"
+#include "oglopp/shader.h"
+#include "oglopp/shape2.h"
+
+//#define VERTS 18
+//#define VERT_SIZE (VERTS * sizeof(float))
+
+namespace oglopp {
+
+	/** @brief Get the opengl texture register for the n'th texture, where index = n
+	* @param[in]	index	The index/layer of the texture
+	*/
+	uint16_t Shape2::getTextureCode(uint8_t index) {
+		return static_cast<uint16_t>(GL_TEXTURE0) + index;
+	}
+
+	/** @brief Get the opengl texture string for the n'th texture, where index = n
+	* @param[in]	index	The index/layer of the texture
+	*/
+	std::string Shape2::getTextureString(uint8_t index) {
+		std::string str = "texture" + std::to_string(index);
+
+		return str;
+	}
+
+	/** @brief Update uniform MVP
+	* @param[in] window	A reference to the window object
+	* @param[in] pShader	A pointer to the shader object
+	* @return				A reference to this shape object
+	*/
+	Shape2& Shape2::updateUniformMVP(Window& window, Shader* pShader) {
+		int width, height;
+		window.getSize(&width, &height);
+
+		// ..:: Model Matrix ::..
+		glm::dmat4 model(1.f); // Accumulate changes
+		model *= glm::translate(model, this->position); // This is kinda backwards but it gives the correct result
+		glm::dmat4 rotation(1.f); // Used for transforming normals
+		if (this->getAngle() != glm::dvec3(0)) {
+
+			rotation = glm::rotate<double>(rotation, this->getAngle().x, glm::dvec3(1.0, 0.0, 0.0f));
+			rotation = glm::rotate<double>(rotation, this->getAngle().y, glm::dvec3(0.0, 1.0, 0.0f));
+			rotation = glm::rotate<double>(rotation, this->getAngle().z, glm::dvec3(0.0, 0.0, 1.0f));
+			model *= rotation;
+		}
+		model = glm::scale(model, this->getScale());
+
+		// ..:: View Matrix ::..
+		glm::mat4 view(window.getCam().getView()); //window.getCam().face(-window.getCam().getBack());
+
+		// ..:: Projection Matrix ::..
+		glm::mat4 projection(window.getCam().getProjection());
+		//projection = //glm::perspective<float>(glm::radians(window.getCam().getFov()), static_cast<float>(width) / static_cast<float>(height), HLGL_RENDER_NEAR, HLGL_RENDER_FAR);
+
+		// ..:: Apply Elements ::..
+		pShader->use();
+		pShader->setMat4("model", model);
+		pShader->setMat4("view", view);
+		pShader->setMat4("projection", projection);
+		pShader->setMat4("rotation", rotation);
+
+		return *this;
+	}
+
+	/** @brief Updated extra uniforms. obverloaded in each inherited class
+	 * @return A reference to this shape object
+ 	*/
+	Shape2& Shape2::updateExtraUniforms() {
+		return *this;
+	}
+
+	Shape2& Shape2::updateEBO() {
+		// Index(element) Buffer Object
+		glGenBuffers(1, &this->EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * HLGL_EBO_COMPONENTS * sizeof(Index), this->indices.data(), GL_STATIC_DRAW);
+
+		return *this;
+	}
+
+	Shape2& Shape2::updateVBO() {
+
+		// Construct interleaved buffer out of the components
+
+
+
+		// Vertex Buffer Object
+		glGenBuffers(1, &this->VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+		glBufferData(GL_ARRAY_BUFFER, this->cLists.totalByteSum(), nullptr, GL_STATIC_DRAW);
+
+		return *this;
+	}
+
+	/*
+	 * @brief Get the number of components for each vertex, in total. Update strideElements and strideBytes
+	 * @return	The number of components for each vertex.
+	 */
+	inline uint32_t Shape2::getComponentCount() {
+		this->strideElements = this->cLists.itemPartSum();
+		this->strideBytes = this->cLists.itemByteSum();
+
+		return this->strideElements;
+	}
+
+	/** @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified.
+	 * @param[in] color		Include the color/normal vec3
+	 * @param[in] texture	Include the texture coord vec2
+	 * @param[in] option	Include the option uint16_t
+	 * @return	A reference to this shape object
+	*/
+	Shape2& Shape2::updateVAO() {
+		// INITIALIZATION - DONE ONCE UNLESS MESH UPDATES
+		// Calculate the stride bytes
+		this->getComponentCount();
+
+		glGenVertexArrays(1, &this->VAO);
+		glBindVertexArray(this->VAO);
+
+		// Update Vertex Buffer Object
+		this->updateVBO();
+
+		// Update Entity Buffer Object
+		if (!this->indices.empty()) {
+			this->updateEBO();
+		}
+
+		uint64_t offset = 0;
+		int index = 0;
+
+		// Push each component list in order.
+		for (IComponentList* cList : this->cLists) {
+			cList->pushVAOIndex(index, offset);
+		}
+
+		// Unbind the vertex array
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		return *this;
+	}
+
+	/** @brief Replacement for updateVAO. Allows dynamically specifying the type of value. Termination case
+	 * @param[in] totalIndices	The total number of indices
+	 * @return 	A reference to this shape object
+ 	*/
+	Shape2& Shape2::finalizePoints(const int totalIndices) {
+		glGenVertexArrays(1, &this->VAO);
+		// Initialization code (done once (unless your object frequently changes))
+
+		// 1. bind Vertex Array Object
+		glBindVertexArray(this->VAO);
+
+		// Update Vertex Buffer Object
+		this->updateVBO();
+
+		// Update Enitty Buffer Object
+		if (this->indexCount > 0) {
+			this->updateEBO();
+		}
+
+		//std::cout << "FIN Index count " << this->indexCount << std::endl;
+		//std::cout << "FIN Stride bytes " << this->strideBytes << std::endl;
+		//std::cout << "FIN Vert count " << this->vertCount << std::endl;
+
+		return *this;
+	}
+
+	/** @brief Convert a shape DataType to a stride element count
+	 * @param[in] dataType	The data type
+	 * @return				The number of associated stride elements/components
+ 	*/
+	const uint32_t Shape2::getStrideElems(DataType const& dataType) {
+		uint32_t elements = 0;
+
+		switch(dataType) {
+			case FLOAT:
+			case DOUBLE:
+			case UINT8:
+			case UINT16:
+			case UINT32:
+			case INT8:
+			case INT16:
+			case INT32:
+				elements = 1;
+				break;
+
+			case VEC2:
+			case DVEC2:
+			case IVEC2:
+			case I64VEC2:
+			case UVEC2:
+			case U64VEC2:
+				elements = 2;
+				break;
+
+			case VEC3:
+			case DVEC3:
+			case IVEC3:
+			case I64VEC3:
+			case UVEC3:
+			case U64VEC3:
+				elements = 3;
+				break;
+
+			case VEC4:
+			case DVEC4:
+			case IVEC4:
+			case I64VEC4:
+			case UVEC4:
+			case U64VEC4:
+				elements = 4;
+				break;
+
+			// No default case. Specify all types. Let compiler warn us otherwise.
+		}
+
+		return elements;
+	}
+
+	/** @brief Get the number of bytes for a single stride component for some datatype
+	 * @param[in] dataType	The data type
+	 * @return				The number of associated stride elements/components
+ 	*/
+	const uint32_t Shape2::getStrideComponentBytes(DataType const& dataType) {
+		uint32_t size = 0;
+
+		switch(dataType) {
+			case FLOAT:
+			case VEC2:
+			case VEC3:
+			case VEC4:
+				size = sizeof(float);
+				break;
+
+			case DOUBLE:
+			case DVEC2:
+			case DVEC3:
+			case DVEC4:
+				size = sizeof(double);
+				break;
+
+			case UINT8:
+				size = sizeof(uint8_t);
+				break;
+
+			case UINT16:
+				size = sizeof(uint16_t);
+				break;
+
+			case UINT32:
+			case UVEC2:
+			case UVEC3:
+			case UVEC4:
+				size = sizeof(uint32_t);
+				break;
+
+			case INT8:
+				size = sizeof(int8_t);
+				break;
+
+			case INT16:
+				size = sizeof(int16_t);
+				break;
+
+			case INT32:
+			case IVEC2:
+			case IVEC3:
+			case IVEC4:
+				size = sizeof(int32_t);
+				break;
+
+			case I64VEC2:
+			case I64VEC3:
+			case I64VEC4:
+				size = sizeof(int64_t);
+				break;
+
+			case U64VEC2:
+			case U64VEC3:
+			case U64VEC4:
+				size = sizeof(uint64_t);
+				break;
+
+			// No default case. Specify all types. Let compiler warn us otherwise.
+		}
+
+		return size;
+	}
+
+	/** @brief Get the component register data type for some shape dataype
+	 * @param[in] dataType	The shape datatype
+	 * @return				The gl register
+ 	*/
+  	const uint32_t Shape2::getStructComponentRegister(DataType const& dataType) {
+   		uint32_t reg = 0;
+
+		switch(dataType) {
+			case FLOAT:
+			case VEC2:
+			case VEC3:
+			case VEC4:
+				reg = GL_FLOAT;
+				break;
+
+			case DOUBLE:
+			case DVEC2:
+			case DVEC3:
+			case DVEC4:
+				reg = GL_DOUBLE;
+				break;
+
+			case UINT8:
+			case UINT16:
+			case UINT32:
+			case UVEC2:
+			case UVEC3:
+			case UVEC4:
+			case INT8:
+			case INT16:
+			case INT32:
+			case IVEC2:
+			case IVEC3:
+			case IVEC4:
+			case I64VEC2:
+			case I64VEC3:
+			case I64VEC4:
+			case U64VEC2:
+			case U64VEC3:
+			case U64VEC4:
+				reg = dataType;
+				break;
+
+			// No default case. Specify all types. Let compiler warn us otherwise.
+		}
+
+		return reg;
+	}
+
+	Shape2::Shape2() {
+		// Initialize stuff
+		//std::memset(this->textures, 0, sizeof(Texture*) * HLGL_SHAPE_MAX_TEXTURES);
+		this->position = glm::vec3(0, 0, 0);
+		this->angle = glm::vec3(0, 0, 0);
+		this->scaleVec = glm::vec3(1, 1 ,1);
+		this->size = 0;
+		this->myRegister = 0;
+		this->strideElements = 0;
+		this->strideBytes = 0;
+
+		this->cLists.push_back(&this->cVertices);
+		this->cLists.push_back(&this->cNormals);
+		this->cLists.push_back(&this->cTexCoords);
+		this->cLists.push_back(&this->cNormals);
+	}
+
+	Shape2::~Shape2() {
+		glDeleteBuffers(1, &this->VBO);
+		glDeleteBuffers(1, &this->EBO);
+		glDeleteVertexArrays(1, &this->VAO);
+	}
+
+	/**
+	 * @brief Push a single vertex to the shape
+	 * @param[in] vector	The vector of the vertex
+	 * @return 				A reference to this shape object
+	 */
+	Shape2& Shape2::pushVertex(glm::vec3 vector) {
+		this->cVertices.push_back({.x=vector.x, .y=vector.y, .z=vector.z});
+		return *this;
+	}
+
+	/**
+	 * @brief Push a single normal vector to the shape
+	 * @param[in] normal	The normal vector to push
+	 * @return 				A reference to this shape object
+	 */
+	Shape2& Shape2::pushNormal(glm::vec3 normal) {
+		this->cNormals.push_back({.x=normal.x, .y=normal.y, .z=normal.z});
+		return *this;
+	}
+
+	/**
+	 * @brief Push a single texture coordinate to this shape
+	 * @param[in] texCoord	The texture coordinate to push
+	 * @return 				A reference to this shape object
+	 */
+	Shape2& Shape2::pushTexCoord(glm::vec2 texCoord) {
+		this->cTexCoords.push_back({.x=texCoord.x, .y=texCoord.y});
+		return *this;
+	}
+
+	/**
+	 * @brief Push a single option to this shape
+	 * @param[in] option	The option to push
+	 * @return 				A reference to this shape object
+	 */
+	Shape2& Shape2::pushOption(uint16_t option) {
+		this->cOptions.push_back({.opt=option});
+		return *this;
+	}
+
+
+
+	/** @brief Push a triangle to the indicies list. A triangle is constructed of the following verticies which were defined with pushPoint
+	 * @param[in] vertA	The A vertex index out of the point list, where the first point is 0
+	 * @param[in] vertB	The B vertex index
+	 * @param[in] vertC	The C vertex index
+	 * @return			A reference to this shape object
+	 */
+	Shape2& Shape2::pushTriangle(unsigned int vertA, unsigned int vertB, unsigned int vertC) {
+		this->indices.push_back(vertA);
+		this->indices.push_back(vertB);
+		this->indices.push_back(vertC);
+
+		this->indexCount++; // One index represents 3 points
+
+		return *this;
+	}
+
+	/** @brief Set the texture
+	* @param[in] texture	The texture object to set to
+	* @return				A reference to this shape object
+	*/
+	Shape2& Shape2::pushTexture(Texture* newTexture) {
+		if (nullptr != newTexture) {
+			this->textures.push_back(newTexture);
+		}
+		return *this;
+	}
+
+	unsigned int Shape2::getVAO() {
+		return this->VAO;
+	}
+
+	unsigned int Shape2::getVBO() {
+		return this->VBO;
+	}
+
+	std::vector<Texture*>& Shape2::getTextureList() {
+		return this->textures;
+	}
+
+	/** @brief Draw this shape to the specified window using an optional shader
+	* @param[in] window		A reference to the window object
+	* @param[in] pShader	An optional pointer to the shader object
+	* @return 				A reference to this shape
+	*/
+	Shape2& Shape2::draw(Window& window, Shader* pShader) {
+		DrawType drawType = TRIANGLES;
+
+		this->size = this->textures.size();
+
+		// Do this stuff if the shader was specified
+		if (pShader != nullptr) {
+			drawType = pShader->getDrawType();
+
+			// Use the shader for the following actions in this block...
+			pShader->use();
+
+			// Perform the model - view - projection calculation and pass through to the shader
+			this->updateUniformMVP(window, pShader);
+
+			// Apply textures to this object using the shader
+			for (int16_t i=0;i<this->size;i++) {
+				myRegister = Shape2::getTextureCode(i);
+
+				// Bind the texture. This is required to be performed for each frame, for each texture, for each object.
+				this->textures[i]->bind(myRegister);
+
+				// We want to re-set the texture string every frame in case the shader changes
+				// There are much better ways to do this but it's just one line soo like...
+				pShader->setInt(Shape2::getTextureString(i), i);
+			}
+		}
+
+		// Bind vertex array
+		glBindVertexArray(this->VAO);
+
+		// Draw
+		switch (drawType) {
+			default:
+			case TRIANGLES: {
+				if (this->indexCount > 0) {
+					glDrawElements(GL_TRIANGLES, this->strideElements, GL_UNSIGNED_INT, 0);
+				} else {
+					glDrawArrays(GL_TRIANGLES, 0, this->cVertices.size());
+				}
+				break;
+			}
+
+			case LINE_LOOP:
+			case LINE: {
+				if (this->indexCount > 0) {
+					glDrawElements(GL_LINES, this->strideElements, GL_UNSIGNED_INT, 0);
+			 	} else {
+			 		glDrawArrays((drawType == LINE) ? GL_LINE_STRIP : GL_LINE_LOOP, 0, this->cVertices.size());
+			 	}
+			 	break;
+			 }
+
+			case POINTS: {
+				glDrawArrays(GL_POINTS, 0, this->cVertices.size());
+				break;
+			}
+		}
+
+		// Unbind vertex array
+		glBindVertexArray(0);
+
+		return *this;
+	}
+
+	/** @brief Get the position of this shape
+	* @return The position of this shape
+	*/
+	glm::dvec3 const& Shape2::getPosition() {
+		return this->position;
+	}
+
+	/** @brief Get the angle of this shape
+	* @return The angle of this shape
+	*/
+	glm::dvec3 const& Shape2::getAngle() {
+		return this->angle;
+	}
+
+	/** @brief Set the position of this shape in world space
+	* @param[in] newPosition	The position in world space
+	* @return					A reference to this position
+	*/
+	Shape2& Shape2::setPosition(glm::dvec3 newPosition) {
+		this->position = newPosition;
+		return *this;
+	}
+
+	/** @brief Set the angle of this shape in radians for each axis
+	* @param[in] newAngle		The angle to set to
+	* @return 					A reference to this shape object
+	*/
+	Shape2& Shape2::setAngle(glm::dvec3 newAngle) {
+		this->angle = newAngle;
+		return *this;
+	}
+
+	/** @brief Translate this shape some coordinates in world space
+	* @param[in] offset	The offset to translate by
+	* @return				A reference to this shape object
+	*/
+	Shape2& Shape2::translate(glm::dvec3 offset) {
+		this->position += offset;
+		return *this;
+	}
+
+	/** @brief Rotate this shape around its local origin
+	* @param[in] offset	The offset to rotate by in radians for each axis
+	* @return				A reference to this shape object
+	*/
+	Shape2& Shape2::rotate(glm::dvec3 offset) {
+		this->angle += offset;
+		return *this;
+	}
+
+	/** @brief Set the scale of the shape
+	* @param[in] newScale	The new scale for this shape
+	* @return 				A reference to this shape object
+	*/
+	Shape2& Shape2::setScale(glm::dvec3 newScale) {
+		this->scaleVec = newScale;
+
+		return *this;
+	}
+
+	/** @brief Apply a scaling factor to the shape
+	* @param[in] offset	The new scale for this shape
+	* @return				A reference to this shape object
+	*/
+	Shape2& Shape2::scale(glm::dvec3 offset) {
+		this->scaleVec *= offset;
+
+		return *this;
+	}
+
+	/** @brief Get the scale factor
+	* @return The scaling factor
+	*/
+	glm::dvec3 const& Shape2::getScale() {
+		return this->scaleVec;
+	}
+}
