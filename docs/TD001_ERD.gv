@@ -1,0 +1,14 @@
+// Graphviz dot language
+// TD001_ERD
+
+digraph G {
+	graph [layout=dot rankdir=LR]
+
+
+	ObjLoader
+	PointBuffer -> ObjLoader
+	Point -> PointBuffer
+	Components -> ObjLoader
+
+	{cVertices cTexCoords cNormals cOptions} -> Components
+}

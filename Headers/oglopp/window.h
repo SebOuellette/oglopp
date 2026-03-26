@@ -4,6 +4,8 @@
 #include "defines.h"
 #include "camera.h"
 //#include "oglopp/glad/gl.h"
+#include <functional>
+
 
 namespace oglopp {
 	/*

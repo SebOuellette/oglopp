@@ -1,10 +1,10 @@
 #ifndef OGLOPP_SHAPE2_H
 #define OGLOPP_SHAPE2_H
 
-#include <cstdint>
+#include <stdint.h>
 #include <glm/ext/vector_float2.hpp>
-#include <stdexcept>
-#include <variant>
+//#include <stdexcept>
+//#include <variant>
 #include <vector>
 #include <glm/vec3.hpp>
 #include <stdint.h>
@@ -17,73 +17,28 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <iostream>
-#include <any>
-#include <concepts>
+//#include <iostream>
+//#include <any>
+//#include <concepts>
 
 namespace oglopp {
-
-	template <typename L>
-	concept ComponentConcept = requires (L l, int& index, uint64_t& offset) {
-		l.pushVAOIndex(index, offset);
-	};
+	
+	//	4am programming 
+	//
+	//template <typename L>
+	//concept ComponentConcept = requires (L l, int& index, uint64_t& offset) {
+	//	l.pushVAOIndex(index, offset);
+	//};
 
 	/** @brief Shape object
 	*/
 	class Shape2 {
 	protected:
 
-		struct Component {
-			static constexpr size_t parts = 0;
-			static constexpr int type = 0;
-		};
+		
+		
 
-		/**
-		 * @brief VAO vertex component.
-		 */
-		struct ComponentVertex : public Component {
-			float x;
-			float y;
-			float z;
-
-			static constexpr size_t parts = 3;
-			static constexpr int type = GL_FLOAT;
-		};
-
-		/**
-		 * @brief VAO texture coordinate component
-		 */
-		struct ComponentTextureCoordinate : public Component {
-			float x;
-			float y;
-
-			static constexpr size_t parts = 2;
-			static constexpr int type = GL_FLOAT;
-		};
-
-		/**
-		 * @brief VAO normal vector component
-		 */
-		struct ComponentNormal : public Component {
-			float x;
-			float y;
-			float z;
-
-			static constexpr size_t parts = 3;
-			static constexpr int type = GL_FLOAT;
-		};
-
-		/**
-		 * @brief VAO option vector component. Surface type, bit mask, etc. For any custom use.
-		 */
-		struct ComponentOption : public Component {
-			uint16_t opt;
-
-			static constexpr size_t parts = 1;
-			static constexpr int type = GL_UNSIGNED_INT16_NV;
-		};
-
-
+		/*
 		class IComponentList {
 		public:
 			virtual ~IComponentList() = default;
@@ -124,48 +79,10 @@ namespace oglopp {
 				index++;
 			}
 		private:
-		};
+		};*/ 
 
-		class ComponentLists : public std::vector<IComponentList*> {
-		public:
-			inline size_t totalByteSum() {
-				size_t sum = 0;
-
-				for (auto& item : *this) {
-					sum += item->totalBytes();
-				}
-
-				return sum;
-			}
-
-			inline size_t itemPartSum() {
-				size_t sum = 0;
-
-				for (auto& item : *this) {
-					sum += item->itemParts();
-				}
-
-				return sum;
-			}
-
-			inline size_t itemByteSum() {
-				size_t sum = 0;
-
-				for (auto& item : *this) {
-					sum += item->itemBytes();
-				}
-
-				return sum;
-			}
-		};
-
+		
 		typedef uint32_t Index;
-
-		class ComponentIndices : public std::vector<Index> {
-
-			//TODO
-
-		};
 
 		unsigned int indexCount = 0;
 		unsigned int VAO = 0;
@@ -173,12 +90,12 @@ namespace oglopp {
 		unsigned int EBO = 0;
 
 		// Seperate list of vertex components
-		ComponentList<ComponentVertex> cVertices;
-		ComponentList<ComponentTextureCoordinate> cTexCoords;
-		ComponentList<ComponentNormal> cNormals;
-		ComponentList<ComponentOption> cOptions;
+		std::vector<ComponentVertex> cVertices;
+		std::vector<ComponentTextureCoordinate> cTexCoords;
+		std::vector<ComponentNormal> cNormals;
+		std::vector<ComponentOption> cOptions;
 
-		ComponentLists cLists;
+		std::vector<Point> pLists;
 		std::vector<Index> indices;
 
 		unsigned int strideElements;

@@ -1,13 +1,13 @@
-#include <cstdlib>
+//#include <cstdlib>
 #include <cstdint>
 #include <glm/ext/vector_float2.hpp>
-#include <iostream>
-#include <iterator>
+//#include <iostream>
+//#include <iterator>
 
 #include "oglopp/defines.h"
 #include "oglopp/glad/gl.h"
 #include "oglopp/shader.h"
-#include "oglopp/shape2.h"
+#include "../Headers/oglopp/shape2.h"
 
 //#define VERTS 18
 //#define VERT_SIZE (VERTS * sizeof(float))
