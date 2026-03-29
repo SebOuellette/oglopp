@@ -1,14 +1,26 @@
 // Graphviz dot language
-// TD001_ERD
+// TD001_ERD - Entity Relationship Diagram
 
 digraph G {
-	graph [layout=dot rankdir=LR]
+	graph [layout=dot rankdir=TD]
+	node [shape=box]
+
+	//Loader -> Shape
+	
+	//BufObj -> {VAO EBO VBO} [arrowtail=onormal, dir=back, label="is a"]
+	
+	Loader -> {VAO Shape} [label="creates"]
+	
+	VAO -> {EBO VBO} [label="creates"]
 
 
-	ObjLoader
-	PointBuffer -> ObjLoader
-	Point -> PointBuffer
-	Components -> ObjLoader
+	// Variables/properties
+	node [shape=plain]
+	VBOBuffer -> VBO
+	{Vertices TexCoords Normals} -> Loader
 
-	{cVertices cTexCoords cNormals cOptions} -> Components
+	// Process for classes
+	node [shape=oval]
+
+
 }

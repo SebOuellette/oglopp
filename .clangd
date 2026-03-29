@@ -1,5 +1,0 @@
-CompileFlags:
-	Add:
-		- "-std=c++20"
-		- "-I/network/Programming/opengl/Headers/"
-		- "-I/network/Programming/usr/include/"

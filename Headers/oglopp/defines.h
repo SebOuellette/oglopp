@@ -15,6 +15,7 @@
 	#define OGL_API
 #endif
 
+
 // Helpful defines
 #define HLGL_WORLD_UP 		glm::dvec3(0.0f, 1.0f, 0.0f)
 

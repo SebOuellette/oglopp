@@ -1,37 +1,37 @@
+#include <fstream>
+#include <string>
+#include <iostream>
+
 #include "oglopp/obj/loader.h"
 
 namespace oglopp {
+	Loader::Loader() {
+		this->attached = nullptr;
+	}
+	
 	/**
-	 * @brief Create a new point object using their indices in the component lists
-	 * @param[in] vertIdx	The vertex component index
-	 * @param[in] texIdx	The texture component index
-	 * @param[in] normIdx	The normal component index
-	 * @param[in] optIdx	The option component index
+	 * @brief Construct a new shape from an obj file
+	 * @param[in] filename	The path of the obj file
+	 * @param[in] vao	The VAO object to build
+	 * @return A reference to this objloader object
 	 */
-	Point ObjLoader::buildPoint(int64_t vertIdx, int64_t texIdx, int64_t normIdx, int64_t optIdx) {
-		Point point;
+	Loader& Loader::construct(std::string const& filename, VAO& vao) {
+		// Set the attached VAO object
+		this->attached = &vao;
+		// Push the file
+		std::ifstream file(filename);
+		
+		// Read every line
+		std::string line = "";
+		std::string type = "";
+		while (file.good()) {
+			std::getline(file, type, ' ');
+			std::getline(file, line);
 
-
-		// Verts
-		if (vertIdx >= 0 && vertIdx < cVertices.size()) {
-			vert = cVertices[vertIdx];
+			std::cout << "[" << type << "] [" << line << "]" << std::endl;
 		}
 
-		// Texture coords
-		if (texIdx >= 0 && texIdx < cTexCoords.size()) {
-			tex = cTexCoords[texIdx];
-		}
-
-		// Normal
-		if (normIdx >= 0 && normIdx < cNormals.size()) {
-			normal = cNormals[normIdx];
-		}
-
-		// Option index
-		if (optIdx >= 0 && optIdx < cOptions.size()) {
-			opt = cOptions[optIdx];
-		}
-
-		return point;
+		file.close();
+		return *this;
 	}
 }

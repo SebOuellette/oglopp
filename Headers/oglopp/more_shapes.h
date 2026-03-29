@@ -2,7 +2,7 @@
 #define OGLOPP_MORE_SHAPES_H
 
 #include "shape.h"
-#include "shape2.h"
+//#include "shape2.h"
 
 
 #define MAP_TO_COORD2(vertIndex, unitSize) (((static_cast<double>(vertIndex) * static_cast<double>(unitSize)) * 2) - 1.0)
@@ -29,12 +29,14 @@ namespace oglopp {
 		Cube();
 	};
 
+#if 0
 	/** @brief 3D Cube object
 	*/
 	class Cube2 : public Shape2 {
 	public:
 		Cube2();
 	};
+#endif
 
 	/** @brief 3D Sphere object
 	*/

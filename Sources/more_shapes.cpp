@@ -78,7 +78,8 @@ namespace oglopp {
 		this->updateVAO();
 	}
 
-
+// When objloader is ready
+#if 0
 	Cube2::Cube2() {  //   l/r    u/d     f/b\
 		// Push the data
 		this->pushVertex({ 0.5f,  0.5f,  0.5f});	// right up back
@@ -107,6 +108,7 @@ namespace oglopp {
 
 		this->updateVAO();
 	}
+#endif
 
 	/** @brief Create a 3D Sphere object.
 	 *  @param[in] X_VERTS	The X resolution of the sphere.
