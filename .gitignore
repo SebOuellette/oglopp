@@ -11,6 +11,8 @@ CMakeCache.txt
 .cache
 CMakeFiles
 
+*.swp
+
 # Glad is commented out cause it's not used. We save the glad installation so that glad can't update without us, and for compatibility.
 #glad
 #glad/**
