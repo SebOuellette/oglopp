@@ -15,23 +15,61 @@ namespace oglopp {
 	EBO::~EBO() {
 		this->destroy();
 	}
-	
-	/**
-	 * @brief Get a reference to the index buffer
-	 * @return A reference to the index buffer vertex
-	 */
-	std::vector<uint32_t>& EBO::getIndices() {
-		return this->indices;
-	}
 
 	/**
-	 * @brief Get the number of indices in the list
-	 * @return The number of indices
+	 * @brief Get the number of sets of indices pushed to the list
+	 * @return The number of individual indices
 	 */
 	size_t EBO::count() {
-		return this->indices.size();
+		return this->numSets;
 	}
 
+	/**
+	 * @brief Push a single VAO point index
+	 * @param[in] index	Index to the point in the VAO
+	 * @return		A reference to this EBO
+	 */
+	EBO& EBO::pushSingle(uint32_t index) {
+		this->indices.push_back(index);
+
+		this->numSets++;
+
+		return *this;
+	}
+	
+	/**
+	 * @brief Create a line of VAO point indices
+	 * @param[in] idxA	First point index
+	 * @param[in] idxB	Second point index
+	 * @return		A reference to this EBO
+	 */
+	EBO& EBO::pushPair(uint32_t idxA, uint32_t idxB) {
+		this->indices.push_back(idxA);
+		this->indices.push_back(idxB);
+
+		this->numSets++;
+
+		return *this;
+	}
+	
+	/**
+	 * @brief Create a triangle of VAO point indices 
+	 * @param[in] idxA	First point index
+	 * @param[in] idxB	Second point index
+	 * @param[in] idxC	Third point index
+	 * @return		A reference to this EBO
+	 */
+	EBO& EBO::pushTriangle(uint32_t idxA, uint32_t idxB, uint32_t idxC) {
+		this->indices.push_back(idxA);
+		this->indices.push_back(idxB);
+		this->indices.push_back(idxC);
+
+		this->numSets++;
+
+		return *this;
+	}
+
+	
 	/**
 	 * @brief Generate the buffer object. To be called by constructor
 	 * @return A reference to this buffer object
@@ -66,7 +104,13 @@ namespace oglopp {
 		return *this;
 	}
 
-
+	/**
+	 * @brief Unbind the EBO
+	 */
+	void EBO::unbind() {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+	
 	/**
 	 * @brief Update the buffer object.
 	 * @param[in] data	Ignored.
@@ -81,7 +125,7 @@ namespace oglopp {
 		// Copy the vertex array data into the buffer
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 			// Stride
-			this->indices.size() * HLGL_EBO_COMPONENTS * sizeof(uint32_t), 
+			this->indices.size() * sizeof(uint32_t), 
 			// Buffer
 			this->indices.data(), 
 			GL_STATIC_DRAW);

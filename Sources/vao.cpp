@@ -20,7 +20,7 @@ namespace oglopp {
 	 * @brief Get a reference to the VBO object
 	 * @return A reference to the VBO object
 	 */
-	inline VBO& VAO::getVBO() {
+	VBO& VAO::getVBO() {
 		return this->vbo;
 	}
 	
@@ -28,7 +28,7 @@ namespace oglopp {
 	 * @brief Get a reference to the EBO object
 	 * @return A reference to the EBO object
 	 */
-	inline EBO& VAO::getEBO() {
+	EBO& VAO::getEBO() {
 		return this->ebo;
 	}
 
@@ -66,6 +66,12 @@ namespace oglopp {
 		return *this;
 	}
 
+	/**
+	 * @brief Unbind the VAO
+	 */
+	void VAO::unbind() {
+		glBindVertexArray(0);
+	}
 
 	/**
 	 * @brief Update the buffer object.
@@ -101,9 +107,9 @@ namespace oglopp {
 		CTexCoord::push(offset, index, STRIDE);
 
 
-		// Unbind the vertex array
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		// Unbind the vertex arrays
+		VBO::unbind();
+		VAO::unbind();
 
 		return *this;
 	}

@@ -1,8 +1,10 @@
-#ifndef OGLOPP_SHAPE_H
-#define OGLOPP_SHAPE_H
+#ifndef OGLOPP_SHAPE2_H
+#define OGLOPP_SHAPE2_H
 
-#include <cstdint>
+#include <stdint.h>
 #include <glm/ext/vector_float2.hpp>
+//#include <stdexcept>
+//#include <variant>
 #include <vector>
 #include <glm/vec3.hpp>
 #include <stdint.h>
@@ -15,18 +17,89 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <iostream>
-
-#include "oglopp/obj/vao.h"
+//#include <iostream>
+//#include <any>
+//#include <concepts>
 
 namespace oglopp {
+	
+	//	4am programming 
+	//
+	//template <typename L>
+	//concept ComponentConcept = requires (L l, int& index, uint64_t& offset) {
+	//	l.pushVAOIndex(index, offset);
+	//};
+
 	/** @brief Shape object
 	*/
-	class Shape {
+	class Shape2 {
 	protected:
-		VAO vao;
 
-		std::vector<Texture*> textures;
+		
+		
+
+		/*
+		class IComponentList {
+		public:
+			virtual ~IComponentList() = default;
+
+			virtual inline size_t itemParts() const = 0;
+			virtual inline int itemTypes() const = 0;
+			virtual inline size_t itemBytes() const = 0;
+			virtual inline size_t totalBytes() const = 0;
+			virtual inline void pushVAOIndex(int& index, uint64_t& offset) const = 0;
+		};
+
+		template <typename T>
+		class ComponentList : public IComponentList, public std::vector<T> {
+		public:
+			inline size_t itemParts() const override {
+				return (!this->empty()) * T::parts;
+			}
+
+			inline int itemTypes() const override {
+				return T::type;
+			}
+
+			inline size_t itemBytes() const override {
+				return (!this->empty()) * sizeof(T);
+			}
+
+			inline size_t totalBytes() const override {
+				return this->size() * this->itemBytes();
+			}
+
+			inline void pushVAOIndex(int& index, uint64_t& offset) const override {
+				if (!this->empty()) {
+					glBufferSubData(GL_ARRAY_BUFFER, offset, this->totalBytes(), this->data());
+					glVertexAttribPointer(index, this->itemParts(), this->itemTypes(), GL_FALSE, 0, (void*)offset);
+					glEnableVertexAttribArray(index);
+					offset += this->totalBytes();
+				}
+				index++;
+			}
+		private:
+		};*/ 
+
+		
+		typedef uint32_t Index;
+
+		unsigned int indexCount = 0;
+		unsigned int VAO = 0;
+		unsigned int VBO = 0;
+		unsigned int EBO = 0;
+
+		// Seperate list of vertex components
+		std::vector<ComponentVertex> cVertices;
+		std::vector<ComponentTextureCoordinate> cTexCoords;
+		std::vector<ComponentNormal> cNormals;
+		std::vector<ComponentOption> cOptions;
+
+		std::vector<Point> pLists;
+		std::vector<Index> indices;
+
+		unsigned int strideElements;
+		unsigned int strideBytes;
 
 		// The angle and position of this shape in the world.
 		glm::dvec3 scaleVec;
@@ -36,6 +109,7 @@ namespace oglopp {
 		// Variables pre-defined for use in each draw() iteration
 		int16_t size;
 		uint16_t myRegister;
+		std::vector<Texture*> textures;
 
 		/** @brief Get the opengl texture register for the n'th texture, where index = n
 		 * @param[in]	index	The index/layer of the texture
@@ -52,7 +126,21 @@ namespace oglopp {
 		 * @param[in] pShader	A pointer to the shader object
 		 * @return				A reference to this shape object
 		*/
-		Shape& updateUniformMVP(Window& window, Shader* pShader);
+		Shape2& updateUniformMVP(Window& window, Shader* pShader);
+
+		/** @brief Updated extra uniforms. obverloaded in each inherited class
+		 * @return A reference to this shape object
+	 	*/
+		Shape2& updateExtraUniforms();
+
+		Shape2& updateEBO();
+		Shape2& updateVBO();
+
+		/*
+		 * @brief Get the number of components for each vertex, in total. Update strideElements and strideBytes
+		 * @return	The number of components for each vertex.
+		 */
+		inline uint32_t getComponentCount();
 
 	public:
 		enum DataType : uint16_t {
@@ -90,63 +178,37 @@ namespace oglopp {
 			U64VEC4 = GL_UNSIGNED_INT64_VEC4_ARB
 		};
 
-		Shape();
-		~Shape();
+		Shape2();
+		~Shape2();
 
-		/** @brief Push a single point to the shape.
-		* @param[in]	vec		The vector of the point
-		* @param[in]	col		The color of the vertex
-		* @param[in]	texPos	The texture position
-		* @param[in]	option	The option to push
-		* @return 		A reference to this shape object
-		*/
-		Shape& pushPoint(glm::vec3 vec, glm::vec3 col, glm::vec2 texPos, float option);
 
-		/** @brief Push a single point to the shape.
-		* @param[in]	vec		The vector of the point
-		* @param[in]	col		The color of the vertex
-		* @param[in]	texPos	The texture position
-		* @return 		A reference to this shape object
-		*/
-		Shape& pushPoint(glm::vec3 vec, glm::vec3 col, glm::vec2 texPos);
-
-		/** @brief Push a single point to the shape.
-		* @param[in]	vec		The vector of the point
-		* @param[in]	col		The color of the vertex
-		* @return 		A reference to this shape object
-		*/
-		Shape& pushPoint(glm::vec3 vec, glm::vec3 col);
-
-		/** @brief Push a single point to the shape.
-		* @param[in]	vec		The vector of the point
-		* @param[in]	texPos	The texture position
-		* @return 		A reference to this shape object
-		*/
-		Shape& pushPoint(glm::vec3 vec, glm::vec2 texPos);
-
-		/** @brief Push a single point to the shape.
-		* @param[in]	vec		The vector of the point
-		* @return 		A reference to this shape object
-		*/
-		Shape& pushPoint(glm::vec3 vec);
-
-		/** @brief Push a constant reference to some value. The size of the value must be able to be extracted from the type
-		 * @param[in] pValue	A pointer to the value to push
-		 * @param[in] bytes		The number of bytes pointer to by pValue
+		/**
+		 * @brief Push a single vertex to the shape
+		 * @param[in] vector	The vector of the vertex
 		 * @return 				A reference to this shape object
-	 	*/
-		Shape& pushValue(void const* pValue, size_t bytes);
+		 */
+		Shape2& pushVertex(glm::vec3 vector);
 
-		/** @brief Increment the number of vertices. Used when pushing template points to indicate the end of a vertex
-		 * @return A reference to this shape
-	 	*/
-		Shape& incrementVerts();
+		/**
+		 * @brief Push a single normal vector to the shape
+		 * @param[in] normal	The normal vector to push
+		 * @return 				A reference to this shape object
+		 */
+		Shape2& pushNormal(glm::vec3 normal);
 
-		/** @brief Reset the vertex count
-		 * @param[in] forceTo	Reset the vertex count to some value. Default is 0
-		 * @return	A reference to this shape object
-	 	*/
-		Shape& resetVerts(unsigned int forceTo = 0);
+		/**
+		 * @brief Push a single texture coordinate to this shape
+		 * @param[in] texCoord	The texture coordinate to push
+		 * @return 				A reference to this shape object
+		 */
+		Shape2& pushTexCoord(glm::vec2 texCoord);
+
+		/**
+		 * @brief Push a single option to this shape
+		 * @param[in] option	The option to push
+		 * @return 				A reference to this shape object
+		 */
+		Shape2& pushOption(uint16_t option);
 
 
 		/** @brief Push a triangle to the indicies list. A triangle is constructed of the following verticies which were defined with pushPoint
@@ -155,27 +217,24 @@ namespace oglopp {
 		 * @param[in] vertC	The C vertex index
 		 * @return			A reference to this shape object
 		*/
-		Shape& pushTriangle(unsigned int vertA, unsigned int vertB, unsigned int vertC);
+		Shape2& pushTriangle(unsigned int vertA, unsigned int vertB, unsigned int vertC);
 
 		/** @brief Push a texture onto the back of the texture stack.
 		 * @param[in] newTexture	The texture object to set to
 		 * @return					A reference to this shape object
 		*/
-		Shape& pushTexture(Texture* newTexture);
+		Shape2& pushTexture(Texture* newTexture);
 
 		/** @brief Update the vertex, index, and texture coordinate list. Expected to be called when the texture list is modified.
-		 * @param[in] color		Include the color/normal vec3
-		 * @param[in] texture	Include the texture coord vec2
-		 * @param[in] option	Include the option uint16_t
 		 * @return	A reference to this shape object
 		*/
-		Shape& updateVAO(bool color = true, bool texture = true, bool option = false);
+		Shape2& updateVAO();
 
 		/** @brief Replacement for updateVAO. Allows dynamically specifying the type of value. Termination case
 		 * @param[in] totalIndices	The total number of indices
 		 * @return 	A reference to this shape object
 	 	*/
-		Shape& finalizePoints(const int totalIndices);
+		Shape2& finalizePoints(const int totalIndices);
 
 		/** @brief Replacement for updateVAO. Allows dynamically specifying the type of value. Termination case (DOES RECURSE)
 		 * @param[in] index			The index of the point
@@ -184,13 +243,13 @@ namespace oglopp {
 		 * @return A reference to this shape object
 	 	*/
 		template <typename First, typename... Args>
-		Shape& finalizePoints(const int index, First firstParam, Args...args) {
+		Shape2& finalizePoints(const int index, First firstParam, Args...args) {
 			// The current stride bytes is the offset
 			const uint64_t OFFSET = this->strideBytes;
 
 			// Calculate the stride elements and stride bytes for THIS SINGLE DATATYPE
-			uint32_t thisStrideElems = Shape::getStrideElems(static_cast<DataType>(firstParam));
-			uint32_t thisStrideBytes = thisStrideElems * Shape::getStrideComponentBytes(static_cast<DataType>(firstParam));
+			uint32_t thisStrideElems = Shape2::getStrideElems(static_cast<DataType>(firstParam));
+			uint32_t thisStrideBytes = thisStrideElems * Shape2::getStrideComponentBytes(static_cast<DataType>(firstParam));
 
 			//std::cout << "this bytes is " << thisStrideBytes << std::endl;
 
@@ -207,14 +266,14 @@ namespace oglopp {
 				case VEC2:
 				case VEC3:
 				case VEC4:
-					glVertexAttribPointer(index, thisStrideElems, Shape::getStructComponentRegister(firstParam), GL_FALSE, this->strideBytes, (void*)OFFSET);
+					glVertexAttribPointer(index, thisStrideElems, Shape2::getStructComponentRegister(firstParam), GL_FALSE, this->strideBytes, (void*)OFFSET);
 					break;
 
 				case DVEC4:
 				case DVEC3:
 				case DVEC2:
 				case DOUBLE:
-					glVertexAttribLPointer(index, thisStrideElems, Shape::getStructComponentRegister(firstParam), this->strideBytes, (void*)OFFSET);
+					glVertexAttribLPointer(index, thisStrideElems, Shape2::getStructComponentRegister(firstParam), this->strideBytes, (void*)OFFSET);
 					break;
 
 				case UINT8:
@@ -235,7 +294,7 @@ namespace oglopp {
 				case I64VEC4:
 				case UVEC4:
 				case U64VEC4:
-					glVertexAttribIPointer(index, thisStrideElems, Shape::getStructComponentRegister(firstParam), this->strideBytes, (void*)OFFSET);
+					glVertexAttribIPointer(index, thisStrideElems, Shape2::getStructComponentRegister(firstParam), this->strideBytes, (void*)OFFSET);
 					break;
 
 				default:
@@ -253,7 +312,7 @@ namespace oglopp {
 		 * @return A reference to this shape object
 	 	*/
 		template <typename First, typename... Args>
-		Shape& finalizePoints(First firstParam, Args...args) {
+		Shape2& finalizePoints(First firstParam, Args...args) {
 			this->strideElements = 0;
 			this->strideBytes = 0;
 
@@ -286,7 +345,6 @@ namespace oglopp {
 
 		unsigned int getVAO();
 		unsigned int getVBO();
-		std::vector<uint8_t>& getVertices();
 		std::vector<Texture*>& getTextureList();
 
 		/** @brief Draw this shape to the specified window using an optional shader
@@ -294,7 +352,7 @@ namespace oglopp {
 		 * @param[in] pShader	An optional pointer to the shader object
 		 * @return 				A reference to this shape
 		*/
-		Shape& draw(Window& window, Shader* pShader = nullptr);
+		Shape2& draw(Window& window, Shader* pShader = nullptr);
 
 		/** @brief Get the position of this shape
 		 * @return The position of this shape
@@ -310,37 +368,37 @@ namespace oglopp {
 		 * @param[in] newPosition	The position in world space
 		 * @return					A reference to this position
 		*/
-		Shape& setPosition(glm::dvec3 newPosition);
+		Shape2& setPosition(glm::dvec3 newPosition);
 
 		/** @brief Set the angle of this shape in radians for each axis
 		 * @param[in] newAngle		The angle to set to
 		 * @return 					A reference to this shape object
 		*/
-		Shape& setAngle(glm::dvec3 newAngle);
+		Shape2& setAngle(glm::dvec3 newAngle);
 
 		/** @brief Translate this shape some coordinates in world space
 		 * @param[in] offset	The offset to translate by
 		 * @return				A reference to this shape object
 		*/
-		Shape& translate(glm::dvec3 offset);
+		Shape2& translate(glm::dvec3 offset);
 
 		/** @brief Rotate this shape around its local origin
 		 * @param[in] offset	The offset to rotate by in radians for each axis
 		 * @return				A reference to this shape object
 		*/
-		Shape& rotate(glm::dvec3 offset);
+		Shape2& rotate(glm::dvec3 offset);
 
 		/** @brief Set the scale of the shape
 		 * @param[in] newScale	The new scale for this shape
 		 * @return 				A reference to this shape object
 		*/
-		Shape& setScale(glm::dvec3 newScale);
+		Shape2& setScale(glm::dvec3 newScale);
 
 		/** @brief Apply a scaling factor to the shape
 		 * @param[in] offset	The new scale for this shape
 		 * @return				A reference to this shape object
 		*/
-		Shape& scale(glm::dvec3 offset);
+		Shape2& scale(glm::dvec3 offset);
 
 		/** @brief Get the scale factor
 		 * @return The scaling factor

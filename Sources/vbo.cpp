@@ -66,7 +66,13 @@ namespace oglopp {
 
 		return *this;
 	}
-
+	
+	/**
+	 * @brief Unbind the VBO
+	 */
+	void VBO::unbind() {
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 
 	/**
 	 * @brief Update the buffer object.

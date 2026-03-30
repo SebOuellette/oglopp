@@ -11,7 +11,7 @@ list(APPEND _INSTALLED_HDRS "/usr/local/include/oglopp")
 
 # /usr/local/lib/liboglopp.*
 file(GLOB_RECURSE _INSTALLED_LIBS
-	"/usr/local/lib/liboglopp.*"
+	"/usr/local/${CMAKE_INSTALL_LIBDIR}/liboglopp.*"
 )
 
 # Remove them all now

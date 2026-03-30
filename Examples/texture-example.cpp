@@ -12,7 +12,6 @@
 using namespace oglopp;
 
 int main() {
-
 	// Create the window
 	Window window;
 	window.create(800, 800, "HoneyLib OpenGL - Texture Example 1");
@@ -67,6 +66,12 @@ int main() {
 	rect.pushTexture(&container);
 	rect.pushTexture(&face);
 
+	// OBJ Loader Test
+	Loader loader;
+	VAO vao;
+
+	loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", vao);
+
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
 		// Process events
@@ -79,8 +84,7 @@ int main() {
 
 		// Uniforms
 		float alphaValue = (sin(glfwGetTime()) / 2.0f) + 0.5f;
-
-	    transform = glm::rotate<float>(transform, 0.01, glm::vec3(1.0, 1.0, 1.0f));
+		transform = glm::rotate<float>(transform, 0.01, glm::vec3(1.0, 1.0, 1.0f));
 
 		ourShader.use();
 		ourShader.setMat4("transform", transform);
@@ -88,7 +92,8 @@ int main() {
 
 
 		//Rendering
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		window.clear();
 		rect.draw(window, &ourShader);
 		tri.draw(window, &ourShader);
 

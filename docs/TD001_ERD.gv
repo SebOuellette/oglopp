@@ -19,8 +19,10 @@ digraph G {
 	VBOBuffer -> VBO
 	{Vertices TexCoords Normals} -> Loader
 
-	// Process for classes
+	// Functions/processes for classes
 	node [shape=oval]
-
-
+	"vao.update()" -> "finalizePoints<T>()"
+	
+	CodeShape
+	ObjShape
 }
