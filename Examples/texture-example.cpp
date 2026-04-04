@@ -68,9 +68,9 @@ int main() {
 
 	// OBJ Loader Test
 	Loader loader;
-	VAO vao;
+	Drawable obj;
 
-	loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", vao);
+	loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", obj);
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
@@ -96,6 +96,7 @@ int main() {
 		window.clear();
 		rect.draw(window, &ourShader);
 		tri.draw(window, &ourShader);
+		obj.draw(window, &ourShader);
 
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer

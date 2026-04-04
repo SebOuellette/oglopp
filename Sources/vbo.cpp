@@ -40,22 +40,6 @@ namespace oglopp {
 
 		return *this;
 	}
-	
-	/**
-	 * @brief Push a vertex to the list, and increment the vertex counter
-	 * @param[in] vtx	The vertex vector to push
-	 * @param[in] tex	The texture coordinate to push
-	 * @param[in] norm	The normal vector to push
-	 * @return		A reference to this VBO object
-	 */
-	VBO& VBO::pushVertex(
-		CVertex const& vtx, 
-		CTexCoord const& tex, 
-		CNormal const& norm
-	) { 
-		// Push each item. Order here should be  vtx, norm, tex
-		return this->push(vtx).push(norm).push(tex);
-	}
 
 	/**
 	 * @brief Bind the buffer.
@@ -83,7 +67,7 @@ namespace oglopp {
 	VBO& VBO::update(void* data) {
 		if (this->data.empty()) return *this;
 
-		this->bind();	
+		this->bind();
 
 		// Copy the vertex array data into the buffer
 		glBufferData(GL_ARRAY_BUFFER, 

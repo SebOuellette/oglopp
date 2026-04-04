@@ -20,18 +20,18 @@ namespace oglopp {
 	Loader& Loader::pushFace(VBO& vbo, int64_t vertIndex, int64_t texIndex, int64_t normIndex) {
 		// If the index is in the list, copy it and push
 		//  Otherwise, push 0,0,0
-		vbo.pushVertex(
+		vbo.push(
 			(vertIndex > 0 && vertIndex < this->cVertices.size()) ? 
 				this->cVertices[vertIndex] : 
-				CVertex({.x = 0, .y = 0, .z = 0}),
+				CVertex(0, 0, 0),
 			
 			(texIndex > 0 && texIndex < this->cTexCoords.size()) ?
 				this->cTexCoords[texIndex] : 
-				CTexCoord({.x = 0, .y = 0}),
+				CTexCoord(0, 0),
 
 			(normIndex > 0 && normIndex < this->cNormals.size()) ? 
 				this->cNormals[normIndex] : 
-				CNormal({.x = 0, .y = 0, .z = 0})
+				CNormal(0, 0, 0)
 		);
 
 #ifdef VERBOSE
@@ -50,7 +50,7 @@ namespace oglopp {
 	Loader& Loader::pushTriangleIndices(EBO& ebo, uint32_t start, uint32_t offset) {
 		if (offset < 3) return *this;
 
-		ebo.pushTriangle(
+		ebo.push(
 			start, 
 			start + offset - 2, 
 			start + offset - 1);
@@ -104,11 +104,7 @@ namespace oglopp {
 			if ("v" == type) {
 				// Read and parse a vertex
 				file >> x >> y >> z;
-				this->cVertices.push_back({
-					.x = x, 
-					.y = y, 
-					.z = z
-				});
+				this->cVertices.push_back(CVertex(x, y, z));
 
 #ifdef VERBOSE
 				std::cout << x << "," << y << "," << z;
@@ -116,10 +112,7 @@ namespace oglopp {
 			} else if ("vt" == type) {
 				// Read and parse a texture coordinate
 				file >> x >> y;
-				this->cTexCoords.push_back({
-					.x = x,
-					.y = y
-				});
+				this->cTexCoords.push_back(CTexCoord(x, y));
 
 #ifdef VERBOSE
 				std::cout << x << "," << y;
@@ -127,11 +120,7 @@ namespace oglopp {
 			} else if ("vn" == type) {
 				// Read and parse a normal vector
 				file >> x >> y >> z;
-				this->cNormals.push_back({
-					.x = x, 
-					.y = y, 
-					.z = z
-				});
+				this->cNormals.push_back(CNormal(x, y, z));
 #ifdef VERBOSE
 				std::cout << x << "," << y << "," << z;
 #endif
@@ -212,7 +201,7 @@ namespace oglopp {
 		this->cNormals.clear();
 
 		// Now let's update the VAO
-		vao.update();
+		vao.update<CVertex, CTexCoord, CNormal>();
 
 		return *this;
 	}
