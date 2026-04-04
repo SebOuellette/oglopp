@@ -24,14 +24,14 @@ namespace oglopp {
 			(vertIndex > 0 && vertIndex < this->cVertices.size()) ? 
 				this->cVertices[vertIndex] : 
 				CVertex(0, 0, 0),
-			
-			(texIndex > 0 && texIndex < this->cTexCoords.size()) ?
-				this->cTexCoords[texIndex] : 
-				CTexCoord(0, 0),
 
 			(normIndex > 0 && normIndex < this->cNormals.size()) ? 
 				this->cNormals[normIndex] : 
-				CNormal(0, 0, 0)
+				CNormal(0, 0, 0),
+
+			(texIndex > 0 && texIndex < this->cTexCoords.size()) ?
+				this->cTexCoords[texIndex] : 
+				CTexCoord(0, 0)
 		);
 
 #ifdef VERBOSE
@@ -201,7 +201,7 @@ namespace oglopp {
 		this->cNormals.clear();
 
 		// Now let's update the VAO
-		vao.update<CVertex, CTexCoord, CNormal>();
+		vao.update<CVertex, CNormal, CTexCoord>();
 
 		return *this;
 	}

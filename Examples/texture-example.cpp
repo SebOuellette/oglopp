@@ -75,32 +75,37 @@ int main() {
 	Drawable obj;
 	//obj.pushTexture(&face);
 	
+	#if 0
 	Shape t;
 	t.translate(glm::vec3(0, 0.5, 0));
 	
 	{
-		//obj.getEBO().push(0, 1, 2);
+		t.pushTriangle(0, 1, 2);
+		t.pushTriangle(1, 3, 2);
 
-		t.pushPoint({-0.5, -1.0, 0.0})
-			.pushPoint({0.0, 0.0, 0.0})
-			.pushPoint({0.5, -1.0, 0.0});
+		t.pushPoint({-1.0, -1.0, -1.0})
+			.pushPoint({1.0, -1.0, -1.0})
+			.pushPoint({-1.0, -1.0, 1.0})
+			.pushPoint({1.0, -1.0, 1.0});
 		t.updateVAO(false, false, false);
 
-		obj.pushPoint(CVertex(-0.5, -1.0, 0.0))
-			.pushPoint(CVertex(0.0, 0.0, 0.0))
-			.pushPoint(CVertex(0.5, -1.0, 0.0));
 
-		//obj.pushPoint(CVertex(-0.5, -1.0, 0.0), CNormal(1.0, 0.0, 0.0), CTexCoord(0.0, 0.0));
-		//obj.pushPoint(CVertex(0.0,  0.0, 0.0), CNormal(0.0, 1.0, 0.0), CTexCoord(0.5, 1.0));
-		//obj.pushPoint(CVertex(0.5, -1.0, 0.0), CNormal(0.0, 0.0, 1.0), CTexCoord(1.0, 0.0));
+		obj.getEBO().push(0, 1, 2);
+		obj.getEBO().push(1, 3, 2);
 
-		// ..:: Initialization code ::..
-//		obj.update<CVertex, CNormal, CTexCoord>();
+
+		obj.pushPoint(CVertex(-1.0, -1.0, -1.0))
+			.pushPoint(CVertex(1.0, -1.0, -1.0))
+			.pushPoint(CVertex(-1.0, -1.0, 1.0))
+			.pushPoint(CVertex(1.0, -1.0, 1.0));
 		obj.update<CVertex>();
 
 	}
+	#endif
+	
+	std::cout << "indices: " << obj.getEBO().getCount() << std::endl;
 
-	//loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", obj);
+	loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", obj);
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
@@ -129,8 +134,8 @@ int main() {
 		ourShader.setVec3("col", {0.0, 1.0, 0.0});
 		obj.draw(window, &ourShader);
 
-		ourShader.setVec3("col", {1.0, 0.0, 0.0});
-		t.draw(window, &ourShader);
+		//ourShader.setVec3("col", {1.0, 0.0, 0.0});
+		//t.draw(window, &ourShader);
 
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer

@@ -39,7 +39,7 @@ namespace oglopp {
 		 * @return	A reference to this EBO
 		 */
 		EBO& push() {
-			this->count++;
+			//this->count++;
 			return *this;
 		}
 		
@@ -53,6 +53,7 @@ namespace oglopp {
 		template <typename... Indices>
 		EBO& push(uint32_t firstIndex, Indices... indices) {
 			this->indices.push_back(firstIndex);
+			this->count++;
 
 			return this->push(indices...);
 		}

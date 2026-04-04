@@ -94,7 +94,7 @@ namespace oglopp {
 			default:
 			case TRIANGLES: {
 				if (this->getEBO().getCount() > 0) {
-					glDrawElements(GL_TRIANGLES, this->getCount(), GL_UNSIGNED_INT, 0);
+					glDrawElements(GL_TRIANGLES, this->getEBO().getCount(), GL_UNSIGNED_INT, 0);
 				} else {
 					glDrawArrays(GL_TRIANGLES, 0, this->getVBO().getCount());
 				}
@@ -104,7 +104,7 @@ namespace oglopp {
 			case LINE_LOOP:
 			case LINE: {
 				if (this->getEBO().getCount() > 0) {
-					glDrawElements(GL_LINES, this->getCount(), GL_UNSIGNED_INT, 0);
+					glDrawElements(GL_LINES, this->getEBO().getCount(), GL_UNSIGNED_INT, 0);
 			 	} else {
 			 		glDrawArrays((drawType == LINE) ? GL_LINE_STRIP : GL_LINE_LOOP, 0, this->getVBO().getCount());
 			 	}
