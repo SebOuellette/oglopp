@@ -50,11 +50,12 @@ int main() {
 		"in vec4 vertexColor;\n"\
 		"in vec2 texCoord;\n"\
 		\
+		"uniform vec3 col;\n"\
 		"uniform sampler2D texture0;\n"\
 		"uniform sampler2D texture1;\n"\
 		\
 		"void main() {\n"\
-			"FragColor =  (vertexColor + texture(texture0, texCoord) + texture(texture1, texCoord)) / 3.0;\n"\
+			"FragColor = vec4(col, 1.0); //  (vertexColor + texture(texture0, texCoord) + texture(texture1, texCoord)) / 3.0;\n"\
 		"}\n",
 
 		ShaderType::RAW);
@@ -72,9 +73,34 @@ int main() {
 	// OBJ Loader Test
 	Loader loader;
 	Drawable obj;
-	obj.pushTexture(&face);
+	//obj.pushTexture(&face);
+	
+	Shape t;
+	t.translate(glm::vec3(0, 0.5, 0));
+	
+	{
+		//obj.getEBO().push(0, 1, 2);
 
-	loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", obj);
+		t.pushPoint({-0.5, -1.0, 0.0})
+			.pushPoint({0.0, 0.0, 0.0})
+			.pushPoint({0.5, -1.0, 0.0});
+		t.updateVAO(false, false, false);
+
+		obj.pushPoint(CVertex(-0.5, -1.0, 0.0))
+			.pushPoint(CVertex(0.0, 0.0, 0.0))
+			.pushPoint(CVertex(0.5, -1.0, 0.0));
+
+		//obj.pushPoint(CVertex(-0.5, -1.0, 0.0), CNormal(1.0, 0.0, 0.0), CTexCoord(0.0, 0.0));
+		//obj.pushPoint(CVertex(0.0,  0.0, 0.0), CNormal(0.0, 1.0, 0.0), CTexCoord(0.5, 1.0));
+		//obj.pushPoint(CVertex(0.5, -1.0, 0.0), CNormal(0.0, 0.0, 1.0), CTexCoord(1.0, 0.0));
+
+		// ..:: Initialization code ::..
+//		obj.update<CVertex, CNormal, CTexCoord>();
+		obj.update<CVertex>();
+
+	}
+
+	//loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", obj);
 
 	std::cout << "OBJ ------" << std::endl;
 	std::cout << "StrideElems: " << obj.getCount() << std::endl;
@@ -103,9 +129,13 @@ int main() {
 		//Rendering
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		window.clear();
-		rect.draw(window, &ourShader);
-		tri.draw(window, &ourShader);
+		//rect.draw(window, &ourShader);
+		//tri.draw(window, &ourShader);
+		ourShader.setVec3("col", {0.0, 1.0, 0.0});
 		obj.draw(window, &ourShader);
+
+		ourShader.setVec3("col", {1.0, 0.0, 0.0});
+		t.draw(window, &ourShader);
 
 
 		// Swap buffers since we always draw on the back buffer isntead of the front buffer

@@ -56,7 +56,7 @@ namespace oglopp {
 		 * @param[in] pShader	An optional pointer to the shader object
 		 * @return 				A reference to this shape
 		*/
-		Drawable& draw(Window& window, Shader* pShader = nullptr);
+		virtual Drawable& draw(Window& window, Shader* pShader = nullptr) override;
 	};
 }
 

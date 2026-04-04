@@ -97,7 +97,9 @@ namespace oglopp {
 		template <typename... Components>
 		VAO& pushPoint(Components... c) {
 			// Push in order...
-			return this->vbo.push(c...);
+			this->vbo.push(c...);
+
+			return *this;
 		}
 		
 		/**
@@ -130,6 +132,8 @@ namespace oglopp {
 			// First, recursively compute the stride
 			size_t stride = 0;
 			VAOUpdater<Components...>::strideSum(stride, this->count);
+
+			std::cout << "Updating obj with stride " << stride << std::endl;
 
 			// Then, recursively push the components in order
 			VAOUpdater<Components...>::update(stride);

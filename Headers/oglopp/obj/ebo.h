@@ -9,7 +9,6 @@ namespace oglopp {
 	class EBO : public BufferObj<EBO> {
 	private:
 		std::vector<uint32_t> indices;
-		size_t numSets;
 
 		/**
 		 * @brief Generate the buffer object

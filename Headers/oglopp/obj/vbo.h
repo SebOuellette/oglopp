@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include <iostream>
 #include "oglopp/util.h"
 #include "oglopp/obj/component.h"
 #include "oglopp/obj/bufferobj.h"
@@ -46,6 +47,7 @@ namespace oglopp {
 			// Called once no matter how many args are given.
 			// We can increment the point count by 1 here
 			this->count++;
+			std::cout << "obj increment vbo count (now " << this->count << ")" << std::endl;
 
 			return *this;
 		}
@@ -66,6 +68,8 @@ namespace oglopp {
 				this->data.end(), 
 				ptr, 
 				ptr + sizeof(first));
+
+			std::cout << "obj pushing " << sizeof(first) << " bytes" << std::endl;
 
 			// Recurse
 			return this->push(c...);

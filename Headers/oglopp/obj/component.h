@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
+#include <initializer_list>
+#include <iostream>
 
 namespace oglopp {
 	// CRTP (Curiously Recurring Template Pattern) design pattern
@@ -27,6 +29,9 @@ namespace oglopp {
 		 * @param[in] stride	The number of bytes per stride
 		 */
 		static inline void push(size_t& offset, int& index, size_t stride) {
+	
+			std::cout << "obj vao pushing index " << index << " at offset " << offset << " with stride " << stride << std::endl;
+			std::cout << "pushing parts " << Child::parts() << "of type " << Child::type() << std::endl;
 			glVertexAttribPointer(
 				index, 
 				Child::parts(), 
@@ -36,8 +41,8 @@ namespace oglopp {
 				(void*)offset
 			);
 			glEnableVertexAttribArray(index);
-			
-			offset += Child::parts() * sizeof(Child);
+		
+			offset += sizeof(Child);
 			index++;
 		}
 	};
@@ -50,7 +55,7 @@ namespace oglopp {
 		float x;
 		float y;
 		float z;
-		
+
 		CVertex(float newX = 0, float newY = 0, float newZ = 0) : x(newX), y(newY), z(newZ) {}
 		CVertex(glm::vec3 vec) : x(vec.x), y(vec.y), z(vec.z) {}
 

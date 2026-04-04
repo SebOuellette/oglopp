@@ -35,12 +35,14 @@ namespace oglopp {
 
 		model = glm::scale(model, this->getScale());
 
+		glm::mat4 view(window.getCam().getView());
+		glm::mat4 projection(window.getCam().getProjection());
 
 		// ..:: Apply Elements ::..
 		pShader->use();
 		pShader->setMat4("model", model);
-		pShader->setMat4("view", window.getCam().getView());
-		pShader->setMat4("projection", window.getCam().getProjection());
+		pShader->setMat4("view", view); //window.getCam().getView());
+		pShader->setMat4("projection", projection); //window.getCam().getProjection());
 		pShader->setMat4("rotation", rotation);
 
 		return *this;

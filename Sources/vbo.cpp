@@ -69,6 +69,13 @@ namespace oglopp {
 
 		this->bind();
 
+		std::cout << "VBO data size is " << this->data.size() << std::endl;
+
+		for (uint8_t byte : this->data) {
+			std::cout << static_cast<int>(byte);
+		}
+		std::cout << std::endl;
+
 		// Copy the vertex array data into the buffer
 		glBufferData(GL_ARRAY_BUFFER, 
 			this->data.size(), // full size 
