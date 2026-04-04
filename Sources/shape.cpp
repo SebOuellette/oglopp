@@ -98,13 +98,6 @@ namespace oglopp {
 		// Bind the newly created buffer to the array buffer
 		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 
-		std::cout << "Shape vbo data size is " << this->vertCount * this->strideBytes << std::endl;
-
-		for (uint8_t byte : this->vertices) {
-			std::cout << static_cast<int>(byte);
-		}
-		std::cout << std::endl;
-
 		// Copy the vertex array data into the buffer
 		glBufferData(GL_ARRAY_BUFFER, this->vertCount * this->strideBytes, this->vertices.data(), GL_STATIC_DRAW);
 
@@ -124,12 +117,7 @@ namespace oglopp {
 			//HLGL_VEC_COMPONENTS * sizeof(float) + (color ? HLGL_COL_COMPONENTS * sizeof(float) : 0) + (texture ? HLGL_TEX_COMPONENTS * sizeof(float) : 0) + (option ? HLGL_OPT_COMPONENTS * sizeof(float) : 0);
 
 		glGenVertexArrays(1, &this->VAO);
-		// Initialization code (done once (unless your object frequently changes))
-		std::cout << "SHAPE ----" << std::endl;
-		std::cout << "StrideElems: " << this->strideElements << std::endl;
-		std::cout << "VertCount: " << this->vertCount << std::endl;
-		std::cout << "Indices: " << this->indexCount << std::endl;
-	
+		// Initialization code (done once (unless your object frequently changes))	
 		// 1. bind Vertex Array Object
 		glBindVertexArray(this->VAO);
 

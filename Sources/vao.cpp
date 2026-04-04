@@ -38,7 +38,7 @@ namespace oglopp {
 	 */
 	VAO& VAO::generate() {
 		// Create an empty vertex buffer object
-		glGenBuffers(1, &this->index);
+		glGenVertexArrays(1, &this->index);
 
 		return *this;
 	}
@@ -48,10 +48,10 @@ namespace oglopp {
 	 * @return A reference to this buffer object (ready for next)
 	 */
 	VAO& VAO::destroy() {
-		// From man glDeleteBuffer
+		// From man glDeleteVertexArrays
 		//  - 'ignores 0's and names that do not correspond
 		//     with named buffers'
-		glDeleteBuffers(1, &this->index);
+		glDeleteVertexArrays(1, &this->index);
 
 		return *this;
 	}
@@ -61,7 +61,7 @@ namespace oglopp {
 	 * @return A reference to this buffer object
 	 */
 	VAO& VAO::bind() {
-		glBindBuffer(GL_ARRAY_BUFFER, this->index);
+		glBindVertexArray(this->index);
 
 		return *this;
 	}

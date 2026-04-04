@@ -29,9 +29,6 @@ namespace oglopp {
 		 * @param[in] stride	The number of bytes per stride
 		 */
 		static inline void push(size_t& offset, int& index, size_t stride) {
-	
-			std::cout << "obj vao pushing index " << index << " at offset " << offset << " with stride " << stride << std::endl;
-			std::cout << "pushing parts " << Child::parts() << "of type " << Child::type() << std::endl;
 			glVertexAttribPointer(
 				index, 
 				Child::parts(), 

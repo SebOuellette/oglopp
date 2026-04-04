@@ -133,8 +133,6 @@ namespace oglopp {
 			size_t stride = 0;
 			VAOUpdater<Components...>::strideSum(stride, this->count);
 
-			std::cout << "Updating obj with stride " << stride << std::endl;
-
 			// Then, recursively push the components in order
 			VAOUpdater<Components...>::update(stride);
 

@@ -65,7 +65,7 @@ namespace oglopp {
 	EBO& EBO::update(void* data) {
 		// Exit early if there are no indices
 		if (this->getCount() == 0) return *this;
-
+		
 		this->bind();	
 
 		// Copy the vertex array data into the buffer

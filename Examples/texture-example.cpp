@@ -102,11 +102,6 @@ int main() {
 
 	//loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", obj);
 
-	std::cout << "OBJ ------" << std::endl;
-	std::cout << "StrideElems: " << obj.getCount() << std::endl;
-	std::cout << "VertCount: " << obj.getVBO().getCount() << std::endl;
-	std::cout << "Indices: " << obj.getEBO().getCount() << std::endl;
-
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
 		// Process events
