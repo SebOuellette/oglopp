@@ -41,18 +41,7 @@ namespace oglopp {
 
 	public:	
 		Drawable();
-		~Drawable();
-
-		/**
-		 * @brief Template variadic point push method
-		 * @param[in] c		A variadic list of components
-		 * @return		A reference to drawable object
-		 */
-		template <typename... Components>
-		Drawable& pushPoint(Components... c) {
-			// Push in order...
-			return this->getVBO().push(c...);
-		}
+		~Drawable();	
 
 		/** @brief Push a texture onto the back of the texture stack.
 		 * @param[in] newTexture	The texture object to set to

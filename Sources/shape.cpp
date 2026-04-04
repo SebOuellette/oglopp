@@ -602,7 +602,7 @@ namespace oglopp {
 
 		// Bind vertex array
 		glBindVertexArray(this->VAO);
-
+	
 		// Draw
 		switch (drawType) {
 			default:

@@ -6,8 +6,7 @@
 #include "oglopp/shader.h"
 #include "oglopp/drawable.h"
 
-//#define VERTS 18
-//#define VERT_SIZE (VERTS * sizeof(float))
+#include <iostream>
 
 namespace oglopp {
 
@@ -84,7 +83,11 @@ namespace oglopp {
 		}
 
 		// Bind vertex array
-		this->bind();
+		this->bind();	
+
+		// this->getCount() = # of types given in latest vao.update<...>()  
+		// vbo.getCount() = # of calls to vbo.push() (total strides)
+		// ebo.getCount() = # of calls to ebo.push() (total sets of indices)
 
 		// Draw
 		switch (drawType) {

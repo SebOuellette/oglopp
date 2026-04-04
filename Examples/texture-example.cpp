@@ -12,9 +12,12 @@
 using namespace oglopp;
 
 int main() {
+	Window::Settings sets;
+	sets.doFaceCulling = false;
+
 	// Create the window
 	Window window;
-	window.create(800, 800, "HoneyLib OpenGL - Texture Example 1");
+	window.create(800, 800, "HoneyLib OpenGL - Texture Example 1", sets);
 
 	// Initialize the shape we want to draw
 	//Shape triangle;
@@ -69,8 +72,14 @@ int main() {
 	// OBJ Loader Test
 	Loader loader;
 	Drawable obj;
+	obj.pushTexture(&face);
 
 	loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", obj);
+
+	std::cout << "OBJ ------" << std::endl;
+	std::cout << "StrideElems: " << obj.getCount() << std::endl;
+	std::cout << "VertCount: " << obj.getVBO().getCount() << std::endl;
+	std::cout << "Indices: " << obj.getEBO().getCount() << std::endl;
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
