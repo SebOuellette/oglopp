@@ -13,7 +13,7 @@ using namespace oglopp;
 
 int main() {
 	Window::Settings sets;
-	sets.doFaceCulling = false;
+	sets.doFaceCulling = true;
 
 	// Create the window
 	Window window;
@@ -103,7 +103,7 @@ int main() {
 	}
 	#endif
 
-	loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", obj);
+	loader.construct("/network/Programming/opengl/Examples/assets/complex.obj", obj);
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {

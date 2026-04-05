@@ -6,7 +6,7 @@
 
 #include "oglopp/obj/loader.h"
 
-#define VERBOSE
+//#define VERBOSE
 
 namespace oglopp {
 	/**
