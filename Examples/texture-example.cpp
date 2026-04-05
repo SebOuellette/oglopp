@@ -55,7 +55,7 @@ int main() {
 		"uniform sampler2D texture1;\n"\
 		\
 		"void main() {\n"\
-			"FragColor = vec4(col, 1.0); //  (vertexColor + texture(texture0, texCoord) + texture(texture1, texCoord)) / 3.0;\n"\
+			"FragColor = (vertexColor + texture(texture0, texCoord) + texture(texture1, texCoord)) / 3.0;\n"\
 		"}\n",
 
 		ShaderType::RAW);
@@ -73,7 +73,7 @@ int main() {
 	// OBJ Loader Test
 	Loader loader;
 	Drawable obj;
-	//obj.pushTexture(&face);
+	obj.pushTexture(&face);
 	
 	#if 0
 	Shape t;
@@ -102,10 +102,8 @@ int main() {
 
 	}
 	#endif
-	
-	std::cout << "indices: " << obj.getEBO().getCount() << std::endl;
 
-	loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", obj);
+	loader.construct("/network/Programming/opengl/Examples/assets/pentagon.obj", obj);
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {

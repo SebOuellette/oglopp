@@ -21,21 +21,21 @@ namespace oglopp {
 		// If the index is in the list, copy it and push
 		//  Otherwise, push 0,0,0
 		vbo.push(
-			(vertIndex > 0 && vertIndex < this->cVertices.size()) ? 
-				this->cVertices[vertIndex] : 
+			(vertIndex > 0 && vertIndex <= this->cVertices.size()) ? 
+				this->cVertices[vertIndex - 1] : 
 				CVertex(0, 0, 0),
 
-			(normIndex > 0 && normIndex < this->cNormals.size()) ? 
-				this->cNormals[normIndex] : 
+			(normIndex > 0 && normIndex <= this->cNormals.size()) ? 
+				this->cNormals[normIndex - 1] : 
 				CNormal(0, 0, 0),
 
-			(texIndex > 0 && texIndex < this->cTexCoords.size()) ?
-				this->cTexCoords[texIndex] : 
+			(texIndex > 0 && texIndex <= this->cTexCoords.size()) ?
+				this->cTexCoords[texIndex - 1] : 
 				CTexCoord(0, 0)
 		);
 
 #ifdef VERBOSE
-		std::cout << vertIndex << "," << texIndex << "," << normIndex << "] ";
+		std::cout << vertIndex << "/" << this->cVertices.size() << "," << texIndex << "/" << this->cTexCoords.size() << "," << normIndex << "/" << this->cNormals.size() << "] ";
 #endif
 
 		return *this;
@@ -151,7 +151,7 @@ namespace oglopp {
 					}
 
 					// End of point in face
-					if (' ' == c) {
+					if (' ' == c && indexItem > 0) {
 						// Push the face points to the VBO
 						pushFace(vao.getVBO(), indices[0], indices[1], indices[2]);
 						facePointCnt++;
