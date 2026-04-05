@@ -2,83 +2,81 @@
 
 namespace oglopp {
 	Rectangle::Rectangle() {
-		this->pushTriangle(0, 1, 2);
-		this->pushTriangle(2, 3, 0);
+		this->getEBO().push(0, 1, 2);
+		this->getEBO().push(2, 3, 0);
 
-		this->pushPoint({ 0.5,  0.5, 0.1}, {1.0, 0.0, 0.0}, {1.0, 1.0});
-		this->pushPoint({ 0.5, -0.5, 0.1}, {0.0, 1.0, 0.0}, {1.0, 0.0});
-		this->pushPoint({-0.5, -0.5, 0.1}, {0.0, 0.0, 1.0}, {0.0, 0.0});
-		this->pushPoint({-0.5,  0.5, 0.1}, {1.0, 0.0, 0.0}, {0.0, 1.0});
+		this->pushPoint(CVertex( 0.5,  0.5, 0.1), CNormal(1.0, 0.0, 0.0), CTexCoord(1.0, 1.0));
+		this->pushPoint(CVertex( 0.5, -0.5, 0.1), CNormal(0.0, 1.0, 0.0), CTexCoord(1.0, 0.0));
+		this->pushPoint(CVertex(-0.5, -0.5, 0.1), CNormal(0.0, 0.0, 1.0), CTexCoord(0.0, 0.0));
+		this->pushPoint(CVertex(-0.5,  0.5, 0.1), CNormal(1.0, 0.0, 0.0), CTexCoord(0.0, 1.0));
 
 		// ..:: Initialization code ::..
-		this->updateVAO();
+		this->update<CVertex, CNormal, CTexCoord>();
 	}
 
 	Triangle::Triangle() {
-		this->pushTriangle(0, 1, 2);
+		this->getEBO().push(0, 1, 2);
 
-		this->pushPoint({-0.5, -1.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 0.0});
-		this->pushPoint({ 0.0,  0.0, 0.0}, {0.0, 1.0, 0.0}, {0.5, 1.0});
-		this->pushPoint({ 0.5, -1.0, 0.0}, {0.0, 0.0, 1.0}, {1.0, 0.0});
+		this->pushPoint(CVertex(-0.5, -1.0, 0.0), CNormal(1.0, 0.0, 0.0), CTexCoord(0.0, 0.0));
+		this->pushPoint(CVertex( 0.0,  0.0, 0.0), CNormal(0.0, 1.0, 0.0), CTexCoord(0.5, 1.0));
+		this->pushPoint(CVertex( 0.5, -1.0, 0.0), CNormal(0.0, 0.0, 1.0), CTexCoord(1.0, 0.0));
 
 		// ..:: Initialization code ::..
-		this->updateVAO();
+		this->update<CVertex, CNormal, CTexCoord>();
 	}
 
 	Cube::Cube() {
 		//				Vector x, y, z			Normal x, y, z		Tex Coord x, y
 		// Front face
-		this->pushPoint({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f});
-		this->pushPoint({-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f});
-		this->pushPoint({ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f});
-		this->pushPoint({ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f});
-		this->pushPoint({ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f});
-		this->pushPoint({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f});
+		this->pushPoint(CVertex(-0.5f, -0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(1.0f, 0.0f));
+		this->pushPoint(CVertex(-0.5f,  0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(1.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f,  0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(0.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f,  0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(0.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f, -0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(0.0f, 0.0f));
+		this->pushPoint(CVertex(-0.5f, -0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(1.0f, 0.0f));
 
 		// Back face
-		this->pushPoint({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f});
-		this->pushPoint({ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f});
-		this->pushPoint({ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f});
-		this->pushPoint({ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f});
-		this->pushPoint({-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f});
-		this->pushPoint({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f});
+		this->pushPoint(CVertex(-0.5f, -0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(0.0f, 0.0f));
+		this->pushPoint(CVertex( 0.5f, -0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(1.0f, 0.0f));
+		this->pushPoint(CVertex( 0.5f,  0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(1.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f,  0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(1.0f, 1.0f));
+		this->pushPoint(CVertex(-0.5f,  0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(0.0f, 1.0f));
+		this->pushPoint(CVertex(-0.5f, -0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(0.0f, 0.0f));
 
 		// Right? face
-		this->pushPoint({-0.5f, -0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f});
-		this->pushPoint({-0.5f,  0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f});
-		this->pushPoint({-0.5f,  0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f});
-		this->pushPoint({-0.5f,  0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f});
-		this->pushPoint({-0.5f, -0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f});
-		this->pushPoint({-0.5f, -0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f});
+		this->pushPoint(CVertex(-0.5f, -0.5f,  0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 0.0f));
+		this->pushPoint(CVertex(-0.5f,  0.5f,  0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 1.0f));
+		this->pushPoint(CVertex(-0.5f,  0.5f, -0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 1.0f));
+		this->pushPoint(CVertex(-0.5f,  0.5f, -0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 1.0f));
+		this->pushPoint(CVertex(-0.5f, -0.5f, -0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 0.0f));
+		this->pushPoint(CVertex(-0.5f, -0.5f,  0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 0.0f));
 
 		// Left? face
-		this->pushPoint({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f});
-		this->pushPoint({ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f});
-		this->pushPoint({ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f});
-		this->pushPoint({ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f});
-		this->pushPoint({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f});
-		this->pushPoint({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f});
+		this->pushPoint(CVertex( 0.5f, -0.5f,  0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 0.0f));
+		this->pushPoint(CVertex( 0.5f, -0.5f, -0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 0.0f));
+		this->pushPoint(CVertex( 0.5f,  0.5f, -0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f,  0.5f, -0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f,  0.5f,  0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f, -0.5f,  0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 0.0f));
 
 		// Bottom face
-		this->pushPoint({-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f});
-		this->pushPoint({ 0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f});
-		this->pushPoint({ 0.5f, -0.5f,  0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f});
-		this->pushPoint({ 0.5f, -0.5f,  0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f});
-		this->pushPoint({-0.5f, -0.5f,  0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f});
-		this->pushPoint({-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f});
+		this->pushPoint(CVertex(-0.5f, -0.5f, -0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(1.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f, -0.5f, -0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(0.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f, -0.5f,  0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(0.0f, 0.0f));
+		this->pushPoint(CVertex( 0.5f, -0.5f,  0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(0.0f, 0.0f));
+		this->pushPoint(CVertex(-0.5f, -0.5f,  0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(1.0f, 0.0f));
+		this->pushPoint(CVertex(-0.5f, -0.5f, -0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(1.0f, 1.0f));
 
 		// Top face
-		this->pushPoint({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f});
-		this->pushPoint({-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f});
-		this->pushPoint({ 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f});
-		this->pushPoint({ 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f});
-		this->pushPoint({ 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f});
-		this->pushPoint({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f});
+		this->pushPoint(CVertex(-0.5f,  0.5f, -0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(1.0f, 0.0f));
+		this->pushPoint(CVertex(-0.5f,  0.5f,  0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(1.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f,  0.5f,  0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(0.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f,  0.5f,  0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(0.0f, 1.0f));
+		this->pushPoint(CVertex( 0.5f,  0.5f, -0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(0.0f, 0.0f));
+		this->pushPoint(CVertex(-0.5f,  0.5f, -0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(1.0f, 0.0f));
 
-		this->updateVAO();
+		this->update<CVertex, CNormal, CTexCoord>();
 	}
-
-// When objloader is ready
 #if 0
 	Cube2::Cube2() {  //   l/r    u/d     f/b\
 		// Push the data
@@ -109,7 +107,6 @@ namespace oglopp {
 		this->updateVAO();
 	}
 #endif
-
 	/** @brief Create a 3D Sphere object.
 	 *  @param[in] X_VERTS	The X resolution of the sphere.
 	 *  @param[in] Y_VERTS 	The Y resolution of the sphere.
@@ -154,7 +151,7 @@ namespace oglopp {
 		this->doAxisLoop(Z_VERTS, Y_VERTS, drawXAxis);
 		this->doAxisLoop(X_VERTS, Z_VERTS, drawYAxis);
 
-		this->updateVAO(true, false);
+		this->update<CVertex, CNormal>();
 	}
 
 	/** @brief Push a point to a sphere. Normalize the provided point, then set the normal to the normal as well. Used for generating smooth spheres.

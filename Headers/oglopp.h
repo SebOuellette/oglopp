@@ -8,7 +8,7 @@
 #include <oglopp/camera.h>
 
 #include <oglopp/shape.h> // deprecated in favour of drawable
-#include <oglopp/drawable.h> // replacement for shape
+//#include <oglopp/drawable.h> // replacement for shape
 #include <oglopp/more_shapes.h>
 
 #include <oglopp/texture.h>

@@ -72,36 +72,8 @@ int main() {
 
 	// OBJ Loader Test
 	Loader loader;
-	Drawable obj;
+	Shape obj;
 	obj.pushTexture(&face);
-	
-	#if 0
-	Shape t;
-	t.translate(glm::vec3(0, 0.5, 0));
-	
-	{
-		t.pushTriangle(0, 1, 2);
-		t.pushTriangle(1, 3, 2);
-
-		t.pushPoint({-1.0, -1.0, -1.0})
-			.pushPoint({1.0, -1.0, -1.0})
-			.pushPoint({-1.0, -1.0, 1.0})
-			.pushPoint({1.0, -1.0, 1.0});
-		t.updateVAO(false, false, false);
-
-
-		obj.getEBO().push(0, 1, 2);
-		obj.getEBO().push(1, 3, 2);
-
-
-		obj.pushPoint(CVertex(-1.0, -1.0, -1.0))
-			.pushPoint(CVertex(1.0, -1.0, -1.0))
-			.pushPoint(CVertex(-1.0, -1.0, 1.0))
-			.pushPoint(CVertex(1.0, -1.0, 1.0));
-		obj.update<CVertex>();
-
-	}
-	#endif
 
 	loader.construct("/network/Programming/opengl/Examples/assets/complex.obj", obj);
 

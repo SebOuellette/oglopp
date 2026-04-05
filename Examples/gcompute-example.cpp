@@ -7,6 +7,7 @@
 #include "oglopp.h"
 #include "oglopp/shader.h"
 #include "oglopp/shape.h"
+#include "oglopp/oldshape.h"
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -85,13 +86,34 @@ int main() {
 
 	shader.setDrawType(POINTS);
 
-	// Create a list of vertices with just an ID. the position will be provided in an SSBO calculated by a compute shader
+	class CID : public Component<CID> {
+	public:
+		uint32_t id;
+
+		CID(uint32_t newId) : id(newId) {}
+
+		static inline const size_t parts() {
+			return 1;
+		}
+
+		static inline const int type() {
+			return DataType::UINT32;
+		}
+	};
+
 	Shape verts;
 	for (uint32_t id = 0; id < ELEMENTS; id++) {
-		verts.pushValue(&id, sizeof(id));
-		verts.incrementVerts();
+		verts.pushPoint(CID(id));
 	}
-	verts.finalizePoints(Shape::UINT32);
+	verts.update<CID>();
+
+	// Create a list of vertices with just an ID. the position will be provided in an SSBO calculated by a compute shader
+	//OldShape verts;
+	//for (uint32_t id = 0; id < ELEMENTS; id++) {
+	//	verts.pushValue(&id, sizeof(id));
+	//	verts.incrementVerts();
+	//}
+	//verts.finalizePoints(static_cast<int>(CID::type()));
 
 
 	glm::vec4* data = new glm::vec4[ELEMENTS];
