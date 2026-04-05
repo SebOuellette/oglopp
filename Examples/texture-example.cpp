@@ -103,7 +103,7 @@ int main() {
 	}
 	#endif
 
-	loader.construct("/network/Programming/opengl/Examples/assets/pentagon.obj", obj);
+	loader.construct("/network/Programming/opengl/Examples/assets/cube2.obj", obj);
 
 	// ----- Render Loop -----
 	while (!window.shouldClose()) {
