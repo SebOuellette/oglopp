@@ -5,20 +5,28 @@
 // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
 #include "oglopp.h"
-#include "oglopp/shader.h"
-#include "oglopp/shape.h"
-#include "oglopp/oldshape.h"
 #include <cstdint>
-#include <cstdlib>
 #include <cstring>
-#include <glm/ext/scalar_uint_sized.hpp>
 #include <iostream>
-#include <cmath>
 
 
 using namespace oglopp;
 
 #define ELEMENTS 20000
+
+// We aren't pushing the standard <vector>,<normal>,<texture coord> set to the opengl VBO, we're just using points.
+// We can define our own custom components (where vector, normal, and texture coord are each one component)
+//
+// In this example, we just want to define a single component that stores a uint32 ID number. (The particle ID)
+struct CID : public Component<CID> {
+	static constexpr uint32_t parts = 1;
+	static constexpr uint16_t type = DataType::UINT32;
+
+	uint32_t id;
+
+	CID(uint32_t newId) : id(newId) {}
+
+};
 
 int main() {
 
@@ -32,22 +40,26 @@ int main() {
 	Window window;
 	window.create(800, 800, "HoneyLib OpenGL - Compute Graphical", options);
 
-	// // Initialize our shader object
+	// Compute shaders are defined seperately from other shaders since they can be executed on their own
 	Compute compute(// Compute
-	"#version 460 core\n"\
-	"layout (local_size_x = 1) in;\n"\
-	"layout (std430, binding = 0) buffer SSBO {\n"\
-		"vec3 data[];\n"\
-	"};\n"\
-	\
-	"uniform float time;\n"\
-	\
-	"void main() {\n"\
-		"uvec3 index = gl_WorkGroupID;\n"\
+		"#version 460 core\n"\
+		"layout (local_size_x = 1) in;\n"\
+		"layout (std430, binding = 0) buffer SSBO {\n"\
+			"vec3 data[];\n"\
+		"};\n"\
 		\
-		"data[index.x] = vec3(sin(6 * (float(index.x) / gl_NumWorkGroups.x + time)), float(index.x) / gl_NumWorkGroups.x * 2.0 - 1.0, 0.0);\n"\
-	"}\n", ShaderType::RAW);
+		"uniform float time;\n"\
+		\
+		"void main() {\n"\
+			"uvec3 index = gl_WorkGroupID;\n"\
+			\
+			"data[index.x] = vec3(sin(6 * (float(index.x) / gl_NumWorkGroups.x + time)), float(index.x) / gl_NumWorkGroups.x * 2.0 - 1.0, 0.0);\n"\
+		"}", 
+		ShaderType::RAW
+	);
 
+
+	// Define the rest of the shaders
 	Shader shader(
 		// Vertex
 		"#version 460 core\n"\
@@ -81,41 +93,35 @@ int main() {
 		"void main() {\n"\
 			"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"\
 		"}",
-		ShaderType::RAW
+		ShaderType::RAW // use ::FILE to load from a file instead. 
 	);
 
+	// Vertices will be drawn as points, not triangulated. No lines or faces will be drawn.
 	shader.setDrawType(POINTS);
 
-	class CID : public Component<CID> {
-	public:
-		uint32_t id;
 
-		CID(uint32_t newId) : id(newId) {}
-
-		static inline const size_t parts() {
-			return 1;
-		}
-
-		static inline const int type() {
-			return DataType::UINT32;
-		}
-	};
-
+	//
+	// BUILD CUSTOM SHAPE
+	//
+	// We can build a custom shape that's just a set of points, then move those points around and draw them with the GPU. 
+	//  This will also allow us to instance other objects on these points within the geometry shader if we so choose. 
+	//
+	// To do this, we don't care about vertex, norm, and texcoord, since we can't change those on the fly quickly. 
+	//  Instead, we use an SSBO in a compute shader to move them 
+	//     Note: (unnecessary, we can just use the SSBO in the vertex shader the same way, 
+	//     but compute shaders are cool and let us specify an exact number of tasks to run)
+	//
 	Shape verts;
 	for (uint32_t id = 0; id < ELEMENTS; id++) {
 		verts.pushPoint(CID(id));
 	}
 	verts.update<CID>();
 
-	// Create a list of vertices with just an ID. the position will be provided in an SSBO calculated by a compute shader
-	//OldShape verts;
-	//for (uint32_t id = 0; id < ELEMENTS; id++) {
-	//	verts.pushValue(&id, sizeof(id));
-	//	verts.incrementVerts();
-	//}
-	//verts.finalizePoints(static_cast<int>(CID::type()));
 
-
+	//
+	// Create the SSBO 
+	// 
+	// We can initialize the SSBO with some data. Here we allocate the data we want, set it to 0, then let the GPU handle it. 
 	glm::vec4* data = new glm::vec4[ELEMENTS];
 	std::memset(data, 0, sizeof(glm::vec4) * ELEMENTS);
 
@@ -126,10 +132,14 @@ int main() {
 	compute.setSSBO(&ssbo);
 	delete[] data;
 
+
+
+
+
+
 	float time = 0;
 
 	std::cout << "Moving " << ELEMENTS << " verticies per frame in compute shader" << std::endl;
-
 	while (!window.shouldClose()) {
 		time += 0.002;
 
@@ -141,10 +151,7 @@ int main() {
 		compute.dispatch(ELEMENTS);
 
 		window.clear();
-
-		//compute.bindSSBO();
 		verts.draw(window, &shader);
-		//compute.unbindSSBO();
 
 		window.bufferSwap();
 		window.pollEvents();

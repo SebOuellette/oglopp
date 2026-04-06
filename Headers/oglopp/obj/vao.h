@@ -24,7 +24,7 @@ namespace oglopp {
 			VAOUpdater<Components...>::strideSum(stride, count);
 
 			stride += sizeof(First);
-			count += First::parts();
+			count += First::parts;
 		}
 
 		static void update(size_t const STRIDE, size_t offset = 0, int index = 0){
@@ -54,6 +54,18 @@ namespace oglopp {
 		 * @return A reference to this buffer object (ready for next)
 		 */
 		virtual VAO& destroy() override;	
+	
+		/**
+		 * @brief Update the buffer object. Private so you have to specify the template type names
+		 * @param[in] data	Ignored.
+		 * @return A reference to this buffer object
+		 */
+		virtual VAO& update(void* data = nullptr) override {
+			// Recursion termination case. No types specified.
+			// Do nothing.
+			return *this;
+		}
+
 
 	public:
 		/**
@@ -102,17 +114,6 @@ namespace oglopp {
 			return *this;
 		}
 		
-		/**
-		 * @brief Update the buffer object.
-		 * @param[in] data	Ignored.
-		 * @return A reference to this buffer object
-		 */
-		virtual VAO& update(void* data = nullptr) override {
-			// Recursion termination case. No types specified.
-			// Do nothing.
-			return *this;
-		}
-
 		/**
 		 * @brief Update the VAO given a static list of components
 		 * @description	Sets getCount equal to the number of types provided

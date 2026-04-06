@@ -16,6 +16,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
+#include "obj/component.h"
 
 namespace oglopp {
 	/** @brief OldShape object
@@ -70,41 +71,6 @@ namespace oglopp {
 		OldShape& updateVBO();
 
 	public:
-		enum DataType : uint16_t {
-			FLOAT 	= GL_FLOAT,
-			DOUBLE	= GL_DOUBLE,
-			UINT8	= GL_UNSIGNED_BYTE,
-			UINT16	= GL_UNSIGNED_SHORT,
-			UINT32	= GL_UNSIGNED_INT,
-			INT8	= GL_BYTE,
-			INT16	= GL_SHORT,
-			INT32	= GL_INT,
-			// Float vec
-			VEC2	= GL_FLOAT_VEC2,
-			VEC3	= GL_FLOAT_VEC3,
-			VEC4	= GL_FLOAT_VEC4,
-			// Double vec
-			DVEC2	= GL_DOUBLE_VEC2,
-			DVEC3	= GL_DOUBLE_VEC3,
-			DVEC4	= GL_DOUBLE_VEC4,
-			// int32 vec
-			IVEC2	= GL_INT_VEC2,
-			IVEC3 	= GL_INT_VEC3,
-			IVEC4	= GL_INT_VEC4,
-			// int64 vec
-			I64VEC2	= GL_INT64_VEC2_ARB,
-			I64VEC3	= GL_INT64_VEC3_ARB,
-			I64VEC4	= GL_INT64_VEC4_ARB,
-			// uint32 vec
-			UVEC2	= GL_UNSIGNED_INT_VEC2,
-			UVEC3	= GL_UNSIGNED_INT_VEC3,
-			UVEC4	= GL_UNSIGNED_INT_VEC4,
-			// uint64 vec
-			U64VEC2	= GL_UNSIGNED_INT64_VEC2_ARB,
-			U64VEC3 = GL_UNSIGNED_INT64_VEC3_ARB,
-			U64VEC4 = GL_UNSIGNED_INT64_VEC4_ARB
-		};
-
 		OldShape();
 		~OldShape();
 
