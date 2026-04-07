@@ -157,10 +157,12 @@ namespace oglopp {
 		angleCopy.y += yaw;
 		angleCopy.x += pitch;
 
-		if (angleCopy.x >= 89.0)
+		if (angleCopy.x > 89.0) {
 			angleCopy.x = 89.0;
-		else if (angleCopy.x <= -89.0)
+		}
+		else if (angleCopy.x < -89.0) {
 			angleCopy.x = -89.0;
+		}
 
 		return this->setAngle(angleCopy);
 	}

@@ -55,7 +55,7 @@ int main() {
 		"uniform sampler2D texture1;\n"\
 		\
 		"void main() {\n"\
-			"FragColor = (vertexColor + texture(texture0, texCoord) + texture(texture1, texCoord)) / 3.0;\n"\
+			"FragColor = texture(texture0, texCoord); // (vertexColor + texture(texture0, texCoord) + texture(texture1, texCoord)) / 3.0;\n"\
 		"}\n",
 
 		ShaderType::RAW);
@@ -65,6 +65,7 @@ int main() {
 
 	Texture container("/network/Programming/opengl/Examples/assets/container.jpg");
 	Texture face("/network/Programming/opengl/Examples/assets/awesomeface.png", oglopp::Texture::PNG);
+	Texture complex("Examples/assets/complex.png", oglopp::Texture::PNG);
 
 	tri.pushTexture(&face);
 	rect.pushTexture(&container);
@@ -73,7 +74,11 @@ int main() {
 	// OBJ Loader Test
 	Loader loader;
 	Shape obj;
-	obj.pushTexture(&face);
+	obj.pushTexture(&complex);
+	obj.translate(glm::vec3(1, 0, 0));
+
+	window.getCam().setPos(glm::vec3(0, 0, -2));
+	window.getCam().setAngle(glm::vec3(0, -90, 0));
 
 	loader.construct("/network/Programming/opengl/Examples/assets/complex.obj", obj);
 
@@ -99,8 +104,8 @@ int main() {
 		//Rendering
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		window.clear();
-		//rect.draw(window, &ourShader);
-		//tri.draw(window, &ourShader);
+		rect.draw(window, &ourShader);
+		tri.draw(window, &ourShader);
 		ourShader.setVec3("col", {0.0, 1.0, 0.0});
 		obj.draw(window, &ourShader);
 

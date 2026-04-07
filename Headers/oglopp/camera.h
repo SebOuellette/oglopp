@@ -49,7 +49,6 @@ namespace oglopp {
 		Camera& setFov(float);
 
 		glm::dvec3 const& getAngle();
-
 		glm::dmat4 const& getView();
 		glm::dmat4 const& getProjection();
 

@@ -29,6 +29,7 @@ int main() {
 	Window::Settings settings;
 	// For post-processing, you will need to use the resizeCallback to update the FBO and texture sizes if you plan on resizing your window. If not, then no need.
 	settings.resizeCallback = resizeCallback;
+	settings.doFaceCulling = false;
 
 	// Create the window
 	Window window;
