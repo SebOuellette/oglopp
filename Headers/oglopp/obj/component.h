@@ -141,8 +141,7 @@ namespace oglopp {
 	/**
 	 * @brief VAO texture coordinate component
 	 */
-	class CTexCoord : public Component<CTexCoord> {
-	public:
+	struct CTexCoord : public Component<CTexCoord> {
 		static constexpr uint32_t parts = HLGL_TEX_COMPONENTS;
 		static constexpr DataType type = DataType::FLOAT;
 
@@ -156,8 +155,7 @@ namespace oglopp {
 	/**
 	 * @brief VAO normal vector component
 	 */
-	class CNormal : public Component<CNormal> {
-	public:
+	struct CNormal : public Component<CNormal> {
 		static constexpr uint32_t parts = HLGL_NOR_COMPONENTS;
 		static constexpr DataType type = DataType::FLOAT;
 

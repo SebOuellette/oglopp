@@ -7,17 +7,15 @@
 #include <oglopp/window.h>
 #include <oglopp/camera.h>
 
-#include <oglopp/shape.h> // deprecated in favour of drawable
-//#include <oglopp/drawable.h> // replacement for shape
+#include <oglopp/shape.h>
 #include <oglopp/more_shapes.h>
+#include <oglopp/obj/loader.h>
 
 #include <oglopp/texture.h>
 #include <oglopp/ssbo.h>
 #include <oglopp/shader.h>
 #include <oglopp/compute.h>
 #include <oglopp/fbo.h>
-
-#include <oglopp/obj/loader.h>
 
 #include <oglopp/matrix.h>
 

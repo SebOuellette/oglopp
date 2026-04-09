@@ -1,7 +1,7 @@
 #cmake_minimum_required(VERSION 4.0.1)
 cmake_minimum_required(VERSION 3.30.0)
 project(oglopp
-	VERSION 1.0.6
+	VERSION 1.1.0
 	LANGUAGES C CXX
 )
 
@@ -13,7 +13,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_SHARED_LIBS ON)
 # Safe linking
-# Runtime path
+# Runtime install path
 set(CMAKE_INSTALL_RPATH "/usr/local/${CMAKE_INSTALL_LIBDIR}")
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
