@@ -134,8 +134,8 @@ namespace oglopp {
 		float y;
 		float z;
 
-		CVertex(float newX = 0, float newY = 0, float newZ = 0) : x(newX), y(newY), z(newZ) {}
-		CVertex(glm::vec3 vec) : x(vec.x), y(vec.y), z(vec.z) {}
+		CVertex(float newX, float newY, float newZ) : x(newX), y(newY), z(newZ) {}
+		CVertex(glm::vec3 const& vec) : x(vec.x), y(vec.y), z(vec.z) {}
 	};
 
 	/**
@@ -148,8 +148,8 @@ namespace oglopp {
 		float x;
 		float y;
 
-		CTexCoord(float newX = 0, float newY = 0) : x(newX), y(newY) {}
-		CTexCoord(glm::vec2 vec) : x(vec.x), y(vec.y) {}
+		CTexCoord(float newX, float newY) : x(newX), y(newY) {}
+		CTexCoord(glm::vec2 const& vec) : x(vec.x), y(vec.y) {}
 	};
 
 	/**
@@ -163,8 +163,8 @@ namespace oglopp {
 		float y;
 		float z;
 
-		CNormal(float newX = 0, float newY = 0, float newZ = 0) : x(newX), y(newY), z(newZ) {}
-		CNormal(glm::vec3 vec) : x(vec.x), y(vec.y), z(vec.z) {}
+		CNormal(float newX, float newY, float newZ) : x(newX), y(newY), z(newZ) {}
+		CNormal(glm::vec3 const& vec) : x(vec.x), y(vec.y), z(vec.z) {}
 	};
 }
 

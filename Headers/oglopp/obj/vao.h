@@ -140,6 +140,7 @@ namespace oglopp {
 			// Unbind the vertex arrays
 			VBO::unbind();
 			VAO::unbind();
+			// TODO: Do I need to unbind the EBO here? 
 			return *this;
 		}
 	};
