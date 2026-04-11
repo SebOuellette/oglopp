@@ -12,9 +12,9 @@ namespace oglopp {
 	class Loader {
 	private:
 		// List of shape components for OBJ construction 
-		std::vector<CVertex> cVertices;
-		std::vector<CTexCoord> cTexCoords;
-		std::vector<CNormal> cNormals;
+		std::vector<CV> cVertices;
+		std::vector<CT> cTexCoords;
+		std::vector<CN> cNormals;
 
 		/**
 		 * @brief Push a set of indices. If negative, create a new 0 element.

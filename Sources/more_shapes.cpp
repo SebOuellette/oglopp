@@ -5,77 +5,77 @@ namespace oglopp {
 		this->getEBO().push(0, 1, 2);
 		this->getEBO().push(2, 3, 0);
 
-		this->pushPoint(CVertex( 0.5,  0.5, 0.1), CNormal(1.0, 0.0, 0.0), CTexCoord(1.0, 1.0));
-		this->pushPoint(CVertex( 0.5, -0.5, 0.1), CNormal(0.0, 1.0, 0.0), CTexCoord(1.0, 0.0));
-		this->pushPoint(CVertex(-0.5, -0.5, 0.1), CNormal(0.0, 0.0, 1.0), CTexCoord(0.0, 0.0));
-		this->pushPoint(CVertex(-0.5,  0.5, 0.1), CNormal(1.0, 0.0, 0.0), CTexCoord(0.0, 1.0));
+		this->pushPoint(CV( 0.5,  0.5, 0.1), CN(1.0, 0.0, 0.0), CT(1.0, 1.0));
+		this->pushPoint(CV( 0.5, -0.5, 0.1), CN(0.0, 1.0, 0.0), CT(1.0, 0.0));
+		this->pushPoint(CV(-0.5, -0.5, 0.1), CN(0.0, 0.0, 1.0), CT(0.0, 0.0));
+		this->pushPoint(CV(-0.5,  0.5, 0.1), CN(1.0, 0.0, 0.0), CT(0.0, 1.0));
 
 		// ..:: Initialization code ::..
-		this->update<CVertex, CNormal, CTexCoord>();
+		this->update<CV, CN, CT>();
 	}
 
 	Triangle::Triangle() {
 		this->getEBO().push(0, 1, 2);
 
-		this->pushPoint(CVertex(-0.5, -1.0, 0.0), CNormal(1.0, 0.0, 0.0), CTexCoord(0.0, 0.0));
-		this->pushPoint(CVertex( 0.0,  0.0, 0.0), CNormal(0.0, 1.0, 0.0), CTexCoord(0.5, 1.0));
-		this->pushPoint(CVertex( 0.5, -1.0, 0.0), CNormal(0.0, 0.0, 1.0), CTexCoord(1.0, 0.0));
+		this->pushPoint(CV(-0.5, -1.0, 0.0), CN(1.0, 0.0, 0.0), CT(0.0, 0.0));
+		this->pushPoint(CV( 0.0,  0.0, 0.0), CN(0.0, 1.0, 0.0), CT(0.5, 1.0));
+		this->pushPoint(CV( 0.5, -1.0, 0.0), CN(0.0, 0.0, 1.0), CT(1.0, 0.0));
 
 		// ..:: Initialization code ::..
-		this->update<CVertex, CNormal, CTexCoord>();
+		this->update<CV, CN, CT>();
 	}
 
 	Cube::Cube() {
 		//				Vector x, y, z			Normal x, y, z		Tex Coord x, y
 		// Front face
-		this->pushPoint(CVertex(-0.5f, -0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(1.0f, 0.0f));
-		this->pushPoint(CVertex(-0.5f,  0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(1.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f,  0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(0.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f,  0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(0.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f, -0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(0.0f, 0.0f));
-		this->pushPoint(CVertex(-0.5f, -0.5f, -0.5f), CNormal(0.0f, 0.0f, -1.0f), CTexCoord(1.0f, 0.0f));
+		this->pushPoint(CV(-0.5f, -0.5f, -0.5f), CN(0.0f, 0.0f, -1.0f), CT(1.0f, 0.0f));
+		this->pushPoint(CV(-0.5f,  0.5f, -0.5f), CN(0.0f, 0.0f, -1.0f), CT(1.0f, 1.0f));
+		this->pushPoint(CV( 0.5f,  0.5f, -0.5f), CN(0.0f, 0.0f, -1.0f), CT(0.0f, 1.0f));
+		this->pushPoint(CV( 0.5f,  0.5f, -0.5f), CN(0.0f, 0.0f, -1.0f), CT(0.0f, 1.0f));
+		this->pushPoint(CV( 0.5f, -0.5f, -0.5f), CN(0.0f, 0.0f, -1.0f), CT(0.0f, 0.0f));
+		this->pushPoint(CV(-0.5f, -0.5f, -0.5f), CN(0.0f, 0.0f, -1.0f), CT(1.0f, 0.0f));
 
 		// Back face
-		this->pushPoint(CVertex(-0.5f, -0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(0.0f, 0.0f));
-		this->pushPoint(CVertex( 0.5f, -0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(1.0f, 0.0f));
-		this->pushPoint(CVertex( 0.5f,  0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(1.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f,  0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(1.0f, 1.0f));
-		this->pushPoint(CVertex(-0.5f,  0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(0.0f, 1.0f));
-		this->pushPoint(CVertex(-0.5f, -0.5f,  0.5f), CNormal(0.0f, 0.0f, 1.0f), CTexCoord(0.0f, 0.0f));
+		this->pushPoint(CV(-0.5f, -0.5f,  0.5f), CN(0.0f, 0.0f, 1.0f), CT(0.0f, 0.0f));
+		this->pushPoint(CV( 0.5f, -0.5f,  0.5f), CN(0.0f, 0.0f, 1.0f), CT(1.0f, 0.0f));
+		this->pushPoint(CV( 0.5f,  0.5f,  0.5f), CN(0.0f, 0.0f, 1.0f), CT(1.0f, 1.0f));
+		this->pushPoint(CV( 0.5f,  0.5f,  0.5f), CN(0.0f, 0.0f, 1.0f), CT(1.0f, 1.0f));
+		this->pushPoint(CV(-0.5f,  0.5f,  0.5f), CN(0.0f, 0.0f, 1.0f), CT(0.0f, 1.0f));
+		this->pushPoint(CV(-0.5f, -0.5f,  0.5f), CN(0.0f, 0.0f, 1.0f), CT(0.0f, 0.0f));
 
 		// Right? face
-		this->pushPoint(CVertex(-0.5f, -0.5f,  0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 0.0f));
-		this->pushPoint(CVertex(-0.5f,  0.5f,  0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 1.0f));
-		this->pushPoint(CVertex(-0.5f,  0.5f, -0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 1.0f));
-		this->pushPoint(CVertex(-0.5f,  0.5f, -0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 1.0f));
-		this->pushPoint(CVertex(-0.5f, -0.5f, -0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 0.0f));
-		this->pushPoint(CVertex(-0.5f, -0.5f,  0.5f), CNormal(-1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 0.0f));
+		this->pushPoint(CV(-0.5f, -0.5f,  0.5f), CN(-1.0f, 0.0f, 0.0f), CT(1.0f, 0.0f));
+		this->pushPoint(CV(-0.5f,  0.5f,  0.5f), CN(-1.0f, 0.0f, 0.0f), CT(1.0f, 1.0f));
+		this->pushPoint(CV(-0.5f,  0.5f, -0.5f), CN(-1.0f, 0.0f, 0.0f), CT(0.0f, 1.0f));
+		this->pushPoint(CV(-0.5f,  0.5f, -0.5f), CN(-1.0f, 0.0f, 0.0f), CT(0.0f, 1.0f));
+		this->pushPoint(CV(-0.5f, -0.5f, -0.5f), CN(-1.0f, 0.0f, 0.0f), CT(0.0f, 0.0f));
+		this->pushPoint(CV(-0.5f, -0.5f,  0.5f), CN(-1.0f, 0.0f, 0.0f), CT(1.0f, 0.0f));
 
 		// Left? face
-		this->pushPoint(CVertex( 0.5f, -0.5f,  0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 0.0f));
-		this->pushPoint(CVertex( 0.5f, -0.5f, -0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 0.0f));
-		this->pushPoint(CVertex( 0.5f,  0.5f, -0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f,  0.5f, -0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(1.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f,  0.5f,  0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f, -0.5f,  0.5f), CNormal(1.0f, 0.0f, 0.0f), CTexCoord(0.0f, 0.0f));
+		this->pushPoint(CV( 0.5f, -0.5f,  0.5f), CN(1.0f, 0.0f, 0.0f), CT(0.0f, 0.0f));
+		this->pushPoint(CV( 0.5f, -0.5f, -0.5f), CN(1.0f, 0.0f, 0.0f), CT(1.0f, 0.0f));
+		this->pushPoint(CV( 0.5f,  0.5f, -0.5f), CN(1.0f, 0.0f, 0.0f), CT(1.0f, 1.0f));
+		this->pushPoint(CV( 0.5f,  0.5f, -0.5f), CN(1.0f, 0.0f, 0.0f), CT(1.0f, 1.0f));
+		this->pushPoint(CV( 0.5f,  0.5f,  0.5f), CN(1.0f, 0.0f, 0.0f), CT(0.0f, 1.0f));
+		this->pushPoint(CV( 0.5f, -0.5f,  0.5f), CN(1.0f, 0.0f, 0.0f), CT(0.0f, 0.0f));
 
 		// Bottom face
-		this->pushPoint(CVertex(-0.5f, -0.5f, -0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(1.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f, -0.5f, -0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(0.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f, -0.5f,  0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(0.0f, 0.0f));
-		this->pushPoint(CVertex( 0.5f, -0.5f,  0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(0.0f, 0.0f));
-		this->pushPoint(CVertex(-0.5f, -0.5f,  0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(1.0f, 0.0f));
-		this->pushPoint(CVertex(-0.5f, -0.5f, -0.5f), CNormal(0.0f, -1.0f, 0.0f), CTexCoord(1.0f, 1.0f));
+		this->pushPoint(CV(-0.5f, -0.5f, -0.5f), CN(0.0f, -1.0f, 0.0f), CT(1.0f, 1.0f));
+		this->pushPoint(CV( 0.5f, -0.5f, -0.5f), CN(0.0f, -1.0f, 0.0f), CT(0.0f, 1.0f));
+		this->pushPoint(CV( 0.5f, -0.5f,  0.5f), CN(0.0f, -1.0f, 0.0f), CT(0.0f, 0.0f));
+		this->pushPoint(CV( 0.5f, -0.5f,  0.5f), CN(0.0f, -1.0f, 0.0f), CT(0.0f, 0.0f));
+		this->pushPoint(CV(-0.5f, -0.5f,  0.5f), CN(0.0f, -1.0f, 0.0f), CT(1.0f, 0.0f));
+		this->pushPoint(CV(-0.5f, -0.5f, -0.5f), CN(0.0f, -1.0f, 0.0f), CT(1.0f, 1.0f));
 
 		// Top face
-		this->pushPoint(CVertex(-0.5f,  0.5f, -0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(1.0f, 0.0f));
-		this->pushPoint(CVertex(-0.5f,  0.5f,  0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(1.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f,  0.5f,  0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(0.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f,  0.5f,  0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(0.0f, 1.0f));
-		this->pushPoint(CVertex( 0.5f,  0.5f, -0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(0.0f, 0.0f));
-		this->pushPoint(CVertex(-0.5f,  0.5f, -0.5f), CNormal(0.0f, 1.0f, 0.0f), CTexCoord(1.0f, 0.0f));
+		this->pushPoint(CV(-0.5f,  0.5f, -0.5f), CN(0.0f, 1.0f, 0.0f), CT(1.0f, 0.0f));
+		this->pushPoint(CV(-0.5f,  0.5f,  0.5f), CN(0.0f, 1.0f, 0.0f), CT(1.0f, 1.0f));
+		this->pushPoint(CV( 0.5f,  0.5f,  0.5f), CN(0.0f, 1.0f, 0.0f), CT(0.0f, 1.0f));
+		this->pushPoint(CV( 0.5f,  0.5f,  0.5f), CN(0.0f, 1.0f, 0.0f), CT(0.0f, 1.0f));
+		this->pushPoint(CV( 0.5f,  0.5f, -0.5f), CN(0.0f, 1.0f, 0.0f), CT(0.0f, 0.0f));
+		this->pushPoint(CV(-0.5f,  0.5f, -0.5f), CN(0.0f, 1.0f, 0.0f), CT(1.0f, 0.0f));
 
-		this->update<CVertex, CNormal, CTexCoord>();
+		this->update<CV, CN, CT>();
 	}
 #if 0
 	Cube2::Cube2() {  //   l/r    u/d     f/b\
@@ -151,7 +151,7 @@ namespace oglopp {
 		this->doAxisLoop(Z_VERTS, Y_VERTS, drawXAxis);
 		this->doAxisLoop(X_VERTS, Z_VERTS, drawYAxis);
 
-		this->update<CVertex, CNormal>();
+		this->update<CV, CN>();
 	}
 
 	/** @brief Push a point to a sphere. Normalize the provided point, then set the normal to the normal as well. Used for generating smooth spheres.

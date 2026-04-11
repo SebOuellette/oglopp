@@ -126,7 +126,7 @@ namespace oglopp {
 	/**
 	 * @brief VAO vertex component.
 	 */
-	struct CVertex : public Component<CVertex> {
+	struct CV : public Component<CV> {
 		static constexpr uint32_t parts = HLGL_VEC_COMPONENTS;
 		static constexpr DataType type = DataType::FLOAT;
 
@@ -134,28 +134,28 @@ namespace oglopp {
 		float y;
 		float z;
 
-		CVertex(float newX, float newY, float newZ) : x(newX), y(newY), z(newZ) {}
-		CVertex(glm::vec3 const& vec) : x(vec.x), y(vec.y), z(vec.z) {}
+		CV(float newX, float newY, float newZ) : x(newX), y(newY), z(newZ) {}
+		CV(glm::vec3 const& vec) : x(vec.x), y(vec.y), z(vec.z) {}
 	};
 
 	/**
 	 * @brief VAO texture coordinate component
 	 */
-	struct CTexCoord : public Component<CTexCoord> {
+	struct CT : public Component<CT> {
 		static constexpr uint32_t parts = HLGL_TEX_COMPONENTS;
 		static constexpr DataType type = DataType::FLOAT;
 
 		float x;
 		float y;
 
-		CTexCoord(float newX, float newY) : x(newX), y(newY) {}
-		CTexCoord(glm::vec2 const& vec) : x(vec.x), y(vec.y) {}
+		CT(float newX, float newY) : x(newX), y(newY) {}
+		CT(glm::vec2 const& vec) : x(vec.x), y(vec.y) {}
 	};
 
 	/**
 	 * @brief VAO normal vector component
 	 */
-	struct CNormal : public Component<CNormal> {
+	struct CN : public Component<CN> {
 		static constexpr uint32_t parts = HLGL_NOR_COMPONENTS;
 		static constexpr DataType type = DataType::FLOAT;
 
@@ -163,8 +163,8 @@ namespace oglopp {
 		float y;
 		float z;
 
-		CNormal(float newX, float newY, float newZ) : x(newX), y(newY), z(newZ) {}
-		CNormal(glm::vec3 const& vec) : x(vec.x), y(vec.y), z(vec.z) {}
+		CN(float newX, float newY, float newZ) : x(newX), y(newY), z(newZ) {}
+		CN(glm::vec3 const& vec) : x(vec.x), y(vec.y), z(vec.z) {}
 	};
 }
 

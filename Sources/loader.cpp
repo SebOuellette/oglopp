@@ -23,15 +23,15 @@ namespace oglopp {
 		vbo.push(
 			(vertIndex > 0 && vertIndex <= this->cVertices.size()) ? 
 				this->cVertices[vertIndex - 1] : 
-				CVertex(0, 0, 0),
+				CV(0, 0, 0),
 
 			(normIndex > 0 && normIndex <= this->cNormals.size()) ? 
 				this->cNormals[normIndex - 1] : 
-				CNormal(0, 0, 0),
+				CN(0, 0, 0),
 
 			(texIndex > 0 && texIndex <= this->cTexCoords.size()) ?
 				this->cTexCoords[texIndex - 1] : 
-				CTexCoord(0, 0)
+				CT(0, 0)
 		);
 
 #ifdef VERBOSE
@@ -104,7 +104,7 @@ namespace oglopp {
 			if ("v" == type) {
 				// Read and parse a vertex
 				file >> x >> y >> z;
-				this->cVertices.push_back(CVertex(x, y, z));
+				this->cVertices.push_back(CV(x, y, z));
 
 #ifdef VERBOSE
 				std::cout << x << "," << y << "," << z;
@@ -112,7 +112,7 @@ namespace oglopp {
 			} else if ("vt" == type) {
 				// Read and parse a texture coordinate
 				file >> x >> y;
-				this->cTexCoords.push_back(CTexCoord(x, y));
+				this->cTexCoords.push_back(CT(x, y));
 
 #ifdef VERBOSE
 				std::cout << x << "," << y;
@@ -120,7 +120,7 @@ namespace oglopp {
 			} else if ("vn" == type) {
 				// Read and parse a normal vector
 				file >> x >> y >> z;
-				this->cNormals.push_back(CNormal(x, y, z));
+				this->cNormals.push_back(CN(x, y, z));
 #ifdef VERBOSE
 				std::cout << x << "," << y << "," << z;
 #endif
@@ -201,7 +201,7 @@ namespace oglopp {
 		this->cNormals.clear();
 
 		// Now let's update the VAO
-		vao.update<CVertex, CNormal, CTexCoord>();
+		vao.update<CV, CN, CT>();
 
 		return *this;
 	}
