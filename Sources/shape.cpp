@@ -29,8 +29,6 @@ namespace oglopp {
 		this->myRegister = 0;
 	}
 
-	Shape::~Shape() {}
-
 	/** @brief Set the texture
 	* @param[in] texture	The texture object to set to
 	* @return		A reference to this shape object

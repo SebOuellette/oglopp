@@ -40,7 +40,7 @@ namespace oglopp {
 
 	public:	
 		Shape();
-		~Shape();	
+		virtual ~Shape() = default;	
 
 		/** @brief Push a texture onto the back of the texture stack.
 		 * @param[in] newTexture	The texture object to set to
