@@ -15,6 +15,14 @@ namespace oglopp {
 		pWindow->keypress(key, scancode, action, mods);
 	}
 
+	void Window::scrollwheel_callback(GLFWwindow* window, double horiz, double vert) {
+		Window* pWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+		pWindow->scroll(horiz, vert);
+	}
+
+
+
+
 	Window::Window() {
 		this->_window = nullptr;
 		this->clearMask = GL_COLOR_BUFFER_BIT; // Initialize with the color buffer bit
@@ -56,11 +64,11 @@ namespace oglopp {
 		glfwWindowHint(GLFW_VISIBLE, settings.visible ? GLFW_TRUE : GLFW_FALSE);
 
 		// Create the window, pass monitor and share if provided
-	    this->_window = glfwCreateWindow(width, height, title, settings.monitor, settings.share);
+		this->_window = glfwCreateWindow(width, height, title, settings.monitor, settings.share);
 		if (_window == NULL) {
 			std::cout << "Failed to create GLFW window" << std::endl;
 			this->destroy();
-	        exit(1);
+	        	exit(1);
 		}
 		glfwMakeContextCurrent(this->_window);
 		//glfwShowWindow(this->_window);
@@ -73,7 +81,6 @@ namespace oglopp {
 	        exit(1);
 		}
 
-//#ifdef HLGL_DRAW_WIREFRAMES
 		// Wireframes mode
 		if (settings.wireframes) {
 			// Use wireframe mode
@@ -82,12 +89,12 @@ namespace oglopp {
 			// Do not use wireframe mode
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
-//#endif
 
 		// Callback function to automatically change viewport when window is resized
 		glfwSetWindowUserPointer(this->_window, this);
 		glfwSetFramebufferSizeCallback(this->_window, this->framebuffer_size_callback);
 		glfwSetKeyCallback(this->_window, this->keypress_callback);
+		glfwSetScrollCallback(this->_window, this->scrollwheel_callback);
 
 		// Set the "background" colour of the window
 		glClearColor(settings.clearColor.r, settings.clearColor.g, settings.clearColor.b, settings.clearColor.a);
@@ -389,4 +396,26 @@ namespace oglopp {
 
 		return *this;
 	}
+
+
+	/**
+	 * @brief Simulate a scroll event. 
+	 * @param[in] horiz	The horizontal scroll amount
+	 * @param[in] vert	The vertical scroll amount
+	 */
+	Window& Window::scroll(double horiz, double vert) {
+		this->startSettings.scrollCallback(horiz, vert, this->startSettings.scrollCallbackPtr); 
+		return *this;
+	}
+
+	/**
+	 * @brief Set the scrollwheel callback data pointer
+	 * @param[in] newPtr	The new pointer
+	 */
+	Window& Window::setScrollCallbackDataPtr(void* newPtr) {
+		this->startSettings.scrollCallbackPtr = newPtr;
+		return *this;
+	}
+
+
 }

@@ -76,6 +76,11 @@ namespace oglopp {
 	Loader& Loader::construct(std::string const& filename, VAO& vao) {
 		// Push the file
 		std::ifstream file(filename);
+
+		if (file.bad() || file.fail() || !file.is_open()) {
+			std::cerr << "File '" << filename << "' failed to open." << std::endl;
+			return *this;
+		}
 		
 		// Read every line
 		std::string line = "";

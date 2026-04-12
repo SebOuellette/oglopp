@@ -18,13 +18,21 @@ namespace oglopp {
 
 	/*
 	 * @brief The resize callback type. A function that takes the new width and height respectively as parameters
-	 * @param [in] key		The GLFW key pressed
+	 * @param [in] key	The GLFW key pressed
 	 * @param [in] scancode	A hardware/os code
 	 * @param [in] action	Pressed or released
-	 * @param [in] mods		Shift, ctrl?
-	 * @param [in] data		An optional pointer to settings.keypressCallbackPtr
+	 * @param [in] mods	Shift, ctrl?
+	 * @param [in] data	An optional pointer to settings.keypressCallbackPtr
 	 */
 	typedef std::function<void(int, int, int, int, void*)> KeypressCallback;
+
+	/**
+	 * @brief The scrollwheel callback type. A function that takes the horizontal and vertical scroll magnitudes respectively as parameters
+	 * @param[in] horiz	The amount scrolled horizontally
+	 * @param[in] vert	The amount scrolled vertically
+	 * @param[in] data	An optional pointer to settings.scrollCallbackPtr
+	 */
+	typedef std::function<void(double, double, void*)> ScrollCallback;
 
 
 	/** @brief Window object
@@ -49,8 +57,10 @@ namespace oglopp {
 			GLFWmonitor* monitor = nullptr;
 			GLFWwindow* share = nullptr;
 
-			// Render options
+			// A window can either render wireframes or polygons
 			bool wireframes = false;
+			
+			// The window background color
 			glm::vec4 clearColor = glm::vec4(0.0);
 
 			// Depth buffer
@@ -58,10 +68,10 @@ namespace oglopp {
 			bool depthReadonly = false;
 			DepthPass depthPass = DepthPass::LESS;
 
-			// Face culling
+			// Face culling draws only the outer faces of shapes for optimization
 			bool doFaceCulling = true;
 
-			// Allow defining point size
+			// Allow defining point size when drawing individual points rather than meshes
 			bool modifyPointSize = false;
 
 			// The resize callback to be run when the window is resized
@@ -70,6 +80,9 @@ namespace oglopp {
 
 			KeypressCallback keypressCallback = [](int, int, int, int, void*){};
 			void* keypressCallbackPtr = nullptr; // Can be updated later on with setKeypressCallbackDataPtr()
+			
+			ScrollCallback scrollCallback = [](double, double, void*){};
+			void* scrollCallbackPtr = nullptr; // Can be updated later on with setScrollCallbackDataPtr()
 		};
 
 
@@ -167,39 +180,67 @@ namespace oglopp {
 	 	*/
 		Window& handleNoclip();
 
+
+		//
+		// Callbacks
+		//
+
 		/**
 		 * @brief Resize the window
-		 * @param[in]	width	The width (in pixels) of the window
-		 * @param[in]	height	The height (in pixels) of the window
+		 * @param[in] width	The width (in pixels) of the window
+		 * @param[in] height	The height (in pixels) of the window
 		 */
 		Window& resize(int width, int height);
-
+		
 		/**
 		 * @brief Set the resize callback data pointer
 		 * @param[in] newPtr	The new pointer
 		 */
 		Window& setResizeCallbackDataPtr(void* newPtr);
 
+
 		/**
-		 * @brief Set the resize callback data pointer
+		 * @brief Simulate a keypress event.
+		 * @param[in] key	The GLFW key pressed
+		 * @param[in] scancode	Key scancode
+		 * @param[in] action	Key action (press, release)
+		 * @param[in] mods	Key modifiers (ctrl, shift, alt)
+		 */
+		Window& keypress(int key, int scancode, int action, int mods);
+	
+		/**
+		 * @brief Set the keypress callback data pointer
 		 * @param[in] newPtr	The new pointer
 		 */
 		Window& setKeypressCallbackDataPtr(void* newPtr);
 
+
+		/**
+		 * @brief Simulate a scroll event. 
+		 * @param[in] horiz	The horizontal scroll amount
+		 * @param[in] vert	The vertical scroll amount
+		 */
+		Window& scroll(double horiz, double vert);
+
+		/**
+		 * @brief Set the scrollwheel callback data pointer
+		 * @param[in] newPtr	The new pointer
+		 */
+		Window& setScrollCallbackDataPtr(void* newPtr);
 	private:
-		Window& keypress(int key, int scancode, int action, int mods);
+		
 
 		uint32_t clearMask;
 
-	    GLFWwindow* _window;
+		GLFWwindow* _window;
 
 		Camera renderCamera;
 
 		Window::Settings startSettings; // Copy of the settings used to start the window
 
-	    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
+		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 		static void keypress_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		static void scrollwheel_callback(GLFWwindow* window, double horiz, double vert);
 	};
 }
 

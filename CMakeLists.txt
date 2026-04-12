@@ -1,7 +1,7 @@
 #cmake_minimum_required(VERSION 4.0.1)
 cmake_minimum_required(VERSION 3.30.0)
 project(oglopp
-	VERSION 1.1.2
+	VERSION 1.1.3
 	LANGUAGES C CXX
 )
 
@@ -12,16 +12,17 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # PIC everywhere
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_SHARED_LIBS ON)
-# Safe linking
-# Runtime install path
 set(CMAKE_INSTALL_RPATH "/usr/local/${CMAKE_INSTALL_LIBDIR}")
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-
-#set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 # Output dirs
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+
+#
+# Collect sources
+#
 
 # Include paths
 include_directories(
@@ -35,17 +36,29 @@ file(GLOB_RECURSE OGL_SOURCES
 )
 set(GLAD_SOURCE ${CMAKE_SOURCE_DIR}/glad/src/gl.c)
 
-# Shared library target
-add_library(${PROJECT_NAME} SHARED
-	${OGL_SOURCES}
-	${GLAD_SOURCE}
-)
+
+
+
+#
+# Build Libraries
+#
+
+add_library(${PROJECT_NAME} SHARED ${GLAD_SOURCE} ${OGL_SOURCES})
 
 # Export macro for Windows
 target_compile_definitions(${PROJECT_NAME} PRIVATE OGL_BUILD_DLL)
 
-# Link dependencies
+
+
+
+
+#
+# Linking
+#
+
+# 
 find_library(GLFW_LIB NAMES glfw glfw3 PATHS /usr/lib/ NO_DEFAULT_PATH REQUIRED)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE ${GLFW_LIB})
 if (UNIX)
 	target_link_libraries(${PROJECT_NAME} PRIVATE dl pthread)
@@ -64,6 +77,7 @@ install(TARGETS ${PROJECT_NAME}
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
 
 # Install headers and glad include
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/Headers/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
@@ -84,22 +98,33 @@ foreach(src IN LISTS EXAMPLE_SRCS)
 	list(APPEND example_targets ${exname})
 endforeach()
 
+#
+# Targets
+#
+
+#
 # All examples
 add_custom_target(examples
 	DEPENDS ${example_targets}
 	COMMENT "Building all example executables"
 )
 
+#
+# Install examples
 #if (TARGET examples)
 #	install(TARGETS ${example_targets} DESTINATION ${CMAKE_INSTALL_BINDIR})
 #endif()
 
+
+#
 # Strip target
 add_custom_target(strip
 	COMMAND ${CMAKE_STRIP} $<TARGET_FILE:${PROJECT_NAME}>
 	COMMENT "Stripping shared library"
 )
 
+
+#
 # Uninstall target
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
@@ -111,7 +136,9 @@ add_custom_target(uninstall
 	COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
 )
 
-# (Optional) Doxygen target if you have docs/Doxyfile
+
+#
+# Doxygen target if you have docs/Doxyfile
 find_package(Doxygen QUIET)
 if (DOXYGEN_FOUND)
 	add_custom_target(docs
