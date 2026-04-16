@@ -86,11 +86,12 @@ namespace oglopp {
 		};
 
 
-	    // Default Constructor
-	    Window();
-	    ~Window();
+		// Default Constructor
+		Window();
+		~Window();
 
-	    /** @brief Create a window with some width and height
+		/**
+		 * @brief Create a window with some width and height
 		 * @param[in]	width	The width (in pixels) of the window upon creation
 		 * @param[in]	height	The height (in pixels) of the window upon creation
 		 * @param[in]	title	The title of the window
@@ -100,29 +101,31 @@ namespace oglopp {
 		Window& create(unsigned int width, unsigned int height, const char* title, Settings const& settings );
 		Window& create(unsigned int width, unsigned int height, const char* title);
 
-	    // Close the window and clear memory
-	    Window& destroy();
+		// Close the window and clear memory
+		Window& destroy();
 
-	    // Process user input
-	    Window& processInput();
+		// Process user input
+		Window& processInput();
 
-	    // Return if the window should close (true) or not (false)
-	    bool shouldClose();
+		// Return if the window should close (true) or not (false)
+		bool shouldClose();
 
-	    // Swap the front and back buffers
-	    Window& bufferSwap();
+		// Swap the front and back buffers
+		Window& bufferSwap();
 
-	    // Poll GLFW events
-	    Window& pollEvents();
+		// Poll GLFW events
+		Window& pollEvents();
 
-		/** @brief Get a reference to this object's camera
+		/** 
+		 * @brief Get a reference to this object's camera
 		 * @return A constant reference to this object's camera
-		*/
+		 */
 		Camera& getCam();
 
-		/** @brief Get a pointer to the saved glfw window object
-		* @return	A pointer to the glfw window object
-		*/
+		/** 
+		 * @brief Get a pointer to the saved glfw window object
+		 * @return	A pointer to the glfw window object
+		 */
 		GLFWwindow* getWindow();
 
 		/** @brief Get the size of the window in pixels

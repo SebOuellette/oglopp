@@ -135,15 +135,3 @@ configure_file(
 add_custom_target(uninstall
 	COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
 )
-
-
-#
-# Doxygen target if you have docs/Doxyfile
-find_package(Doxygen QUIET)
-if (DOXYGEN_FOUND)
-	add_custom_target(docs
-		COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs/Doxyfile
-		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-		COMMENT "Generating Doxygen documentation"
-	)
-endif()
