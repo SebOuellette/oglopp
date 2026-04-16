@@ -44,10 +44,34 @@ namespace oglopp {
 			ALWAYS		= GL_ALWAYS,
 			NEVER		= GL_NEVER,
 			LESS		= GL_LESS,
+			EQUAL		= GL_EQUAL,
 			LEQUAL		= GL_LEQUAL,
 			GREATER		= GL_GREATER,
 			NOTEQUAL	= GL_NOTEQUAL,
 			GEQUAL		= GL_GEQUAL
+		};
+
+		enum StencilAction : uint16_t {
+			KEEP		= GL_KEEP,	// The currently stored stencil value is kept
+			ZERO		= GL_ZERO,	// The stencil value is set to 0
+			REPLACE		= GL_REPLACE,	// The stencil value is replaced with the reference value set with Window::stencilFunc()
+			INCR		= GL_INCR,	// The stencil value is increased by 1 if it is lower than the maximum value
+			INCR_WRAP	= GL_INCR_WRAP,	// Same as INCR, but wraps it back to 0 as soon as the maximum value is exceeded
+			DECR		= GL_DECR,	// The stencil value is decreased by 1 if it is higher than the minimum value
+			DECR_WRAP	= GL_DECR_WRAP,	// Same as DECR, but wraps it to the maximum value if it ends up lower than 0
+			INVERT		= GL_INVERT	// Bitwise inverts the current stencil buffer value
+		};
+
+		enum ClearMask : uint32_t {
+			NONE		= 0,
+
+			// The list of supported clear bits
+			COLOR		= GL_COLOR_BUFFER_BIT,
+			DEPTH		= GL_DEPTH_BUFFER_BIT,
+			STENCIL		= GL_STENCIL_BUFFER_BIT,
+
+			// bitwise OR of all clear bits
+			ALL		= COLOR | DEPTH | STENCIL,
 		};
 
 		struct Settings {
@@ -64,6 +88,7 @@ namespace oglopp {
 			glm::vec4 clearColor = glm::vec4(0.0);
 
 			// Depth buffer
+			bool doStencilBuffer = false;
 			bool doDepthBuffer = true;
 			bool depthReadonly = false;
 			DepthPass depthPass = DepthPass::LESS;
@@ -175,13 +200,64 @@ namespace oglopp {
 		Window& setCursorPos(glm::dvec2 const& pos);
 
 		/** @brief Clear the window
+		 * @param[in] mask
 		 * @return A reference to this window
 	 	*/
-		Window& clear(uint32_t maskXor = 0);
+		Window& clear(uint32_t maskXor = ClearMask::ALL);
 
 		/** @brief Handle noclip movement
 	 	*/
 		Window& handleNoclip();
+
+		/**
+		 * @brief Disable the depth mask to pause writing to the depth buffer.
+		 * @return A reference to this window
+		 */
+		Window& noDepth();
+		
+		/**
+		 * @brief Enable the depth mask to continue writing to the depth buffer
+		 * @return A reference to this window
+		 */
+		Window& useDepth();
+
+
+		// All these stencil functions need to be moved into a Stencil class
+
+		/**
+		 * @brief Enable and disable stencil test on the fly
+		 * @param[in] enabled	True to enable stencil test, false to disable
+		 * @return		A reference to this window
+		 */
+		Window& enableStencil(bool enabled);
+
+		/**
+		 * @brief Disable the stencil mask to pause writing to the stencil buffer
+		 * @return A reference to this window
+		 */
+		Window& readStencil();
+		
+		/**
+		 * @brief Enable the stencil mask to continue writing to the stencil buffer
+		 * @param[in] mask	An optional mask. Default value is 0xFF to use all bits. 
+		 * @return A reference to this window
+		 */
+		Window& writeStencil(uint8_t mask = 0xFF);
+
+		/**
+		 * @brief Set the stencil condition and reference (and optional mask) for stencil tests
+		 * @param[in] condition	The depth pass
+		 *
+		 */
+		Window& stencilFunc(DepthPass condition, float reference, uint8_t mask = 0xFF);
+
+		/**
+		 * @brief Set the stencil operation to perform on reference or current value based on the func's pass or fail result
+		 * @param[in] stFail	The action to perform upon failure of the stencil test. Was an object drawn to this fragment of the stencil test buffer?
+		 * @param[in] dtFail	The action to perform upon failure of the depth test. Was an object drawn to this fragment of the depth test buffer?
+		 * @param[in] pass	The action to perform upon success of the stencil function.
+		 */
+		Window& stencilOp(StencilAction stFail, StencilAction dtFail, StencilAction pass);
 
 
 		//
@@ -216,7 +292,6 @@ namespace oglopp {
 		 * @param[in] newPtr	The new pointer
 		 */
 		Window& setKeypressCallbackDataPtr(void* newPtr);
-
 
 		/**
 		 * @brief Simulate a scroll event. 

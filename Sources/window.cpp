@@ -106,15 +106,13 @@ namespace oglopp {
 
 			// Apply the depth clear bit
 			this->clearMask |= GL_DEPTH_BUFFER_BIT;
-
-			if (settings.depthReadonly) {
-				glDepthMask(GL_FALSE); // if readonly == true, depthMask = false
-			} else {
-				glDepthMask(GL_TRUE);
-			}
+			settings.depthReadonly ? this->noDepth() : this->useDepth();
 		} else {
 			glDisable(GL_DEPTH_TEST);
 		}
+
+		// Stencil
+		settings.doStencilBuffer ? glEnable(GL_STENCIL_TEST) : glDisable(GL_STENCIL_TEST);
 
 		// Modifying point size
 		if (settings.modifyPointSize) {
@@ -269,7 +267,11 @@ namespace oglopp {
 	 * @return A reference to this window
  	*/
 	Window& Window::clear(uint32_t maskXor) {
-		glClear(this->clearMask ^ maskXor);
+		// Bitwise AND because by default maskXor will contain all clear bits.
+		//  We only want to clear the bits supported in this window (as defined by the settings upon creation)
+		// 
+		// If we want to clear a specific buffer, we can define as such. But only the supported buffers can be cleared. 
+		glClear(this->clearMask & maskXor);
 		return *this;
 	}
 
@@ -346,6 +348,51 @@ namespace oglopp {
 
 		return *this;
 	}
+
+
+	/**
+	 * @brief Disable the depth mask to pause writing to the depth buffer.
+	 * @return A reference to this window
+	 */
+	Window& Window::noDepth() {
+		glDepthMask(GL_FALSE);
+		return *this;
+	}
+	
+	/**
+	 * @brief Enable the depth mask to continue writing to the depth buffer
+	 * @return A reference to this window
+	 */
+	Window& Window::useDepth() {
+		glDepthMask(GL_TRUE);
+		return *this;
+	}
+
+	Window& Window::enableStencil(bool enabled) {
+			enabled ? glEnable(GL_STENCIL_TEST) : glDisable(GL_STENCIL_TEST);
+		return *this;
+	}
+
+	/**
+	 * @brief Disable the stencil mask to pause writing to the stencil buffer
+	 * @return A reference to this window
+	 */
+	Window& Window::readStencil() {
+		glStencilMask(0x00); // Each bit ends up as 0 (disabling writes) - from opengl docs
+		return *this;
+	}
+	
+	/**
+	 * @brief Enable the stencil mask to continue writing to the stencil buffer
+	 * @param[in] mask	An optional mask. Default value is 0xFF to use all bits. 
+	 * @return A reference to this window
+	 */
+	Window& Window::writeStencil(uint8_t mask) {
+		glStencilMask(mask); 
+		return *this;
+	}
+
+
 
 	/**
 	 * @brief Resize the window
