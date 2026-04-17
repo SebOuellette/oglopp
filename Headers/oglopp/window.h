@@ -3,6 +3,7 @@
 
 #include "defines.h"
 #include "camera.h"
+#include "glad/gl.h"
 //#include "oglopp/glad/gl.h"
 #include <functional>
 
@@ -60,6 +61,12 @@ namespace oglopp {
 			DECR		= GL_DECR,	// The stencil value is decreased by 1 if it is higher than the minimum value
 			DECR_WRAP	= GL_DECR_WRAP,	// Same as DECR, but wraps it to the maximum value if it ends up lower than 0
 			INVERT		= GL_INVERT	// Bitwise inverts the current stencil buffer value
+		};
+
+		enum StencilFace : uint16_t {
+			FRONT		= GL_FRONT,
+			BACK		= GL_BACK,
+			FRONT_AND_BACK	= GL_FRONT_AND_BACK
 		};
 
 		enum ClearMask : uint32_t {
@@ -222,6 +229,10 @@ namespace oglopp {
 		Window& useDepth();
 
 
+
+
+
+
 		// All these stencil functions need to be moved into a Stencil class
 
 		/**
@@ -245,16 +256,39 @@ namespace oglopp {
 		Window& writeStencil(uint8_t mask = 0xFF);
 
 		/**
+		 * @brief Set the stencil condition for either the front, back or both sides
+		 * @param[in] face	The face to update the stencil state for
+		 * @param[in] condition	The test function to perform
+		 * @param[in] reference	The reference value for the stencil test
+		 * @param[in] mask	An optionalmask ANDed withboth reference and stored stencil
+		 */
+		Window& stencilFunc(StencilFace face, DepthPass condition, float reference, uint8_t mask = 0xFF);
+
+		/**
 		 * @brief Set the stencil condition and reference (and optional mask) for stencil tests
-		 * @param[in] condition	The depth pass
-		 *
+		 * @param[in] condition	The test function to perform
+		 * @param[in] reference	The reference value for the stencil test
+		 * @param[in] mask	An optionalmask ANDed withboth reference and stored stencil
 		 */
 		Window& stencilFunc(DepthPass condition, float reference, uint8_t mask = 0xFF);
+		
+		/**
+		 * @brief Set the stencil operation to perform for either the front, back, or both sides
+		 * @param[in] stFail	The action to perform upon failure of the stencil test. 
+		 *			Was an object drawn to this fragment of the stencil test buffer?
+		 * @param[in] dtFail	The action to perform upon failure of the depth test. 
+		 *			Was an object drawn to this fragment of the depth test buffer?
+		 * @param[in] pass	The action to perform upon success of the stencil function.
+		 */
+		Window& stencilOp(StencilFace face, StencilAction stFail, StencilAction dtFail, StencilAction pass);
+
 
 		/**
 		 * @brief Set the stencil operation to perform on reference or current value based on the func's pass or fail result
-		 * @param[in] stFail	The action to perform upon failure of the stencil test. Was an object drawn to this fragment of the stencil test buffer?
-		 * @param[in] dtFail	The action to perform upon failure of the depth test. Was an object drawn to this fragment of the depth test buffer?
+		 * @param[in] stFail	The action to perform upon failure of the stencil test. 
+		 *			Was an object drawn to this fragment of the stencil test buffer?
+		 * @param[in] dtFail	The action to perform upon failure of the depth test. 
+		 *			Was an object drawn to this fragment of the depth test buffer?
 		 * @param[in] pass	The action to perform upon success of the stencil function.
 		 */
 		Window& stencilOp(StencilAction stFail, StencilAction dtFail, StencilAction pass);

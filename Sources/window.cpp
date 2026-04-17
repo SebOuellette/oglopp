@@ -369,7 +369,7 @@ namespace oglopp {
 	}
 
 	Window& Window::enableStencil(bool enabled) {
-			enabled ? glEnable(GL_STENCIL_TEST) : glDisable(GL_STENCIL_TEST);
+		enabled ? glEnable(GL_STENCIL_TEST) : glDisable(GL_STENCIL_TEST);
 		return *this;
 	}
 
@@ -391,8 +391,56 @@ namespace oglopp {
 		glStencilMask(mask); 
 		return *this;
 	}
+	
+	/**
+	 * @brief Set the stencil condition for either the front, back or both sides
+	 * @param[in] face	The face to update the stencil state for
+	 * @param[in] condition	The test function to perform
+	 * @param[in] reference	The reference value for the stencil test
+	 * @param[in] mask	An optionalmask ANDed withboth reference and stored stencil
+	 */
+	Window& Window::stencilFunc(StencilFace face, DepthPass condition, float reference, uint8_t mask) {
+		glStencilFuncSeparate(face, condition, reference, mask);
+		return *this;
+	}
 
 
+	/**
+	 * @brief Set the stencil condition and reference (and optional mask) for stencil tests
+	 * @param[in] condition	The depth pass
+	 * @param[in] condition	The test function to perform
+	 * @param[in] reference	The reference value for the stencil test
+	 * @param[in] mask	An optionalmask ANDed withboth reference and stored stencil
+	 */
+	Window& Window::stencilFunc(DepthPass condition, float reference, uint8_t mask) {
+		glStencilFunc(condition, reference, mask);
+		return *this;
+	}
+	
+	/**
+	 * @brief Set the stencil operation to perform for either the front, back, or both sides
+	 * @param[in] stFail	The action to perform upon failure of the stencil test. 
+	 *			Was an object drawn to this fragment of the stencil test buffer?
+	 * @param[in] dtFail	The action to perform upon failure of the depth test. 
+	 *			Was an object drawn to this fragment of the depth test buffer?
+	 * @param[in] pass	The action to perform upon success of the stencil function.
+	 */
+	Window& Window::stencilOp(StencilFace face, StencilAction stFail, StencilAction dtFail, StencilAction pass) {
+		glStencilOpSeparate(face, stFail, dtFail, pass);	
+		return *this;
+	}
+
+	/**
+	 * @brief Set the stencil operation to perform on reference or current value based on the func's pass or fail result
+	 * @param[in] stFail	The action to perform upon failure of the stencil test. Was an object drawn to this fragment of the stencil test buffer?
+	 * @param[in] dtFail	The action to perform upon failure of the depth test. Was an object drawn to this fragment of the depth test buffer?
+	 * @param[in] pass	The action to perform upon success of the stencil function.
+	 */
+	Window& Window::stencilOp(StencilAction stFail, StencilAction dtFail, StencilAction pass) {
+		glStencilOp(stFail, dtFail, pass);
+		return *this;
+	}
+	
 
 	/**
 	 * @brief Resize the window
