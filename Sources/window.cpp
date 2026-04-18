@@ -114,7 +114,12 @@ namespace oglopp {
 		}
 
 		// Stencil
-		settings.doStencilBuffer ? glEnable(GL_STENCIL_TEST) : glDisable(GL_STENCIL_TEST);
+		if (settings.doStencilBuffer) {
+			glEnable(GL_STENCIL_TEST);
+			this->clearMask |= ClearMask::STENCIL;
+		} else {
+			glDisable(GL_STENCIL_TEST);
+		}
 
 		// Modifying point size
 		if (settings.modifyPointSize) {
@@ -179,6 +184,18 @@ namespace oglopp {
 
 	    return *this;
 	}
+	
+	/**
+	 * @brief The polygon mode 
+	 * @param[in] mode	The fill mode. Leave blank to reset to default (FILL)
+	 * @param[in] face	The face to set the mode for. Leave blank for default (FRONT_AND_BACK)
+	 * @return		A reference to this window object
+	 */
+	Window& Window::polygonMode(PolygonMode mode, Face face) {
+		glPolygonMode(face, mode);
+		return *this;
+	}
+
 
 	/** @brief Get a reference to this object's camera
 	* @return A constant reference to this object's camera
@@ -265,14 +282,15 @@ namespace oglopp {
 	}
 
 	/** @brief Clear the window
+	 * @param[in] clearbits	The Window::ClearMask combination of bits to clear
 	 * @return A reference to this window
  	*/
-	Window& Window::clear(uint32_t maskXor) {
+	Window& Window::clear(uint32_t clearbits) {
 		// Bitwise AND because by default maskXor will contain all clear bits.
 		//  We only want to clear the bits supported in this window (as defined by the settings upon creation)
 		// 
 		// If we want to clear a specific buffer, we can define as such. But only the supported buffers can be cleared. 
-		glClear(this->clearMask & maskXor);
+		glClear(this->clearMask & clearbits);
 		return *this;
 	}
 
@@ -395,50 +413,27 @@ namespace oglopp {
 	
 	/**
 	 * @brief Set the stencil condition for either the front, back or both sides
-	 * @param[in] face	The face to update the stencil state for
 	 * @param[in] condition	The test function to perform
 	 * @param[in] reference	The reference value for the stencil test
+	 * @param[in] face	The face to perform the condition on. Default is both sides
 	 * @param[in] mask	An optionalmask ANDed withboth reference and stored stencil
 	 */
-	Window& Window::stencilFunc(StencilFace face, DepthPass condition, float reference, uint8_t mask) {
+	Window& Window::stencilFunc(DepthPass condition, float reference, Face face, uint8_t mask) {
 		glStencilFuncSeparate(face, condition, reference, mask);
-		return *this;
-	}
-
-
-	/**
-	 * @brief Set the stencil condition and reference (and optional mask) for stencil tests
-	 * @param[in] condition	The depth pass
-	 * @param[in] condition	The test function to perform
-	 * @param[in] reference	The reference value for the stencil test
-	 * @param[in] mask	An optionalmask ANDed withboth reference and stored stencil
-	 */
-	Window& Window::stencilFunc(DepthPass condition, float reference, uint8_t mask) {
-		glStencilFunc(condition, reference, mask);
 		return *this;
 	}
 	
 	/**
 	 * @brief Set the stencil operation to perform for either the front, back, or both sides
+	 * @param[in] pass	The action to perform upon success of the stencil function.
 	 * @param[in] stFail	The action to perform upon failure of the stencil test. 
 	 *			Was an object drawn to this fragment of the stencil test buffer?
 	 * @param[in] dtFail	The action to perform upon failure of the depth test. 
 	 *			Was an object drawn to this fragment of the depth test buffer?
-	 * @param[in] pass	The action to perform upon success of the stencil function.
+	 * @param[in] face	The face t o perform the condition on. Default is both sides
 	 */
-	Window& Window::stencilOp(StencilFace face, StencilAction stFail, StencilAction dtFail, StencilAction pass) {
-		glStencilOpSeparate(face, stFail, dtFail, pass);	
-		return *this;
-	}
-
-	/**
-	 * @brief Set the stencil operation to perform on reference or current value based on the func's pass or fail result
-	 * @param[in] stFail	The action to perform upon failure of the stencil test. Was an object drawn to this fragment of the stencil test buffer?
-	 * @param[in] dtFail	The action to perform upon failure of the depth test. Was an object drawn to this fragment of the depth test buffer?
-	 * @param[in] pass	The action to perform upon success of the stencil function.
-	 */
-	Window& Window::stencilOp(StencilAction stFail, StencilAction dtFail, StencilAction pass) {
-		glStencilOp(stFail, dtFail, pass);
+	Window& Window::stencilOp(StencilAction pass, StencilAction stFail, StencilAction dtFail, Face face) {
+		glStencilOpSeparate(face, stFail, dtFail, pass);
 		return *this;
 	}
 	
@@ -451,6 +446,7 @@ namespace oglopp {
 	Window& Window::resize(int width, int height) {
 		//std::cout << "Window resized [" << width << ", " << height << "]" << std::endl;
 		glViewport(0, 0, width, height);
+		this->getCam().updateProjectionView(width, height);
 
 		// If the window is resized and moved around while the cursor is locked, free the cursor since it could be locked outside the window.
 		glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);

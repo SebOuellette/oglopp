@@ -186,7 +186,7 @@ namespace oglopp {
 	Texture& Texture::bind(uint16_t id) {
 		// Set the id (used within the shader) to bind the texture to
 		glActiveTexture(id);
-
+	
 		// Now bind the texture
 		return this->bind();
 	}

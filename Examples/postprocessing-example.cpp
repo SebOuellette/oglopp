@@ -185,7 +185,10 @@ int main() {
 		rect.draw(window, &ourShader);
 		tri.draw(window, &ourShader);
 		coob.draw(window, &ourShader);
+
+		window.polygonMode(Window::PolygonMode::LINE);
 		coob2.draw(window, &ourShader);
+		window.polygonMode();
 
 		// Unbind the renderbuffer, then clear the real display buffer so we can re-draw our canvas.
 		FBO::unbind();

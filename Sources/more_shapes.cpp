@@ -5,10 +5,10 @@ namespace oglopp {
 		this->getEBO().push(0, 1, 2);
 		this->getEBO().push(2, 3, 0);
 
-		this->pushPoint(CV( 0.5,  0.5, 0.1), CN(1.0, 0.0, 0.0), CT(1.0, 1.0));
-		this->pushPoint(CV( 0.5, -0.5, 0.1), CN(0.0, 1.0, 0.0), CT(1.0, 0.0));
-		this->pushPoint(CV(-0.5, -0.5, 0.1), CN(0.0, 0.0, 1.0), CT(0.0, 0.0));
-		this->pushPoint(CV(-0.5,  0.5, 0.1), CN(1.0, 0.0, 0.0), CT(0.0, 1.0));
+		this->pushPoint(CV( 0.5,  0.5, 0.0), CN(1.0, 0.0, 0.0), CT(1.0, 1.0));
+		this->pushPoint(CV( 0.5, -0.5, 0.0), CN(0.0, 1.0, 0.0), CT(1.0, 0.0));
+		this->pushPoint(CV(-0.5, -0.5, 0.0), CN(0.0, 0.0, 1.0), CT(0.0, 0.0));
+		this->pushPoint(CV(-0.5,  0.5, 0.0), CN(1.0, 0.0, 0.0), CT(0.0, 1.0));
 
 		// ..:: Initialization code ::..
 		this->update<CV, CN, CT>();
