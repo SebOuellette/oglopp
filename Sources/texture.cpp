@@ -149,7 +149,6 @@ namespace oglopp {
 	Texture& Texture::destroy() {
 		glDeleteTextures(1, &this->TID);
 		glDeleteBuffers(1, &this->TBO);
-		std::cout << "Destroying texture" << std::endl;
 
 		return *this;
 	}

@@ -24,11 +24,12 @@ namespace oglopp {
 		COMPUTE 	= GL_COMPUTE_SHADER
 	};
 
-	enum DrawType : uint8_t {
-		TRIANGLES 	= 0x00,		// 2d/3d. Draws a triangular surface
-		POINTS,					// Set of unconnected points
-		LINE,					// Draw a line between the points
-		LINE_LOOP,				// Similar to LINE, but include a line between the last point and the first point
+	enum DrawType : uint16_t {
+		TRIANGLES 	= GL_TRIANGLES,		// 2d/3d. Draws a triangular surface
+		POINTS		= GL_POINTS,		// Set of unconnected points
+		LINES		= GL_LINES,		// Draw lines between pairs of lines
+		LINE_STRIP	= GL_LINE_STRIP,	// Draw a line around all verticies to form an unconnected polygon
+		LINE_LOOP	= GL_LINE_LOOP,		// Similar to LINE, but include a line between the last and first point
 	};
 
 	/** @brief Shader object

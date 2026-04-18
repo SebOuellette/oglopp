@@ -34,6 +34,8 @@ namespace oglopp {
 
 		if (this->_window != nullptr) {
 			glfwDestroyWindow(this->_window);
+			// Here we would set _window to null
+			// but this is a destructor so what's the point
 		}
 	}
 
@@ -142,12 +144,11 @@ namespace oglopp {
 
 	Window& Window::destroy() {
 		if (this->_window != nullptr) {
-			std::cout << "Destroying window" << std::endl;
-
 			glfwHideWindow(this->_window);
 
 			glfwSetWindowShouldClose(this->_window, GLFW_TRUE);
-			//this->_window = nullptr;
+			//this->_window = nullptr; // Can't set this to null cause we're only signalling the window object to close here
+
 		}
 
 	    return *this;
@@ -466,7 +467,7 @@ namespace oglopp {
 	 * @param[in] callback	The callback function
 	 * @param[in] data	The new pointer
 	 */
-	Window& Window::setResizeCallback(ResizeCallback callback, void* data) {
+	Window& Window::setResizeCallback(ResizeCallback callback = [](int, int, void*){}, void* data = nullptr) {
 		this->startSettings.resizeCallback = callback;
 		this->startSettings.resizeCallbackPtr = data;
 
@@ -490,7 +491,7 @@ namespace oglopp {
 	 * @param[in] callback	The callback function
 	 * @param[in] data	The new pointer
 	 */
-	Window& Window::setKeypressCallback(KeypressCallback callback, void* data) {
+	Window& Window::setKeypressCallback(KeypressCallback callback = [](int, int, int, int, void*){}, void* data = nullptr) {
 		this->startSettings.keypressCallback = callback;
 		this->startSettings.keypressCallbackPtr = data;
 
@@ -513,7 +514,7 @@ namespace oglopp {
 	 * @param[in] callback	The callback function
 	 * @param[in] data	The new pointer
 	 */
-	Window& Window::setScrollCallback(ScrollCallback callback, void* data) {
+	Window& Window::setScrollCallback(ScrollCallback callback = [](double, double, void*){}, void* data = nullptr) {
 		this->startSettings.scrollCallback = callback;
 		this->startSettings.scrollCallbackPtr = data;
 		return *this;

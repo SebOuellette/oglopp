@@ -55,7 +55,7 @@ namespace oglopp {
 		std::vector<Texture*> const& getTextureList();
 
 		/** @brief Draw this shape to the specified window using an optional shader
-		 * @param[in] window	A reference to the window object
+		 * @param[in] window reference to the window object
 		 * @param[in] pShader	An optional pointer to the shader object
 		 * @return 		A reference to this shape
 		*/
