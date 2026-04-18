@@ -460,12 +460,15 @@ namespace oglopp {
 		return *this;
 	}
 
+
 	/**
-	 * @brief Set the callback data pointer
-	 * @param[in] newPtr	The new pointer
+	 * @brief Set the FBO resize callback data pointer
+	 * @param[in] callback	The callback function
+	 * @param[in] data	The new pointer
 	 */
-	Window& Window::setResizeCallbackDataPtr(void* newPtr) {
-		this->startSettings.resizeCallbackPtr = newPtr;
+	Window& Window::setResizeCallback(ResizeCallback callback, void* data) {
+		this->startSettings.resizeCallback = callback;
+		this->startSettings.resizeCallbackPtr = data;
 
 		return *this;
 	}
@@ -484,10 +487,12 @@ namespace oglopp {
 
 	/**
 	 * @brief Set the resize callback data pointer
-	 * @param[in] newPtr	The new pointer
+	 * @param[in] callback	The callback function
+	 * @param[in] data	The new pointer
 	 */
-	Window& Window::setKeypressCallbackDataPtr(void* newPtr) {
-		this->startSettings.keypressCallbackPtr = newPtr;
+	Window& Window::setKeypressCallback(KeypressCallback callback, void* data) {
+		this->startSettings.keypressCallback = callback;
+		this->startSettings.keypressCallbackPtr = data;
 
 		return *this;
 	}
@@ -505,10 +510,12 @@ namespace oglopp {
 
 	/**
 	 * @brief Set the scrollwheel callback data pointer
-	 * @param[in] newPtr	The new pointer
+	 * @param[in] callback	The callback function
+	 * @param[in] data	The new pointer
 	 */
-	Window& Window::setScrollCallbackDataPtr(void* newPtr) {
-		this->startSettings.scrollCallbackPtr = newPtr;
+	Window& Window::setScrollCallback(ScrollCallback callback, void* data) {
+		this->startSettings.scrollCallback = callback;
+		this->startSettings.scrollCallbackPtr = data;
 		return *this;
 	}
 

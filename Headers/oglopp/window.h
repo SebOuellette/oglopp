@@ -1,10 +1,7 @@
 #ifndef OGLOPP_WINDOW_H
 #define OGLOPP_WINDOW_H
 
-#include "defines.h"
 #include "camera.h"
-#include "glad/gl.h"
-//#include "oglopp/glad/gl.h"
 #include <functional>
 
 
@@ -307,9 +304,10 @@ namespace oglopp {
 		
 		/**
 		 * @brief Set the resize callback data pointer
+		 * @param[in] callback	The callback function
 		 * @param[in] newPtr	The new pointer
 		 */
-		Window& setResizeCallbackDataPtr(void* newPtr);
+		Window& setResizeCallback(ResizeCallback callback, void* newPtr);
 
 
 		/**
@@ -323,9 +321,11 @@ namespace oglopp {
 	
 		/**
 		 * @brief Set the keypress callback data pointer
+		 * @param[in] callback	The callback function
 		 * @param[in] newPtr	The new pointer
 		 */
-		Window& setKeypressCallbackDataPtr(void* newPtr);
+		Window& setKeypressCallback(KeypressCallback callback, void* newPtr);
+
 
 		/**
 		 * @brief Simulate a scroll event. 
@@ -336,9 +336,10 @@ namespace oglopp {
 
 		/**
 		 * @brief Set the scrollwheel callback data pointer
+		 * @param[in] callback	The callback function
 		 * @param[in] newPtr	The new pointer
 		 */
-		Window& setScrollCallbackDataPtr(void* newPtr);
+		Window& setScrollCallback(ScrollCallback callback, void* newPtr);
 	private:
 		
 

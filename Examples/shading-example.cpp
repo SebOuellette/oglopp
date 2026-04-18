@@ -5,7 +5,6 @@
 // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
 #include "../Headers/oglopp.h"
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include <cmath>
 
@@ -14,24 +13,21 @@ using namespace oglopp;
 
 #define CAMSPEED (0.05)
 
-class InputBuffer {
-public:
-	static Window* windowPtr;
+void scrollCallback(double horiz, double vert, void* data) {
+	if (nullptr == data) return; // Data could be null
 
-	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-		InputBuffer::windowPtr->getCam().setFov(InputBuffer::windowPtr->getCam().getFov() - yoffset);
-	}
-};
-
-Window* InputBuffer::windowPtr  = nullptr;
+	Camera* camera = static_cast<Camera*>(data);
+	camera->setFov(camera->getFov() - vert);
+}
 
 int main() {
-
 	// Create the window
 	Window window;
 	window.create(800, 800, "HoneyLib OpenGL - Shading");
-	InputBuffer::windowPtr = &window;
-	glfwSetScrollCallback(window.getWindow(), InputBuffer::scrollCallback);
+
+	// Set the scroll callback data pointer to the window's camera
+	// This lets us update the FOV easily. We can change this if we need to do more. 
+	window.setScrollCallback(scrollCallback, &window.getCam());
 
 	int width = 0;
 	int height = 0;
@@ -53,13 +49,49 @@ int main() {
 	sphere.setPosition(glm::vec3(3.f, 3.f, 6.f));
 	sphere.scale(glm::vec3(3.0));
 
-	// // Initialize our shader object
+	// Initialize our shader object
+	/*
+	 	Oglopp provides some information to the shaders behind the scenes about the shape we're drawing. 
+		It's important to know what data is available, and how to access it. 
+
+		Graphical shaders are performed when the draw function is called on a shape. 
+		 myshape.draw(window, &shader);
+
+		Based on the following, you can imagine how one may create a class to inherit Shader, and automatically
+		perform 
+	
+	MESH:
+	 layout (location = 0) in vec3 pos
+	 layout (location = 1) in vec3 normal
+	 layout (location = 2) in vec2 tex
+		Your mesh is accessible from the vertex shader using the layout qualifier. 
+		 layout (location = <index>) in <type> <variable_name>;
+
+		The indices and types must match what was used to construct myshape. Oglopp builtin shapes
+		are composed of three components: CV, CN, and CT: Vertex positions, Normals, and Texture coordinates 
+		respectively. If you are using a shape with custom components, you would use a layout
+		qualifier to index each component in your shape.
+
+	PROJECTION:
+	 uniform mat4 model
+	 uniform mat4 view
+	 uniform mat4 projection
+	 uniform mat4 rotation
+		Projection variables are exposed to the vertex shader as uniforms. They are used to 
+		draw the shape as a 3D object. This list of variables is composed of the model, view, 
+		and projection matrices, as well as a rotation matrix. The rotation matrix is needed to apply
+		the final transformation to the mesh's normal vectors, otherwise shading remains static as the
+		object rotates.
+
+		The model matrix is composed of a translation to the shape's position, a rotation in the x, y, and z axes, 
+		followed by a scaling of the object. This seems backwards but it gives the right result idk. 
+	*/
 	Shader shader(
 		// Vertex
 		"#version 330 core\n"\
-		"layout (location = 0) in vec3 aPos;\n"\
-		"layout (location = 1) in vec3 aNormal;\n"\
-		"layout (location = 2) in vec2 aTexCoord;\n"\
+		"layout (location = 0) in vec3 POS;\n"\
+		"layout (location = 1) in vec3 NORMAL;\n"\
+		"layout (location = 2) in vec2 TEX;\n"\
 		\
 		"uniform mat4 model;\n"\
 		"uniform mat4 view;\n"\
@@ -69,13 +101,13 @@ int main() {
 		\
 		"out vec3 FragPos;\n"\
 		"out vec3 Normal;\n"\
-		"out vec2 texCoord;\n"\
+		"out vec2 TexCoord;\n"\
 		\
 		"void main() {\n"\
-			"gl_Position = projection * view * model * vec4(aPos, 1.0);\n"\
-			"FragPos = vec3(model * vec4(aPos, 1.0));\n"\
-			"texCoord = aTexCoord;\n"\
-			"Normal = vec3(rotation * vec4(aNormal, 1.0));\n"\
+			"gl_Position = projection * view * model * vec4(POS, 1.0);\n"\
+			"FragPos = vec3(model * vec4(POS, 1.0));\n"\
+			"TexCoord = TEX;\n"\
+			"Normal = vec3(rotation * vec4(NORMAL, 1.0));\n"\
 		"}\n", // End of vertex
 
 		// Fragment
@@ -89,7 +121,7 @@ int main() {
 		\
 		"in vec3 FragPos;\n"\
 		"in vec3 Normal;\n"\
-		"in vec2 texCoord;\n"\
+		"in vec2 TexCoord;\n"\
 		\
 		"out vec4 FragColor;\n"\
 		\
@@ -134,13 +166,10 @@ int main() {
 
 		angle += 0.02;
 
-		//window.getCam().setAngle(glm::vec3(angle * 10, 0, 0.0));
-
 		// Uniforms
 		coob.rotate(glm::vec3(0.01));
 		coob2.setPosition(glm::vec3(sin(angle), cos(angle), 0.0));
 		coob3.setPosition(glm::vec3(sin(angle / 10) * 4, cos(angle / 10) * 4, cos(angle / 10) * sin(angle / 10) * 4));
-		//coob2.translate(glm::vec3(0, 1.0, 0.0));
 
 		// Update the projection and view matrices for all the shapes to be drawn
 		int width, height;
@@ -149,7 +178,6 @@ int main() {
 
 		// Prepare render layer
 		shader.use();
-		//shader.use();
 		shader.setVec3("viewPos", window.getCam().getPos());
 		shader.setVec3("lightColor", glm::vec3(1.0));
 		shader.setVec3("lightPos", glm::vec3(0.0, 4.0, 0.0));

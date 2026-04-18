@@ -27,8 +27,6 @@ void resizeCallback(int width, int height, void* data) {
 
 int main() {
 	Window::Settings settings;
-	// For post-processing, you will need to use the resizeCallback to update the FBO and texture sizes if you plan on resizing your window. If not, then no need.
-	settings.resizeCallback = resizeCallback;
 	settings.doFaceCulling = false;
 
 	// Create the window
@@ -135,7 +133,8 @@ int main() {
 	ResizeData resizeData;
 	resizeData.fbo = &fbo;
 	resizeData.tex = &fboTex;
-	window.setResizeCallbackDataPtr(&resizeData);
+	// For post-processing, you will need to use the resizeCallback to update the FBO and texture sizes if you plan on resizing your window. If not, then no need.
+	window.setResizeCallback(resizeCallback, &resizeData);
 
 	// Create the canvas we will draw the FBO texture to
 	Rectangle canvas;

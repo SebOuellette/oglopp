@@ -1,7 +1,7 @@
 #cmake_minimum_required(VERSION 4.0.1)
 cmake_minimum_required(VERSION 3.30.0)
 project(oglopp
-	VERSION 1.1.3
+	VERSION 1.1.4
 	LANGUAGES C CXX
 )
 
